@@ -9,7 +9,7 @@
     <meta name="description" content="CVE-2026-49468 原理说明漏洞概述CVE-2026-49468 是 LiteLLM Proxy 的 Host Header 认证绕过漏洞。 受影响版本中，LiteLLM 在鉴权前会计算当前请求路由，并基于该路由判断：  是否是 public route 是否需要 API key 鉴权 当前 key 是否允许访问该路由  问题在于旧版 LiteLLM 使用了 Starlette&amp;#x2F">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Z3r4y : Take it easy">
-<meta property="og:url" content="http://example.com/images/04/cve_49468_principle.html">
+<meta property="og:url" content="https://z3r4y.github.io/images/04/cve_49468_principle.html">
 <meta property="og:site_name" content="Z3r4y : Take it easy">
 <meta property="og:description" content="CVE-2026-49468 原理说明漏洞概述CVE-2026-49468 是 LiteLLM Proxy 的 Host Header 认证绕过漏洞。 受影响版本中，LiteLLM 在鉴权前会计算当前请求路由，并基于该路由判断：  是否是 public route 是否需要 API key 鉴权 当前 key 是否允许访问该路由  问题在于旧版 LiteLLM 使用了 Starlette&amp;#x2F">
 <meta property="og:locale" content="en_US">
@@ -54,6 +54,16 @@
     
     
 	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
 	
 <meta name="generator" content="Hexo 7.3.0"></head>
 
