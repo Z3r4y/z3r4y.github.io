@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 论文信息论文：The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence链接：arXiv:2605.26494 · HTML 全文    一个预训练模型，怎样经过数据构建、SFT、长程 RL 和持续评测，变成可以完成真实任务的策略模型？  本文沿一条训练主线展开：Pretraining 与 De">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环">
+<meta property="og:url" content="https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="1. 论文信息论文：The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence链接：arXiv:2605.26494 · HTML 全文    一个预训练模型，怎样经过数据构建、SFT、长程 RL 和持续评测，变成可以完成真实任务的策略模型？  本文沿一条训练主线展开：Pretraining 与 De">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/5-progression.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/6-mtp-original.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/1-data-pipeline.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/10-eq-interleaved.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/3-interleaved-thinking.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/7-eq-mdp.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/9-eq-reward.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/11-advantage.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/8-eq-cispo.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/12-importance-ratio.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/2-forge.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/13-windowed-fifo.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/12/4-self-evolution.png">
+<meta property="article:published_time" content="2026-07-19T08:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-19T11:48:38.670Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="LLM Training">
+<meta property="article:tag" content="Mixture of Experts">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/12/5-progression.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"></head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/07/17/Thinking-Signature-Unsealed%EF%BC%9AClaude-%E9%9A%90%E8%97%8F%E6%8E%A8%E7%90%86%E7%9A%84%E9%87%8D%E6%96%B0%E6%9A%B4%E9%9C%B2/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&text=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&is_video=false&description=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环&body=Check out this article: https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&name=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&t=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Pretraining%EF%BC%9A%E7%BB%93%E6%9E%84%E3%80%81%E6%95%B0%E6%8D%AE%E4%B8%8E-MTP"><span class="toc-number">2.</span> <span class="toc-text">2. Pretraining：结构、数据与 MTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%EF%BC%9A%E6%95%B0%E6%8D%AE%E4%B8%8E-Interleaved-Thinking"><span class="toc-number">3.</span> <span class="toc-text">3. SFT 冷启动：数据与 Interleaved Thinking</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-RL%EF%BC%9AReward%E3%80%81CISPO-%E4%B8%8E-Mixed-Domain"><span class="toc-number">4.</span> <span class="toc-text">4. RL：Reward、CISPO 与 Mixed-Domain</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Forge%EF%BC%9A%E8%AE%A9%E9%95%BF%E8%BD%A8%E8%BF%B9-RL-%E6%8C%81%E7%BB%AD%E8%BF%90%E8%BD%AC"><span class="toc-number">5.</span> <span class="toc-text">5. Forge：让长轨迹 RL 持续运转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Self-Evolution%EF%BC%9A%E8%AE%AD%E7%BB%83%E7%A0%94%E5%8F%91%E7%9A%84%E5%A4%96%E5%B1%82%E5%BE%AA%E7%8E%AF"><span class="toc-number">6.</span> <span class="toc-text">6. Self-Evolution：训练研发的外层循环</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-07-19T08:00:00.000Z" class="dt-published" itemprop="datePublished">2026-07-19</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/LLM-Training/" rel="tag">LLM Training</a>, <a class="p-category" href="/tags/Mixture-of-Experts/" rel="tag">Mixture of Experts</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>, <a class="p-category" href="/tags/Reinforcement-Learning/" rel="tag">Reinforcement Learning</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-论文信息"><a href="#1-论文信息" class="headerlink" title="1. 论文信息"></a>1. 论文信息</h2><p>论文：<strong>The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2605.26494">arXiv:2605.26494</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/html/2605.26494v1">HTML 全文</a>  </p>
+<blockquote>
+<p>一个预训练模型，怎样经过数据构建、SFT、长程 RL 和持续评测，变成可以完成真实任务的策略模型？</p>
+</blockquote>
+<p>本文沿一条训练主线展开：Pretraining 与 Decay 建立底座，SFT 冷启动可运行策略并注入 Interleaved Thinking，RL 与 CISPO 根据任务结果改变动作概率，Forge 负责规模化训练，Self-Evolution 则构成训练研发的外层迭代。</p>
+<blockquote>
+<p>预训练决定模型拥有什么，SFT 决定模型从哪里开始行动，RL 决定哪些行动会被强化；Forge 和外层评测则决定这条参数更新链路能否持续运转。</p>
+</blockquote>
+<p><img src="/images/12/5-progression.png" alt="MiniMax-M2、M2.5 与 M2.7 的版本能力进展"></p>
+<p><em>M2 系列在 11 个三代均有结果的 benchmark 上的版本进展。图中是数据、RL、scaffold 和评测共同变化后的版本结果，不是单组件消融。</em></p>
+<h2 id="2-Pretraining：结构、数据与-MTP"><a href="#2-Pretraining：结构、数据与-MTP" class="headerlink" title="2. Pretraining：结构、数据与 MTP"></a>2. Pretraining：结构、数据与 MTP</h2><p><strong>模型结构</strong><br>M2 是一个 62 层 decoder-only Transformer，隐藏维度为 3,072，最大上下文为 192K。模型共有 229.9B 参数，但每个 token 只激活约 9.8B；MoE 降低的是单 token 计算量，不是 checkpoint 的权重规模。</p>
+<p>每个 Transformer block 的 FFN 都采用 MoE：共有 256 个细粒度专家，每个 token 选择 top-8，router 使用 sigmoid gating 和可学习的 expert bias。这种设计用条件计算换取更大的总参数量，同时也需要管理专家分工、路由决策和负载均衡。</p>
+<p>Attention 则选择 Full Attention，而不是 Hybrid Sliding Window Attention。两者在部分短任务上接近，但长上下文差距会扩大，例如 RULER 128K CWE 为 90.0 对 72.0。这个选择本质上是用更高的计算成本换取长程状态的稳定性。</p>
+<p><strong>数据与 Decay</strong><br>M2 共使用 29.2T 预训练 tokens。Constant phase 约 19.9T，Data mixture 是不同数据来源的采样分布；论文只说明代码、数学和 STEM 相对自然分布被显著上采样，没有公开各类数据的完整比例和重复次数。</p>
+<p>Decay phase 约 9.3T，混入更高质量的数据，并把上下文从 8K 逐步扩展到 32K、192K；长文本主要来自代码拼接、自然长文 PDF 和主题相关的 document packing。论文没有公开 learning-rate schedule，因此这里更适合把 Decay 理解成数据构成、上下文长度和辅助目标共同变化的继续预训练阶段，不能把后期收益简单归因给某个数据集。</p>
+<p><strong>MTP</strong><br>Multi-Token Prediction 在 next-token loss 之外继续预测更远的未来 token。它不是另一个完整模型，而是附加在主模型上的预测模块，并与主模型共享 embedding 和 output head：</p>
+<p><img src="/images/12/6-mtp-original.png" alt="Multi-Token Prediction 模块架构"></p>
+<p><em>Multi-Token Prediction（MTP）模块架构。</em></p>
+<p>预训练早期使用一个 MTP 模块，loss 权重为 0.3；Decay 阶段将权重退火到 0.1，并把模块扩展到三个。新增模块从主模型复制权重，先单独训练到 loss 稳定，再与主模型联合训练。推理时，MTP 生成多个 draft tokens，再由主模型一次性验证。因此它有两个角色：<strong>训练时增加未来 token 的监督信号，推理时通过 speculative decoding 提高吞吐。</strong></p>
+<h2 id="3-SFT-冷启动：数据与-Interleaved-Thinking"><a href="#3-SFT-冷启动：数据与-Interleaved-Thinking" class="headerlink" title="3. SFT 冷启动：数据与 Interleaved Thinking"></a>3. SFT 冷启动：数据与 Interleaved Thinking</h2><p>预训练后的模型已经有代码和推理知识，但还没有稳定学会什么时候调用工具、如何遵守协议、怎样根据 observation 继续，以及何时验证和结束。SFT 的作用，是给参数注入一套可运行的行为先验，为 RL 提供起点。</p>
+<p>论文的 SFT 数据覆盖 chat、reasoning、code 和 cowork 四个领域，流程是领域 reward rejection sampling 加多阶段清洗，留下高质量的 interleaved-thinking trajectories。</p>
+<p><img src="/images/12/1-data-pipeline.png" alt="SWE 与 AppDev 的可验证数据构建管线"></p>
+<p><em>SWE 与 AppDev 的可验证数据构建管线。</em></p>
+<table>
+<thead>
+<tr>
+<th>数据场景</th>
+<th>如何得到可验证信号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>SWE</td>
+<td>GitHub PR、可运行 Docker、F2P&#x2F;P2P 测试；分别检查修复和回归</td>
+</tr>
+<tr>
+<td>AppDev</td>
+<td>Agent-as-a-Verifier，依次通过 Execution、Interaction、Visual Aesthetics 三层 rubric</td>
+</tr>
+<tr>
+<td>Terminal-Gym</td>
+<td>自动生成 Docker 环境和测试，并按通过率、提示数量、修复轮数校准难度</td>
+</tr>
+</tbody></table>
+<p>在 AppDev 管线中，采样时 teacher 可以看到完整的专家提示，训练时再删掉其中一部分，通过 prompt distillation 让模型把工具规范、TODO 和自验证习惯内化，而不是依赖同一份 system prompt。论文还在部分数据管线中扰动 scaffold，降低模型对单一工具布局的共适应。</p>
+<p>在 SFT 中，一条轨迹会被拆成许多 state-action 训练样本；模型在每个 state 上拟合 teacher action。这样做能把工具协议和行为模式注入参数，但 SFT 更像行为模仿，不直接知道哪个动作最终提高了任务成功率。它仍可能遇到 teacher 状态分布和学生运行状态不一致、模型与 scaffold 共适应等问题，所以是冷启动策略，而不是最终的成功率优化。</p>
+<p>其中一个关键的行为先验是 Interleaved Thinking。M2 把 reasoning、action 和 observation 组织成交错序列：</p>
+<p><img src="/images/12/10-eq-interleaved.png" alt="Interleaved trajectory"></p>
+<p><em>交错轨迹与 reasoning state persistence。</em></p>
+<p>它区别于“不思考”和“先想完再行动”：每轮工具返回后，模型重新进入 thinking，并继续使用之前的状态。</p>
+<p><img src="/images/12/3-interleaved-thinking.png" alt="No Thinking、Extended Thinking 与 Interleaved Thinking"></p>
+<p><em>三种 reasoning state 组织方式。图片展示模式对比；Plan–Act–Reflect 的循环关系需要结合正文理解。</em></p>
+<blockquote>
+<p>Interleaved Thinking 不只是让思考和工具调用交错出现，更关键的是 reasoning state persistence：上一轮的 thinking、action 和 tool response 都会进入下一轮上下文。</p>
+</blockquote>
+<p>这样模型可以复用假设和中间结论，在 observation 不符合预期时修正计划，而不是每轮重新猜测背景。论文声称 reasoning-state persistence 在多项 Agent benchmark 上有一致收益，但没有公开完整数值消融，不能写成明确百分比的因果结论。</p>
+<h2 id="4-RL：Reward、CISPO-与-Mixed-Domain"><a href="#4-RL：Reward、CISPO-与-Mixed-Domain" class="headerlink" title="4. RL：Reward、CISPO 与 Mixed-Domain"></a>4. RL：Reward、CISPO 与 Mixed-Domain</h2><p>SFT 解决“教师通常怎么做”，RL 进一步问“当前模型怎样做更容易成功”。</p>
+<p>Rollout      ：让当前 policy 在环境里跑一次的过程<br>Trajectory   ：这次运行留下的完整序列<br>Training pair：从 trajectory 拆出的单步 (state, action)</p>
+<p>论文将 state transition 和完整 trajectory 定义为：</p>
+<p><img src="/images/12/7-eq-mdp.png" alt="State transition 与 trajectory 定义"></p>
+<p><em>工具执行和上下文管理共同决定下一个 state，policy 则由模型参数化。</em></p>
+<p>模型 completion 是 action；工具返回、上下文管理和环境变化共同决定下一个 state。</p>
+<blockquote>
+<p>进入 Agent RL 后，Interleaved Thinking 继续作为 rollout 的状态组织方式；RL 优化的是在这些 state 下，哪些 action 更可能带来更高 reward。</p>
+</blockquote>
+<p>论文没有只使用最终 pass&#x2F;fail，而是组合三类 reward：</p>
+<p><img src="/images/12/9-eq-reward.png" alt="Composite reward"></p>
+<p><em>Process、speed 和 performance 三类 reward 的组合。</em></p>
+<p>process reward 提供工具格式和中间行为等密集信号；speed reward 根据相对完成时间鼓励更高效的路径；performance reward 反映最终任务结果。</p>
+<p>进入 CISPO 之前，原始 reward 会先被转换成 advantage：从当前动作开始累加后续 reward，再减去这条 trajectory 的 baseline。</p>
+<p><img src="/images/12/11-advantage.png" alt="Advantage 的计算方式"></p>
+<p><em>Reward-to-go 衡量动作之后累积的收益，trajectory-level baseline 用于降低方差。</em></p>
+<p>Reward 给出结果好坏，advantage 将它变成相对基线的更新信号；接下来才由 CISPO 把这个信号转成 policy 更新。</p>
+<p>CISPO（Clipped Importance Sampling Policy Optimization）是一种基于重要性采样的策略优化方法：它允许当前 policy 继续利用旧 policy 产生的 rollout，用 importance ratio 校正两者的概率差异，再通过 clipping 限制旧数据造成的过大更新。其目标函数如下：</p>
+<p><img src="/images/12/8-eq-cispo.png" alt="CISPO 目标函数"></p>
+<p>重要性权重来自当前策略与 rollout policy 对同一 token 的概率比，并进行非对称裁剪：</p>
+<p><img src="/images/12/12-importance-ratio.png" alt="重要性采样比率的非对称裁剪"></p>
+<p><em>Ratio 使用 stop-gradient，并裁剪到 0 至 1 加上限系数的区间，不使用 PPO 式的对称下界。</em></p>
+<p>对这个目标函数求梯度后，每个 token 的更新信号可以读成<strong>三个因子</strong>的共同作用：</p>
+<blockquote>
+<p>advantage 决定动作应被鼓励还是压制；当前策略的 log-probability 梯度给出参数更新方向；裁剪后的重要性权重限制旧 rollout 对更新的影响。</p>
+</blockquote>
+<p>为了避免 RL 只优化工具任务，论文在每个阶段同时混合 reasoning、coding、agent、general 四类数据，并逐步调整：</p>
+<table>
+<thead>
+<tr>
+<th>训练轴</th>
+<th>变化方向</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Domain ratio</td>
+<td>早期偏 reasoning&#x2F;general，后期增加 agent&#x2F;coding</td>
+</tr>
+<tr>
+<td>Context length</td>
+<td>从短决策逐步扩展到长轨迹</td>
+</tr>
+<tr>
+<td>Difficulty</td>
+<td>从宽分布逐步集中到困难样本</td>
+</tr>
+</tbody></table>
+<p>这只能降低遗忘，不能保证所有能力单调上升。表 4 中 M2.7 的 MMLU-Pro 为 81.8，低于 M2.5 的 85.2。</p>
+<h2 id="5-Forge：让长轨迹-RL-持续运转"><a href="#5-Forge：让长轨迹-RL-持续运转" class="headerlink" title="5. Forge：让长轨迹 RL 持续运转"></a>5. Forge：让长轨迹 RL 持续运转</h2><p>Forge 把 rollout、trajectory、reward、训练和权重同步接成可持续循环。</p>
+<p><img src="/images/12/2-forge.png" alt="Forge RL 系统架构"></p>
+<p><em>Forge 将 Agent Side、middleware 和 Training&#x2F;Inference Side 解耦，并同时支持 black-box 与 white-box Agent。</em></p>
+<p>Agent Side<br>  → Gateway &#x2F; Data Pool<br>  → Rollout Engine 生成 token<br>  → Train Engine 计算 CISPO<br>  → 同步新权重回 Rollout Engine</p>
+<p>black-box Agent 只需交出实际请求、completion 和 observation；内部如何压缩上下文、管理 memory 或协调子 Agent，可以对训练框架不透明。white-box Agent 则把 context management 注册给框架，以便训练时重建状态。</p>
+<p>Forge 主要解决三个训练系统问题：</p>
+<ul>
+<li><strong>Policy staleness</strong>：长 rollout 完成时，生成它的权重可能已经旧了；更快产生新数据，可以让训练分布更接近当前 policy。</li>
+<li><strong>Length bias</strong>：严格 FIFO 会被长任务阻塞，完全 greedy 又会让短任务主导前面的 batch。Windowed FIFO 在两者之间控制吞吐与数据分布的平衡。</li>
+<li><strong>重复计算</strong>：Prefix-tree merging 只计算一次共享前缀，再分别计算分支；论文称最高 40× speedup，但没有公开硬件、平均加速、显存曲线或误差条，不能把“up to”写成普遍结果。</li>
+</ul>
+<p><img src="/images/12/13-windowed-fifo.png" alt="Windowed FIFO 调度机制"></p>
+<p><em>窗口锚定在当前最老的未消费 trajectory，并限制调度器能够向后查看的范围。</em></p>
+<p>Windowed FIFO 的机制可以压缩成三步：</p>
+<ol>
+<li>以队头最老的未消费 trajectory 为起点，只开放它和后面一定数量的任务。</li>
+<li>窗口内不要求严格顺序，哪个 trajectory 先完成，哪个就可以先进入训练，避免慢任务造成队头阻塞。</li>
+<li>窗口外的任务即使已经完成也不能被取走；只有队头被消费后，窗口才会向右滑动并放入后续任务。</li>
+</ol>
+<p>窗口越小越接近严格 FIFO，训练分布更稳定；窗口越大越接近 greedy，吞吐更高但更容易让短任务提前聚集。论文实践中将窗口大小设为 generation batch 规模的 30%。</p>
+<p>调度之外，Rollout Engine 的生成侧还使用 MTP 加速 RL rollout。随着 CISPO 持续更新 policy，主模型的输出分布也会变化；如果 MTP 不同步，draft token 的 acceptance rate 就会下降。论文因此使用 top-K KL loss 让 MTP 模块持续跟随当前 policy，保持生成吞吐。这里的 MTP 主要影响推理效率，不参与 reward、advantage 或信用分配。</p>
+<p>这些优化影响的是有效训练产量：</p>
+<p>更高吞吐 → 更多有效 trajectory → 更广的 reward 覆盖 → 更多参数更新</p>
+<h2 id="6-Self-Evolution：训练研发的外层循环"><a href="#6-Self-Evolution：训练研发的外层循环" class="headerlink" title="6. Self-Evolution：训练研发的外层循环"></a>6. Self-Evolution：训练研发的外层循环</h2><p>Self-Evolution 是这条训练链路的外层循环，不是模型实时修改自身权重：</p>
+<p><img src="/images/12/4-self-evolution.png" alt="Model Iteration System 与 RL 团队双循环"></p>
+<p><em>Model Iteration System 与 RL team workflow。论文将其称为 self-evolution 的 early operational form。</em></p>
+<p>人类设定目标<br>    ↓<br>模型读取日志、分析失败、修改 scaffold&#x2F;config<br>    ↓<br>运行实验与 Evaluation<br>    ↓<br>人类 review，决定保留、回滚或进入下一轮</p>
+<p>论文中模型承接了 RL 团队约 30%–50% 的日常 iteration workload，并在内部 programming scaffold 上完成 100 轮全自主迭代、内部评测提升约 30%。这些是工作量和内部实验结果，不是公开 benchmark 上的模型权重增益；MLE Bench Lite 的 66.6% medal rate 也不能与它混为同一实验。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Pretraining%EF%BC%9A%E7%BB%93%E6%9E%84%E3%80%81%E6%95%B0%E6%8D%AE%E4%B8%8E-MTP"><span class="toc-number">2.</span> <span class="toc-text">2. Pretraining：结构、数据与 MTP</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%EF%BC%9A%E6%95%B0%E6%8D%AE%E4%B8%8E-Interleaved-Thinking"><span class="toc-number">3.</span> <span class="toc-text">3. SFT 冷启动：数据与 Interleaved Thinking</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-RL%EF%BC%9AReward%E3%80%81CISPO-%E4%B8%8E-Mixed-Domain"><span class="toc-number">4.</span> <span class="toc-text">4. RL：Reward、CISPO 与 Mixed-Domain</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-Forge%EF%BC%9A%E8%AE%A9%E9%95%BF%E8%BD%A8%E8%BF%B9-RL-%E6%8C%81%E7%BB%AD%E8%BF%90%E8%BD%AC"><span class="toc-number">5.</span> <span class="toc-text">5. Forge：让长轨迹 RL 持续运转</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-Self-Evolution%EF%BC%9A%E8%AE%AD%E7%BB%83%E7%A0%94%E5%8F%91%E7%9A%84%E5%A4%96%E5%B1%82%E5%BE%AA%E7%8E%AF"><span class="toc-number">6.</span> <span class="toc-text">6. Self-Evolution：训练研发的外层循环</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&text=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&is_video=false&description=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环&body=Check out this article: https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&title=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&name=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/&t=MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
