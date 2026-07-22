@@ -1,0 +1,61 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="560" viewBox="0 0 1200 560" role="img" aria-labelledby="title desc">
+  <title id="title">语义标签与 probe 决策边界错位</title>
+  <desc id="desc">FN 和 FP 两种示意：文本改写保持语义标签不变，却让表示投影跨过 probe 的决策边界。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#5fd3af"/></marker>
+  </defs>
+  <rect width="1200" height="560" rx="18" fill="#17191c"/>
+  <style>
+    .title{font:600 27px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#eef3f7}
+    .label{font:500 19px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#eef3f7}
+    .small{font:400 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#aeb8c2}
+    .mono{font:500 16px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#dce8ef}
+    .panel{fill:#20252a;stroke:#3e4852;stroke-width:2}
+    .axis{stroke:#77838e;stroke-width:2}
+    .boundary{stroke:#ff8c8c;stroke-width:2;stroke-dasharray:8 8}
+    .move{stroke:#5fd3af;stroke-width:4;fill:none;marker-end:url(#arrow)}
+  </style>
+  <text x="36" y="48" class="title">绕过的核心：语义标签不变，但表示跨过 probe 边界</text>
+  <text x="36" y="76" class="small">二维坐标只是示意性的 activation 投影；论文没有公开这样的真实二维轨迹</text>
+
+  <rect x="35" y="105" width="545" height="380" rx="16" class="panel"/>
+  <rect x="620" y="105" width="545" height="380" rx="16" class="panel"/>
+  <text x="65" y="145" class="label" fill="#79b7ff">FN：真实 high-stakes 被压成 low</text>
+  <text x="650" y="145" class="label" fill="#f2ad68">FP：真实 low-stakes 被推成 high</text>
+
+  <!-- FN plot -->
+  <line x1="95" y1="430" x2="520" y2="430" class="axis"/>
+  <line x1="95" y1="430" x2="95" y2="180" class="axis"/>
+  <line x1="305" y1="175" x2="305" y2="440" class="boundary"/>
+  <text x="315" y="204" class="small" fill="#ff8c8c">probe boundary</text>
+  <text x="95" y="458" class="small">低 probe score</text>
+  <text x="414" y="458" class="small">高 probe score</text>
+  <text x="105" y="198" class="small">语义信息的另一维</text>
+  <circle cx="438" cy="270" r="12" fill="#79b7ff"/>
+  <text x="454" y="264" class="small">原始 x₀</text>
+  <text x="454" y="286" class="mono">p=.82, y=1</text>
+  <circle cx="180" cy="350" r="12" fill="#ff8c8c"/>
+  <text x="112" y="342" class="small">改写 x_adv</text>
+  <text x="112" y="365" class="mono">p=.21, y=1</text>
+  <path d="M425 280 C360 300 285 330 194 344" class="move"/>
+  <text x="230" y="260" class="small" fill="#5fd3af">平淡、流程化、语义分散</text>
+
+  <!-- FP plot -->
+  <line x1="680" y1="430" x2="1105" y2="430" class="axis"/>
+  <line x1="680" y1="430" x2="680" y2="180" class="axis"/>
+  <line x1="890" y1="175" x2="890" y2="440" class="boundary"/>
+  <text x="900" y="204" class="small" fill="#ff8c8c">probe boundary</text>
+  <text x="680" y="458" class="small">低 probe score</text>
+  <text x="999" y="458" class="small">高 probe score</text>
+  <text x="690" y="198" class="small">语义信息的另一维</text>
+  <circle cx="765" cy="350" r="12" fill="#79b7ff"/>
+  <text x="705" y="329" class="small">原始 x₀</text>
+  <text x="705" y="352" class="mono">p=.18, y=0</text>
+  <circle cx="1035" cy="270" r="12" fill="#f2ad68"/>
+  <text x="905" y="235" class="small">改写 x_adv</text>
+  <text x="905" y="258" class="mono">p=.79, y=0</text>
+  <path d="M780 340 C850 325 925 300 1022 278" class="move"/>
+  <text x="740" y="260" class="small" fill="#5fd3af">风险词、法律套话、显眼触发器</text>
+
+  <text x="600" y="525" text-anchor="middle" class="mono">y 保持不变，p(x) 跨过阈值</text>
+</svg>

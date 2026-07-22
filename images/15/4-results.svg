@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500" role="img" aria-labelledby="title desc">
+  <title id="title">GPT-5 红队成功率变化</title>
+  <desc id="desc">GPT-5 对 Llama probe 的 FN 和 FP 成功率从首批到后半程明显上升，旁边标注 held-out AUROC 不是同一指标。</desc>
+  <rect width="1100" height="500" rx="18" fill="#17191c"/>
+  <style>
+    .title{font:600 27px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#eef3f7}
+    .label{font:500 18px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#eef3f7}
+    .small{font:400 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#aeb8c2}
+    .value{font:600 16px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#eef3f7}
+    .grid{stroke:#3a434c;stroke-width:1}
+  </style>
+  <text x="36" y="48" class="title">反馈让 GPT-5 更容易找到 probe 的错判样本</text>
+  <text x="36" y="75" class="small">论文报告值；成功率的分母是有效红队候选，不是线上流量</text>
+
+  <g transform="translate(75,105)">
+    <line x1="0" y1="315" x2="610" y2="315" class="grid"/>
+    <line x1="0" y1="252" x2="610" y2="252" class="grid"/>
+    <line x1="0" y1="189" x2="610" y2="189" class="grid"/>
+    <line x1="0" y1="126" x2="610" y2="126" class="grid"/>
+    <line x1="0" y1="63" x2="610" y2="63" class="grid"/>
+    <line x1="0" y1="0" x2="610" y2="0" class="grid"/>
+    <line x1="0" y1="0" x2="0" y2="315" stroke="#77838e" stroke-width="2"/>
+    <line x1="0" y1="315" x2="610" y2="315" stroke="#77838e" stroke-width="2"/>
+    <text x="-42" y="320" class="small">0%</text>
+    <text x="-48" y="194" class="small">40%</text>
+    <text x="-48" y="68" class="small">80%</text>
+    <text x="36" y="350" class="small">FN</text>
+    <text x="334" y="350" class="small">FP</text>
+    <text x="600" y="350" text-anchor="end" class="small">GPT-5 attacker</text>
+
+    <rect x="18" y="252" width="72" height="63" rx="5" fill="#79b7ff"/>
+    <rect x="100" y="114" width="72" height="201" rx="5" fill="#5fd3af"/>
+    <text x="54" y="244" text-anchor="middle" class="value">8.0%</text>
+    <text x="136" y="106" text-anchor="middle" class="value">63.6%</text>
+    <text x="54" y="337" text-anchor="middle" class="small">首批</text>
+    <text x="136" y="337" text-anchor="middle" class="small">后半程</text>
+
+    <rect x="316" y="252" width="72" height="63" rx="5" fill="#f2ad68"/>
+    <rect x="398" y="38" width="72" height="277" rx="5" fill="#ff8c8c"/>
+    <text x="352" y="244" text-anchor="middle" class="value">20.0%</text>
+    <text x="434" y="30" text-anchor="middle" class="value">88.0%</text>
+    <text x="352" y="337" text-anchor="middle" class="small">首批</text>
+    <text x="434" y="337" text-anchor="middle" class="small">后半程</text>
+  </g>
+
+  <rect x="760" y="122" width="295" height="185" rx="14" fill="#20252a" stroke="#46505a" stroke-width="2"/>
+  <text x="790" y="160" class="label">Held-out AUROC</text>
+  <text x="790" y="202" class="value" fill="#79b7ff">Llama probe：0.91</text>
+  <text x="790" y="234" class="value" fill="#b99af7">Qwen probe：0.85</text>
+  <text x="790" y="274" class="small">这是普通评测分布的排序指标，</text>
+  <text x="790" y="296" class="small">不是红队成功率，也不是鲁棒性保证。</text>
+
+  <rect x="760" y="340" width="295" height="75" rx="12" fill="#2a2024" stroke="#ff8c8c" stroke-width="2"/>
+  <text x="790" y="370" class="small">同一个 probe 可以同时拥有：</text>
+  <text x="790" y="397" class="value">高 AUROC + 可学习的尾部错判</text>
+</svg>

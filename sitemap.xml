@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://z3r4y.github.io/2026/07/23/Red-teaming-Activation-Probes-using-Prompted-LLMs/</loc>
+    
+    <lastmod>2026-07-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/2026/07/22/PACEbench%EF%BC%9ACVE%20%E7%BB%84%E5%90%88%E4%B8%8E%E7%8E%AF%E5%A2%83%E6%9E%84%E9%80%A0/</loc>
     
     <lastmod>2026-07-22</lastmod>
@@ -178,6 +187,20 @@
   </url>
   
   <url>
+    <loc>https://z3r4y.github.io/tags/Prompt-Injection/</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/System-Security/</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/tags/Automated-Penetration-Testing/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -199,14 +222,14 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Prompt-Injection/</loc>
+    <loc>https://z3r4y.github.io/tags/RAG-Security/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/System-Security/</loc>
+    <loc>https://z3r4y.github.io/tags/Software-Supply-Chain/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -234,20 +257,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/RAG-Security/</loc>
-    <lastmod>2026-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Software-Supply-Chain/</loc>
-    <lastmod>2026-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/tags/LLM-Training/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
@@ -263,6 +272,27 @@
   
   <url>
     <loc>https://z3r4y.github.io/tags/Reinforcement-Learning/</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Activation-Monitoring/</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Adversarial-Attack/</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/AI-Safety/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -291,13 +321,6 @@
   
   <url>
     <loc>https://z3r4y.github.io/tags/Jailbreak/</loc>
-    <lastmod>2026-07-22</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Adversarial-Attack/</loc>
     <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="500" viewBox="0 0 1200 500" role="img" aria-labelledby="title desc">
+  <title id="title">Activation Probe 的读出链</title>
+  <desc id="desc">输入对话经过被监控模型产生中间激活，再由轻量 probe 聚合成分数和阈值标签。</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="5" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#8f9aa6"/>
+    </marker>
+  </defs>
+  <rect width="1200" height="500" rx="18" fill="#17191c"/>
+  <style>
+    .title{font:600 27px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#eef3f7}
+    .label{font:500 18px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#eef3f7}
+    .small{font:400 15px -apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;fill:#aeb8c2}
+    .formula{font:500 17px ui-monospace,SFMono-Regular,Menlo,monospace;fill:#dce8ef}
+    .box{fill:#20252a;stroke:#46505a;stroke-width:2}
+    .arrow{stroke:#8f9aa6;stroke-width:3;fill:none;marker-end:url(#arrow)}
+  </style>
+  <text x="36" y="48" class="title">Activation Probe：从 hidden states 到风险分数</text>
+  <text x="36" y="75" class="small">probe 读取的是目标模型的中间表示，不是另一个会完整理解文本的 LLM</text>
+
+  <rect x="30" y="112" width="145" height="86" rx="12" class="box" stroke="#5fd3af"/>
+  <text x="102" y="143" text-anchor="middle" class="label">输入对话</text>
+  <text x="102" y="174" text-anchor="middle" class="formula">x</text>
+
+  <rect x="220" y="112" width="175" height="86" rx="12" class="box" stroke="#79b7ff"/>
+  <text x="307" y="143" text-anchor="middle" class="label">被监控 LLM</text>
+  <text x="307" y="174" text-anchor="middle" class="small">Llama / Qwen</text>
+
+  <rect x="440" y="100" width="210" height="110" rx="12" class="box" stroke="#b99af7"/>
+  <text x="545" y="133" text-anchor="middle" class="label">第 l 层 activations</text>
+  <text x="545" y="166" text-anchor="middle" class="formula">A_l(x)=[a₁,…,a_S]</text>
+  <text x="545" y="192" text-anchor="middle" class="small">pre-layer-norm residual stream</text>
+
+  <rect x="695" y="100" width="185" height="110" rx="12" class="box" stroke="#f2ad68"/>
+  <text x="787" y="132" text-anchor="middle" class="label">轻量 probe</text>
+  <text x="787" y="165" text-anchor="middle" class="formula">gθ(A)</text>
+  <text x="787" y="192" text-anchor="middle" class="small">投影 + token 聚合</text>
+
+  <rect x="925" y="112" width="115" height="86" rx="12" class="box" stroke="#5fd3af"/>
+  <text x="982" y="143" text-anchor="middle" class="label">分数</text>
+  <text x="982" y="174" text-anchor="middle" class="formula">p(x)</text>
+
+  <rect x="1080" y="100" width="95" height="110" rx="12" class="box" stroke="#ff8c8c"/>
+  <text x="1127" y="132" text-anchor="middle" class="label">阈值</text>
+  <text x="1127" y="165" text-anchor="middle" class="formula">p&gt;.5?</text>
+  <text x="1127" y="193" text-anchor="middle" class="small">高 / 低</text>
+
+  <path d="M175 155 H215" class="arrow"/>
+  <path d="M395 155 H435" class="arrow"/>
+  <path d="M650 155 H690" class="arrow"/>
+  <path d="M880 155 H920" class="arrow"/>
+  <path d="M1040 155 H1075" class="arrow"/>
+
+  <rect x="95" y="285" width="1010" height="125" rx="14" fill="#20252a" stroke="#39434d" stroke-width="2"/>
+  <text x="125" y="322" class="label" fill="#f2ad68">Attention Probe 的内部读出</text>
+  <text x="125" y="359" class="formula">q=Aθq</text>
+  <text x="290" y="359" class="formula">v=Aθv</text>
+  <text x="455" y="359" class="formula">α=softmax(q)</text>
+  <text x="690" y="359" class="formula">z=αᵀv</text>
+  <text x="855" y="359" class="formula">p=σ(z)</text>
+  <text x="125" y="389" class="small">θq 决定关注哪些 token，θv 决定这些 token 提供多少概念证据；整体包含 softmax 和 sigmoid。</text>
+
+  <text x="36" y="463" class="small">攻击者改变的是 x → A_l(x) 随之改变；它不直接编辑 A，也不需要知道 probe 权重。</text>
+</svg>
