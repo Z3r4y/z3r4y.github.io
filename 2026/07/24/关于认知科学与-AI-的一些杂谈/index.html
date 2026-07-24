@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="只是记录一些无端的思绪：  现在业界的共识是下一个智能阶梯是从 agent 转换到持续学习，让大模型有持续学习的能力。这一块或许需要攻克的就是如何把短期记忆去变化到模型的长期记忆。  把人类智能狭义地拆开，大致是知觉、注意、记忆。 同一个模糊的形状，放在浴室里像吹风机，挪到工作台上又像电钻。形状没变，我们对它的理解却变了。 这件事看起来很简单，却很能说明人类认知的特点。我们总以为自己先看见，再理解">
+<meta property="og:type" content="article">
+<meta property="og:title" content="关于认知科学与 AI 的一些杂谈">
+<meta property="og:url" content="https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="只是记录一些无端的思绪：  现在业界的共识是下一个智能阶梯是从 agent 转换到持续学习，让大模型有持续学习的能力。这一块或许需要攻克的就是如何把短期记忆去变化到模型的长期记忆。  把人类智能狭义地拆开，大致是知觉、注意、记忆。 同一个模糊的形状，放在浴室里像吹风机，挪到工作台上又像电钻。形状没变，我们对它的理解却变了。 这件事看起来很简单，却很能说明人类认知的特点。我们总以为自己先看见，再理解">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/cognition/mach-bands-classic.jpg">
+<meta property="og:image" content="https://z3r4y.github.io/images/cognition/gestalt-proximity.svg">
+<meta property="og:image" content="https://z3r4y.github.io/images/cognition/necker-cube-publicdomain.svg">
+<meta property="article:published_time" content="2026-07-24T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-24T22:11:17.481Z">
+<meta property="article:author" content="Z3r4y">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/cognition/mach-bands-classic.jpg">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>关于认知科学与 AI 的一些杂谈 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/07/23/Red-teaming-Activation-Probes-using-Prompted-LLMs/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&text=关于认知科学与 AI 的一些杂谈"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&is_video=false&description=关于认知科学与 AI 的一些杂谈"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于认知科学与 AI 的一些杂谈&body=Check out this article: https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&name=关于认知科学与 AI 的一些杂谈&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&t=关于认知科学与 AI 的一些杂谈"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%A7%89"><span class="toc-number">1.</span> <span class="toc-text">知觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">2.</span> <span class="toc-text">注意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86"><span class="toc-number">3.</span> <span class="toc-text">记忆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E8%81%8A%E5%9B%9E-AI"><span class="toc-number">4.</span> <span class="toc-text">再聊回 AI</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        关于认知科学与 AI 的一些杂谈
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-07-24T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-07-24</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>只是记录一些无端的思绪：</p>
+<blockquote>
+<p>现在业界的共识是下一个智能阶梯是从 agent 转换到持续学习，让大模型有持续学习的能力。这一块或许需要攻克的就是如何把短期记忆去变化到模型的长期记忆。</p>
+</blockquote>
+<p>把人类智能狭义地拆开，大致是知觉、注意、记忆。</p>
+<p>同一个模糊的形状，放在浴室里像吹风机，挪到工作台上又像电钻。形状没变，我们对它的理解却变了。</p>
+<p>这件事看起来很简单，却很能说明人类认知的特点。我们总以为自己先看见，再理解；实际上，理解从“看见”的那一刻就已经介入了。</p>
+<h2 id="知觉"><a href="#知觉" class="headerlink" title="知觉"></a>知觉</h2><p>视觉并不是对物理世界的逐点复刻。</p>
+<p>马赫带是一个很典型的例子。在明暗区域的交界处，我们感受到的亮度差异往往比实际更明显。视觉系统增强了局部变化，于是物体的边缘更容易从背景里浮现。它当然可以被叫作错觉，但这个错觉很有用。</p>
+<div style="background:#fff;padding:1rem;margin:1.5rem 0;">
+  <img src="/images/cognition/mach-bands-classic.jpg" alt="马赫带">
+</div>
+
+<p>格式塔心理学讲的也是类似的事。相近的元素会被看成一组，断开的轮廓会被自动补全，杂乱的图形常被理解成一个更简单的整体。哪怕已经知道自己被骗了，我们通常也没办法命令眼睛换一种看法。</p>
+<div style="background:#fff;padding:1rem;margin:1.5rem 0;">
+  <img src="/images/cognition/gestalt-proximity.svg" alt="格式塔接近性">
+</div>
+
+<p>奈克尔立方体把这种建构表现得更直接：同一个图形可以被看成两种不同的朝向，而且两个解释都成立。</p>
+<div style="background:#fff;padding:1rem;margin:1.5rem 0;">
+  <img src="/images/cognition/necker-cube-publicdomain.svg" alt="奈克尔立方体">
+</div>
+
+<p>很多加工发生在意识之前。大脑根据已有经验提出一个猜测，再用新进入的信息不断修正它。浴室里的吹风机和工作台上的电钻，就是这种上下文作用最直观的表现。</p>
+<blockquote>
+<p>从建构主义的视角看，我们对世界的理解一直由两股力量共同完成：一边是自下而上的感官信号，一边是自上而下的知识、经验。</p>
+</blockquote>
+<p>同样的信息落到不同的人那里，最后形成的理解未必相同。主观性会制造偏差，也让我们可以用很少的信息，迅速猜出眼前大概是什么。</p>
+<h2 id="注意"><a href="#注意" class="headerlink" title="注意"></a>注意</h2><p>知觉组织信息，注意决定接下来处理哪一部分。</p>
+<p>比如在一张复杂的厨房图片里找水龙头。它可能很小，单靠视觉特征并不显眼，但我们知道水龙头大概率在操作台附近。有了这点常识，大部分区域一开始就被<strong>排除</strong>了。</p>
+<p>“注意”有两种很直观的来源：闪烁的灯光、强烈的声音，会从外部把注意拽走；“我要找水龙头”这样的目标，则从内部引导搜索。前者是<strong>外源性</strong>的，后者是<strong>内源性</strong>的。我们一直在两者之间切换，既被环境吸引，也带着目的观察环境。</p>
+<p>同样的，注意不只是让某些东西更清楚，也会让另一些东西直接消失。</p>
+<p>有个实验把一只猩猩图片放进肺部 CT。正在专心寻找细小病灶的专业人员，依然可能忽略这个远比病灶显眼的东西。我们觉得自己看到了整个画面，其实只处理了当前任务筛出来的那一小部分。</p>
+<p>选择一定伴随着排除。外部信息很多，大脑真正能深入加工的内容很少。放到某个瞬间看，人类的智能其实非常“窄”。</p>
+<h2 id="记忆"><a href="#记忆" class="headerlink" title="记忆"></a>记忆</h2><p>被注意到的信息，不会自动变成长期记忆。</p>
+<p>工作记忆更像一张临时操作台，容量小，内容也在不停变化。经典研究曾用“7±2”描述某些记忆任务，具体数字并不固定，但它的有限是确定的。</p>
+<p>大脑如何去决定什么记忆留下，什么消失？“目标”是一个重要因素。明确知道某段信息之后要用，我们就会投入更多注意，反复理解和复述。新颖、情绪强烈或频繁出现的内容，也更容易进入长期记忆。</p>
+<p>这里需要提出<strong>激活扩散网络</strong>的概念。长期记忆的组织更接近一张由许多节点组成的网络，节点之间的连接有强有弱。一个概念被激活，激活就会沿着连接向附近扩散，让相关信息更容易被想起。</p>
+<p>看到一瓶熟悉的水，品牌、味道和某次饮用经历可能一起冒出来；看到完全不懂的数学公式，视觉信号进来了，却没有多少已有知识能接得住它。相同的信息落到不同的人那里，会激活完全不同的网络。</p>
+<p>专家和新手的差别也在这里。专家拥有的不只是更多事实，那些事实之间还存在更丰富的连接。新知识进入大脑，有点像给图书馆添一本书：你得知道它该放在哪一排，旁边又应该是谁。</p>
+<h2 id="再聊回-AI"><a href="#再聊回-AI" class="headerlink" title="再聊回 AI"></a>再聊回 AI</h2><p>可以把上下文粗略看成“短期记忆”，把模型权重看成“长期记忆”，但这只是类比。新信息不会在正常推理时自然写回参数。</p>
+<p>短期记忆向长期记忆的转换，人脑的路径更像是：先由目标和注意筛选信息，再通过理解把它接入已有的激活扩散网络；需要时，根据线索激活相关内容，再由目标进行监控和取舍。</p>
+<p>在持续学习这个命题上，大模型的记忆难点不只是存储量，还包括什么值得写入、怎样组织关联，以及当前任务该唤起哪一部分。</p>
+<p>虽说机器不必复刻人脑，但这个问题本身值得保留。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%9F%A5%E8%A7%89"><span class="toc-number">1.</span> <span class="toc-text">知觉</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F"><span class="toc-number">2.</span> <span class="toc-text">注意</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%AE%B0%E5%BF%86"><span class="toc-number">3.</span> <span class="toc-text">记忆</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%86%8D%E8%81%8A%E5%9B%9E-AI"><span class="toc-number">4.</span> <span class="toc-text">再聊回 AI</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&text=关于认知科学与 AI 的一些杂谈"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&is_video=false&description=关于认知科学与 AI 的一些杂谈"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=关于认知科学与 AI 的一些杂谈&body=Check out this article: https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&title=关于认知科学与 AI 的一些杂谈"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&name=关于认知科学与 AI 的一些杂谈&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/&t=关于认知科学与 AI 的一些杂谈"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
