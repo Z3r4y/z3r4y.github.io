@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 项目信息项目：OBLITERATUS项目地址：pliny-the-prompter&#x2F;obliteratus   OBLITERATUS 是一个面向开放权重 LLM 的 abliteration 工具。它不重新训练模型，也不依赖 inference 时的 steering hook，而是直接修改 Attention、FFN 和 MoE 等模块的权重，削弱模型的 refusal beh">
+<meta property="og:type" content="article">
+<meta property="og:title" content="OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向">
+<meta property="og:url" content="https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="1. 项目信息项目：OBLITERATUS项目地址：pliny-the-prompter&#x2F;obliteratus   OBLITERATUS 是一个面向开放权重 LLM 的 abliteration 工具。它不重新训练模型，也不依赖 inference 时的 steering hook，而是直接修改 Attention、FFN 和 MoE 等模块的权重，削弱模型的 refusal beh">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-07-25T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-25T19:28:37.382Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Mechanistic Interpretability">
+<meta property="article:tag" content="Abliteration">
+<meta property="article:tag" content="Alignment">
+<meta property="article:tag" content="Model Editing">
+<meta name="twitter:card" content="summary">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/07/24/%E5%85%B3%E4%BA%8E%E8%AE%A4%E7%9F%A5%E7%A7%91%E5%AD%A6%E4%B8%8E-AI-%E7%9A%84%E4%B8%80%E4%BA%9B%E6%9D%82%E8%B0%88/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&text=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&is_video=false&description=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向&body=Check out this article: https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&name=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&t=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A1%B9%E7%9B%AE%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 项目信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-Hidden-States-%E4%B8%AD%E6%8F%90%E5%8F%96%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91"><span class="toc-number">2.</span> <span class="toc-text">2. 从 Hidden States 中提取拒答方向</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Difference-in-Means"><span class="toc-number">2.1.</span> <span class="toc-text">Difference-in-Means</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%8D%95%E6%96%B9%E5%90%91%E5%88%B0-SVD-%E5%AD%90%E7%A9%BA%E9%97%B4"><span class="toc-number">2.2.</span> <span class="toc-text">从单方向到 SVD 子空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E9%9C%80%E8%A6%81%E4%BF%AE%E6%94%B9%E7%9A%84%E5%B1%82"><span class="toc-number">2.3.</span> <span class="toc-text">选择需要修改的层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8A%8A%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91%E6%8A%95%E5%BD%B1%E5%87%BA%E6%A8%A1%E5%9E%8B%E6%9D%83%E9%87%8D"><span class="toc-number">3.</span> <span class="toc-text">3. 把拒答方向投影出模型权重</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%83%E5%88%A0%E9%99%A4%E7%9A%84%E7%9C%9F%E6%98%AF%E2%80%9C%E6%8B%92%E7%AD%94%E2%80%9D%E5%90%97%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">4. 它删除的真是“拒答”吗？</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-07-25T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-07-25</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Abliteration/" rel="tag">Abliteration</a>, <a class="p-category" href="/tags/Alignment/" rel="tag">Alignment</a>, <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/Mechanistic-Interpretability/" rel="tag">Mechanistic Interpretability</a>, <a class="p-category" href="/tags/Model-Editing/" rel="tag">Model Editing</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-项目信息"><a href="#1-项目信息" class="headerlink" title="1. 项目信息"></a>1. 项目信息</h2><p>项目：<strong>OBLITERATUS</strong><br>项目地址：<a target="_blank" rel="noopener" href="https://huggingface.co/spaces/pliny-the-prompter/obliteratus">pliny-the-prompter&#x2F;obliteratus</a>  </p>
+<p>OBLITERATUS 是一个面向开放权重 LLM 的 abliteration 工具。它不重新训练模型，也不依赖 inference 时的 steering hook，而是直接修改 Attention、FFN 和 MoE 等模块的权重，削弱模型的 refusal behavior。</p>
+<blockquote>
+<p>OBLITERATUS 先比较模型处理有害与无害请求时的内部状态，从中找出与拒答相关的方向；随后直接修改 Transformer 权重，削弱这些方向对模型计算的影响。</p>
+</blockquote>
+<p>其主要流程可以压缩为：</p>
+<pre><code>Harmful / benign Prompts
+             ↓
+    Per-layer Activations
+             ↓
+Difference-in-Means / SVD
+             ↓
+      Refusal Subspace
+             ↓
+  Low-rank Weight Update
+             ↓
+Refusal ↓ / Capability Drift ?
+</code></pre>
+<p>这类方法通常被称为 <strong>abliteration</strong>：先定位与拒答相关的 representation direction，再从模型计算中消除该方向。它与 Jailbreak 的区别是，Jailbreak 只为某次输入寻找绕过方式；abliteration 则永久改变模型参数。它也不同于 fine-tuning：整个过程不使用 gradient descent，核心操作只是激活统计、矩阵分解和权重投影。</p>
+<h2 id="2-从-Hidden-States-中提取拒答方向"><a href="#2-从-Hidden-States-中提取拒答方向" class="headerlink" title="2. 从 Hidden States 中提取拒答方向"></a>2. 从 Hidden States 中提取拒答方向</h2><p>为避免矩阵左右乘的混乱，本文统一把 hidden state 写成<strong>行向量</strong>。</p>
+<pre><code>l：Transformer layer
+i：第 i 条 prompt
+t：token position
+d：hidden size
+T_i：第 i 条 prompt 的 token 数量
+</code></pre>
+<p>第 $i$ 条 prompt 在第 $l$ 层、第 $t$ 个位置的 hidden state 为：</p>
+<div class="mathjax">
+\[
+h_{l,i,t}\in\mathbb{R}^{1\times d}
+\]
+</div>
+
+<p>OBLITERATUS 给每个 Transformer block 注册 forward hook，并保存 prompt 最后一个 token position 的输出：</p>
+<div class="mathjax">
+\[
+a_{l,i}=h_{l,i,T_i}\in\mathbb{R}^{1\times d}
+\]
+</div>
+
+<p>对于 causal language model，最后位置可以 attention 到此前的全部 tokens，因此 $a_{l,i}$ 被用作模型在第 $l$ 层处理完整请求后的内部表示。CoT-aware 模式还会取序列 50%、75% 和最后位置的激活并求平均，以覆盖可能出现在 reasoning tokens 中的信号。</p>
+<p>程序分别收集 Harmful 与 Benign prompts。固定第 $l$ 层，两组 activation matrices 为：</p>
+<div class="mathjax">
+\[
+A_l^H=
+\begin{bmatrix}
+a_{l,1}^H\\
+a_{l,2}^H\\
+\vdots\\
+a_{l,N}^H
+\end{bmatrix}
+\in\mathbb{R}^{N\times d},
+\qquad
+A_l^B=
+\begin{bmatrix}
+a_{l,1}^B\\
+a_{l,2}^B\\
+\vdots\\
+a_{l,M}^B
+\end{bmatrix}
+\in\mathbb{R}^{M\times d}
+\]
+</div>
+
+<h3 id="Difference-in-Means"><a href="#Difference-in-Means" class="headerlink" title="Difference-in-Means"></a>Difference-in-Means</h3><p>最基础的 basic 模式分别计算两组激活的中心：</p>
+<div class="mathjax">
+\[
+\mu_l^H=\frac{1}{N}\sum_{i=1}^{N}a_{l,i}^H,
+\qquad
+\mu_l^B=\frac{1}{M}\sum_{i=1}^{M}a_{l,i}^B
+\]
+</div>
+
+<p>然后将均值差归一化：</p>
+<div class="mathjax">
+\[
+d_l=
+\frac{\mu_l^H-\mu_l^B}
+{\|\mu_l^H-\mu_l^B\|_2}
+\in\mathbb{R}^{1\times d}
+\]
+</div>
+
+<p>$d_l$ 可以直观理解为：<strong>从 benign activation center 指向 harmful activation center 的单位向量。</strong> 原始差值的长度</p>
+<div class="mathjax">
+\[
+s_l=\|\mu_l^H-\mu_l^B\|_2
+\]
+</div>
+
+<p>则用于衡量两组激活在该层分离得有多明显。</p>
+<blockquote>
+<p>这里的数学事实只是“两个 activation distributions 的均值存在差异”。之所以将 $d_l$ 称为 refusal direction，其隐含了一个额外假设：harmful 与 benign 数据间最稳定的表示差异，主要来自模型是否启动拒答机制，而不是主题、长度或措辞差异。</p>
+</blockquote>
+<h3 id="从单方向到-SVD-子空间"><a href="#从单方向到-SVD-子空间" class="headerlink" title="从单方向到 SVD 子空间"></a>从单方向到 SVD 子空间</h3><p>拒答未必只有一种内部模式。危险意图识别、安全策略调用、道歉式措辞和替代建议可能形成不同的变化方向。OBLITERATUS 的默认 advanced 模式因此保留逐样本差异：</p>
+<div class="mathjax">
+\[
+\delta_{l,i}=a_{l,i}^H-a_{l,i}^B
+\]
+\[
+D_l=
+\begin{bmatrix}
+\delta_{l,1}\\
+\delta_{l,2}\\
+\vdots\\
+\delta_{l,N}
+\end{bmatrix}
+\in\mathbb{R}^{N\times d}
+\]
+</div>
+
+<p>随后对 difference matrix 做 Singular Value Decomposition：</p>
+<div class="mathjax">
+\[
+D_l=U_l\Sigma_lV_l^{\mathsf T}
+\]
+</div>
+
+<p>$V_l^{\mathsf T}$ 的每一行都是 hidden space 中的单位方向，对应奇异值按</p>
+<div class="mathjax">
+\[
+\sigma_{l,1}\geq\sigma_{l,2}\geq\cdots\geq 0
+\]
+</div>
+
+<p>排列。方向 $v_{l,1}$ 解释的激活差异最多，之后依次减少。默认模式取前四行：</p>
+<div class="mathjax">
+\[
+R_l=
+\begin{bmatrix}
+v_{l,1}\\
+v_{l,2}\\
+v_{l,3}\\
+v_{l,4}
+\end{bmatrix}
+\in\mathbb{R}^{4\times d}
+\]
+</div>
+
+<p>这四个方向不是四种预先定义的拒答语义。SVD 不知道什么是道歉、危险或安全策略，它只是在 $D_l$ 中寻找变化能量最大的四个正交方向。n_directions&#x3D;4 是覆盖范围与过度消融风险之间的工程折中，而不是“拒答天然由四个机制组成”的结论。</p>
+<table>
+<thead>
+<tr>
+<th>模式</th>
+<th>方向提取</th>
+<th align="right">方向数</th>
+<th>主要特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>basic</td>
+<td>Difference-in-Means</td>
+<td align="right">1</td>
+<td>接近经典 abliteration，简单且保守</td>
+</tr>
+<tr>
+<td>advanced（默认）</td>
+<td>SVD</td>
+<td align="right">4</td>
+<td>多方向、部分消融、范数保持</td>
+</tr>
+</tbody></table>
+<h3 id="选择需要修改的层"><a href="#选择需要修改的层" class="headerlink" title="选择需要修改的层"></a>选择需要修改的层</h3><p>每一层都能提取方向，但并不是每一层都值得修改。单方向模式用两组激活中心的距离作为该层的信号强度：</p>
+<div class="mathjax">
+\[
+s_l=\|\mu_l^H-\mu_l^B\|_2
+\]
+</div>
+
+<p>SVD 模式则统计前 $k$ 个方向包含的差异能量：</p>
+<div class="mathjax">
+\[
+s_l=\sum_{j=1}^{k}\sigma_{l,j}^2
+\]
+</div>
+
+<p>$s_l$ 越大，说明 harmful 与 benign activations 在该层的差异越明显。默认策略先从强度曲线中寻找明显的分界点，再补充选择 harmful 与 benign 平均激活方向差异最大的少数层，而不是直接修改整个模型。代码还会排除最早的若干层，并限制小模型的修改层数，以减少对基础表示和通用能力的破坏。</p>
+<h2 id="3-把拒答方向投影出模型权重"><a href="#3-把拒答方向投影出模型权重" class="headerlink" title="3. 把拒答方向投影出模型权重"></a>3. 把拒答方向投影出模型权重</h2><p>方向提取只是相关性分析；真正改变模型行为的是权重投影。</p>
+<p>考虑一个单位行向量：</p>
+<div class="mathjax">
+\[
+d\in\mathbb{R}^{1\times d},
+\qquad dd^{\mathsf T}=1
+\]
+</div>
+
+<p>任意 hidden state $x\in\mathbb{R}^{1\times d}$ 沿 $d$ 的标量坐标为 $xd^{\mathsf T}$，相应向量分量为：</p>
+<div class="mathjax">
+\[
+x_{\parallel}=(xd^{\mathsf T})d
+\]
+</div>
+
+<p>删除这一分量后：</p>
+<div class="mathjax">
+\[
+x_{\perp}
+=x-(xd^{\mathsf T})d
+=x(I-d^{\mathsf T}d)
+\]
+</div>
+
+<p>因此定义正交投影矩阵：</p>
+<div class="mathjax">
+\[
+P=I-d^{\mathsf T}d
+\]
+</div>
+
+<p>它最重要的两个性质是：</p>
+<div class="mathjax">
+\[
+dP=0
+\]
+\[
+zP=z,\qquad zd^{\mathsf T}=0
+\]
+</div>
+
+<p>也就是说，$P$ 会把向量投影到 $d$ 的正交补空间：沿 $d$ 的分量归零，原本与 $d$ 垂直的分量保持不变。</p>
+<p>一种实现方式是在每次 inference 时执行 $x\leftarrow xP$，但这需要持续安装 activation hook。OBLITERATUS 选择把投影提前吸收到线性层权重中。PyTorch 的 nn.Linear 可以写成：</p>
+<div class="mathjax">
+\[
+y=xW^{\mathsf T}+b,
+\qquad
+W\in\mathbb{R}^{m\times d}
+\]
+</div>
+
+<p>修改后的权重为：</p>
+<div class="mathjax">
+\[
+\boxed{
+W'=WP
+=W-(Wd^{\mathsf T})d
+}
+\]
+</div>
+
+<p>这里 $Wd^{\mathsf T}\in\mathbb{R}^{m\times1}$ 表示每个输出通道对方向 $d$ 的响应，再与 $d\in\mathbb{R}^{1\times d}$ 相乘，得到一个与 $W$ 同形状的 rank-1 matrix。实际实现直接计算这个 rank-1 更新，不需要显式构造 $d\times d$ 的投影矩阵 $P$。</p>
+<p>修改后：</p>
+<div class="mathjax">
+\[
+W'd^{\mathsf T}
+=W(I-d^{\mathsf T}d)d^{\mathsf T}
+=0
+\]
+</div>
+
+<p>因此，该线性层不再响应输入中的纯 $d$ 分量。对输出布局相反的矩阵，投影从左侧施加；其几何含义是阻止该矩阵继续向 residual stream 写入 $d$ 方向。</p>
+<p>默认高级模式不是完全删除，而是使用：</p>
+<div class="mathjax">
+\[
+W'=W-\alpha(Wd^{\mathsf T})d
+\]
+</div>
+
+<p>代码将 regularization&#x3D;0.3 转换为：</p>
+<div class="mathjax">
+\[
+\alpha=1-0.3=0.7
+\]
+</div>
+
+<p>于是：</p>
+<div class="mathjax">
+\[
+W'd^{\mathsf T}=(1-\alpha)Wd^{\mathsf T}=0.3Wd^{\mathsf T}
+\]
+</div>
+
+<p>即删除约 70% 的相关响应，保留约 30%。多个正交 SVD 方向则对应：</p>
+<div class="mathjax">
+\[
+W'
+=W-\alpha\sum_{j=1}^{k}(Wd_j^{\mathsf T})d_j
+\]
+</div>
+
+<p>整个修改仍然是 low-rank weight update，不需要 gradient descent。</p>
+<p>OBLITERATUS 会在选中的 Transformer layers 中尝试处理以下通路：</p>
+<table>
+<thead>
+<tr>
+<th>模块</th>
+<th>常见权重</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Attention input</td>
+<td>q_proj、k_proj、v_proj、fused QKV</td>
+</tr>
+<tr>
+<td>Attention output</td>
+<td>o_proj、out_proj</td>
+</tr>
+<tr>
+<td>FFN input</td>
+<td>up_proj、gate_proj</td>
+</tr>
+<tr>
+<td>FFN output</td>
+<td>down_proj</td>
+</tr>
+<tr>
+<td>MoE</td>
+<td>router、individual experts、shared experts</td>
+</tr>
+</tbody></table>
+<p>对标准 PyTorch 线性层 $W\in\mathbb{R}^{m\times d}$，上述更新使 $Wd^{\mathsf T}$ 缩小或归零，即该层不再像原来一样响应输入中的 $d$ 分量。OBLITERATUS 将同一规则应用到 Attention、FFN 和 MoE 中多个与 hidden size 匹配的矩阵；覆盖的模块越多，对模型整体计算路径的影响也越广。</p>
+<p>投影会让权重矩阵的整体数值变小。因此默认会在完成多个方向的修改后，适度放大剩余权重，使其整体大小接近修改前：</p>
+<div class="mathjax">
+\[
+W''=W'\frac{\|W\|_F}{\|W'\|_F}
+\]
+</div>
+
+<p>实现将单次放大比例限制为 1.10，以避免连续多层放大破坏模型。但范数保持只说明权重整体数值尺度接近，并不表示删除的信息、输出分布或模型能力得到恢复。</p>
+<h2 id="4-它删除的真是“拒答”吗？"><a href="#4-它删除的真是“拒答”吗？" class="headerlink" title="4. 它删除的真是“拒答”吗？"></a>4. 它删除的真是“拒答”吗？</h2><p>完整 pipeline 在代码中被命名为：</p>
+<pre><code>SUMMON  → 加载模型
+PROBE   → 采集 harmful / benign activations
+DISTILL → 提取方向与子空间
+EXCISE  → 修改 Attention / FFN / MoE 权重
+VERIFY  → 测量拒答率、困惑度与 KL divergence
+REBIRTH → 保存修改后的模型
+</code></pre>
+<p>VERIFY 很重要，因为“拒答率下降”本身并不能证明模型编辑成功。一个输出乱码、始终答非所问的模型也可能不再产生典型拒绝语句。理想目标应当同时满足：</p>
+<div class="mathjax">
+\[
+\text{RefusalRate}(M')<\text{RefusalRate}(M)
+\]
+\[
+M'(x_B)\approx M(x_B)
+\quad\text{for benign inputs }x_B
+\]
+</div>
+
+<p>项目用 perplexity、生成连贯性和原始&#x2F;修改模型的 KL divergence 估计 capability drift。但这些快速测试仍不足以证明通用能力完整保留，更不能替代重新进行的安全评测。</p>
+<p>最关键的解释边界在于，程序实际观测的是：</p>
+<div class="mathjax">
+\[
+\mu_l^H-\mu_l^B
+=\Delta_l^{\text{refusal}}
++\Delta_l^{\text{topic}}
++\Delta_l^{\text{style}}
++\Delta_l^{\text{length}}
++\Delta_l^{\text{noise}}
+\]
+</div>
+
+<p>SVD 最大化的是 difference matrix 中的变化能量，并不直接最大化“删除后拒答下降多少”。如果 harmful prompts 主要讨论危险化学，而 benign prompts 主要讨论天气，那么提取到的方向很可能同时包含主题信息。高质量的对照与配对数据可以减少这种混杂，却不能保证得到纯净、唯一的 refusal representation。</p>
+<p>类似地，一个与拒答相关的方向还可能参与风险识别、不确定性表达、事实判断或正常推理。投影是一种真实的因果干预：删除方向后拒答率若下降，说明该方向确实参与了行为；但它无法证明所有随之改变的能力都只属于“安全护栏”。</p>
+<p>项目中的基础 Difference-in-Means 与 output-weight projection 有较清晰的 representation geometry 解释。四方向 SVD、Q&#x2F;K&#x2F;V 全投影、MoE router、attention head surgery、neuron masking 和 inverted reflection 等扩展则越来越激进，不能自动继承基础方法的全部理论依据。尤其 inverted 模式使用类似</p>
+<div class="mathjax">
+\[
+W'=W-2(Wd^{\mathsf T})d
+\]
+</div>
+
+<p>的反射，使 $Wd^{\mathsf T}$ 变号，而不是归零；其行为比普通 abliteration 更难预测。</p>
+<blockquote>
+<p>OBLITERATUS 删除的不是一个已经被证明为纯净安全模块的对象，而是一组由 harmful&#x2F;benign activation difference 估计出来、并与拒答行为相关的低维方向。</p>
+</blockquote>
+<p>从数学上看，它的核心只有三步：</p>
+<div class="mathjax">
+\[
+\text{Activation Difference}
+\longrightarrow
+\text{Refusal Subspace}
+\longrightarrow
+\text{Low-rank Weight Projection}
+\]
+</div>
+
+<p>abliteration 的吸引力在于，它通过一次低秩模型编辑实现无需重训、无需 runtime hook 的持久行为修改；它的风险也来自同一点：一旦激活差异中混入主题、知识或推理特征，这些分量同样会被永久写进权重更新。因而，“拒答变少”是一个可以测量的行为结果，而“只移除了安全机制”则是远强得多、目前不能仅凭投影公式成立的主张。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E9%A1%B9%E7%9B%AE%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 项目信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-Hidden-States-%E4%B8%AD%E6%8F%90%E5%8F%96%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91"><span class="toc-number">2.</span> <span class="toc-text">2. 从 Hidden States 中提取拒答方向</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Difference-in-Means"><span class="toc-number">2.1.</span> <span class="toc-text">Difference-in-Means</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%8E%E5%8D%95%E6%96%B9%E5%90%91%E5%88%B0-SVD-%E5%AD%90%E7%A9%BA%E9%97%B4"><span class="toc-number">2.2.</span> <span class="toc-text">从单方向到 SVD 子空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%80%89%E6%8B%A9%E9%9C%80%E8%A6%81%E4%BF%AE%E6%94%B9%E7%9A%84%E5%B1%82"><span class="toc-number">2.3.</span> <span class="toc-text">选择需要修改的层</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8A%8A%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91%E6%8A%95%E5%BD%B1%E5%87%BA%E6%A8%A1%E5%9E%8B%E6%9D%83%E9%87%8D"><span class="toc-number">3.</span> <span class="toc-text">3. 把拒答方向投影出模型权重</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%83%E5%88%A0%E9%99%A4%E7%9A%84%E7%9C%9F%E6%98%AF%E2%80%9C%E6%8B%92%E7%AD%94%E2%80%9D%E5%90%97%EF%BC%9F"><span class="toc-number">4.</span> <span class="toc-text">4. 它删除的真是“拒答”吗？</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&text=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&is_video=false&description=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向&body=Check out this article: https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&title=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&name=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/&t=OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
