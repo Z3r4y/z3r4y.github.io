@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="90 percent of security research is getting test environments setup properly.  官网：docs.ludus.cloud；项目：gitlab.com&#x2F;badsectorlabs&#x2F;ludus。  做过企业级复杂网络拓扑靶场的人大概都会同意：真正耗时间的并不是启动一台 Windows，而是让 DC、客户端、">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Ludus：从 PVE 到 Cyber Range">
+<meta property="og:url" content="https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="90 percent of security research is getting test environments setup properly.  官网：docs.ludus.cloud；项目：gitlab.com&#x2F;badsectorlabs&#x2F;ludus。  做过企业级复杂网络拓扑靶场的人大概都会同意：真正耗时间的并不是启动一台 Windows，而是让 DC、客户端、">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/17/1-why.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/17/2-yaml-to-range.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/17/4-ludus-architecture.svg">
+<meta property="article:published_time" content="2026-07-31T12:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-30T19:10:14.496Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="Automated Penetration Testing">
+<meta property="article:tag" content="Cyber Range">
+<meta property="article:tag" content="Proxmox">
+<meta property="article:tag" content="Infrastructure">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/17/1-why.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Ludus：从 PVE 到 Cyber Range | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/07/30/MiniMax-%E6%A8%A1%E5%9E%8B%E8%BF%AD%E4%BB%A3%E4%B8%8E%E7%AB%9E%E5%93%81%E5%88%86%E6%9E%90/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&text=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&is_video=false&description=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Ludus：从 PVE 到 Cyber Range&body=Check out this article: https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&name=Ludus：从 PVE 到 Cyber Range&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&t=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Range%EF%BC%9ALudus-%E7%9A%84%E6%8A%BD%E8%B1%A1%E5%8D%95%E5%85%83"><span class="toc-number">1.</span> <span class="toc-text">Range：Ludus 的抽象单元</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-PVE-%E5%88%B0-Range"><span class="toc-number">2.</span> <span class="toc-text">从 PVE 到 Range</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Ludus：从 PVE 到 Cyber Range
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-07-31T12:00:00.000Z" class="dt-published" itemprop="datePublished">2026-07-31</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Cyber-Security/">Cyber Security</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Automated-Penetration-Testing/" rel="tag">Automated Penetration Testing</a>, <a class="p-category" href="/tags/Cyber-Range/" rel="tag">Cyber Range</a>, <a class="p-category" href="/tags/Infrastructure/" rel="tag">Infrastructure</a>, <a class="p-category" href="/tags/Proxmox/" rel="tag">Proxmox</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>90 percent of security research is getting test environments setup properly.</p>
+</blockquote>
+<p>官网：<a target="_blank" rel="noopener" href="https://docs.ludus.cloud/">docs.ludus.cloud</a>；项目：<a target="_blank" rel="noopener" href="https://gitlab.com/badsectorlabs/ludus">gitlab.com&#x2F;badsectorlabs&#x2F;ludus</a>。</p>
+<p><img src="/images/17/1-why.png" alt="Why cyber environments matter"></p>
+<p>做过企业级复杂网络拓扑靶场的人大概都会同意：真正耗时间的并不是启动一台 Windows，而是让 DC、客户端、攻击机、路由规则和初始化状态在同一时刻正确地出现。</p>
+<p>理解 Ludus 的一个好入口，是从 Template 到 Range 的这段变化。Template 提供一台已经准备好的机器；Range 则让域控、客户端、攻击机、路由规则和初始化状态一起出现，成为一段可以进入、实验和重新生成的网络。</p>
+<h2 id="Range：Ludus-的抽象单元"><a href="#Range：Ludus-的抽象单元" class="headerlink" title="Range：Ludus 的抽象单元"></a>Range：Ludus 的抽象单元</h2><p>PVE 的直接管理对象是一台 VM，Ludus 的直接管理对象则是一套 Range。Range 把多个节点、它们之间的网络关系以及实验开始时应有的状态视为一个整体：域控和域成员的身份关系、服务所处的网段、路由与访问规则、场景需要的账号和数据，都属于同一次部署。</p>
+<p>这使得网络不再只是 VM 的附属设置。VLAN 决定谁能首先看见谁，双网卡主机决定哪里可以发生 pivot，访问规则决定一次控制之后能否继续推进。攻击机只是其中一个角色；它可以随 Range 一起部署，也可以被单独规划为攻击平面。</p>
+<p><img src="/images/17/2-yaml-to-range.png" alt="Ludus configuration becomes a cyber range"></p>
+<blockquote>
+<p>真正需要被固定下来的，是整条实验路径的起点和边界。</p>
+</blockquote>
+<p>Ludus 配置的价值在于把模板、角色、网络位置和依赖关系写成一份可以反复兑现的声明。一次部署之后，得到的不只是一组已经开机的 VM，而是一个处于指定初始状态的实验环境。实验过程中产生的变更也可以随整套环境一起被清理、恢复或重新创建。</p>
+<h2 id="从-PVE-到-Range"><a href="#从-PVE-到-Range" class="headerlink" title="从 PVE 到 Range"></a>从 PVE 到 Range</h2><p>PVE 依赖硬件辅助虚拟化，因此 Ludus 通常部署在裸金属 PVE 上，以获得更稳定的性能、存储 I&#x2F;O 和虚拟化兼容性；当然也可以采用嵌套虚拟化。</p>
+<p>Ludus 采用分层架构。Proxmox Virtual Environment，也就是 PVE，是它的虚拟化基础设施层：QEMU&#x2F;KVM 在这里执行 VM，PVE 提供虚拟计算、存储、网络和克隆能力。Ludus 位于这一层之上，负责将 Template clone、虚拟网络配置和后续角色初始化编排为 Range 的部署流程。</p>
+<p><img src="/images/17/4-ludus-architecture.svg" alt="Ludus architecture"></p>
+<p>Packer 处于镜像构建阶段。它从 Windows 或 Linux ISO 创建临时 VM，执行无人值守安装与基础 Provisioning，并将完成后的 VM 固化为 PVE Template。这里的 Template 是 PVE 标记为可克隆的 VM 模板对象，而不是某个固定扩展名的镜像文件；底层磁盘可以是 qcow2、raw 或存储后端管理的块卷。后续 Range 部署从这份经过启动验证的 Golden Image clone 出所有实例，而不再重复操作系统安装。</p>
+<p>实例 clone 完成后，Ludus 进入后置配置阶段。Ansible 按依赖关系执行角色配置：先创建域服务，再将成员机加入域，随后部署应用、工具和场景服务。QEMU Guest Agent 为 PVE 与来宾机提供管理接口，暴露 IP 和运行状态等信息，供编排流程确认 VM 已具备继续配置的条件。</p>
+<blockquote>
+<p>这种分层将基础镜像与场景配置分离：Packer 和 Template 控制镜像一致性，Ansible 控制角色与服务状态，Ludus 负责它们与网络拓扑的编排。每次部署都从同一个 Golden Image 和同一份拓扑定义开始。</p>
+</blockquote>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Ludus 以 Range 为中心，将 PVE 的虚拟化能力、Packer 构建的 Golden Image 与 Ansible 的配置管理串成一条部署链路。网络拓扑、机器角色和初始状态因此能够从同一基线被反复生成。</p>
+<p>对于模型渗透能力评测，这提供了可比较、可重置的实验条件。也是当前的较好实践。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Range%EF%BC%9ALudus-%E7%9A%84%E6%8A%BD%E8%B1%A1%E5%8D%95%E5%85%83"><span class="toc-number">1.</span> <span class="toc-text">Range：Ludus 的抽象单元</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E-PVE-%E5%88%B0-Range"><span class="toc-number">2.</span> <span class="toc-text">从 PVE 到 Range</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">3.</span> <span class="toc-text">总结</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&text=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&is_video=false&description=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Ludus：从 PVE 到 Cyber Range&body=Check out this article: https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&title=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&name=Ludus：从 PVE 到 Cyber Range&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/&t=Ludus：从 PVE 到 Cyber Range"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
