@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="论文：Baselines Before Architecture: Evaluating Coding Agents for Autonomous Penetration Testing链接：arXiv:2607.13085Artifact：krodalabs&#x2F;coding-agent-research-artifactBenchmark：XBOW Validation Benchmar">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Baselines Before Architecture：早想 Diss 所谓渗透 Agent">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="论文：Baselines Before Architecture: Evaluating Coding Agents for Autonomous Penetration Testing链接：arXiv:2607.13085Artifact：krodalabs&#x2F;coding-agent-research-artifactBenchmark：XBOW Validation Benchmar">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/19/1-attribution-gap.svg">
+<meta property="og:image" content="https://z3r4y.github.io/images/19/2-fig1-rq3.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/19/3-table9-model-scaling.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/19/4-table14-residual-interp.png">
+<meta property="article:published_time" content="2026-08-03T15:30:00.000Z">
+<meta property="article:modified_time" content="2026-08-03T18:16:30.997Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="Automated Penetration Testing">
+<meta property="article:tag" content="Paper Reading">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/19/1-attribution-gap.svg">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Baselines Before Architecture：早想 Diss 所谓渗透 Agent | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/02/NTLM-Reflection%EF%BC%9AMS08-068-CVE-2025-33073-CVE-2026-24294/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&text=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&is_video=false&description=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Baselines Before Architecture：早想 Diss 所谓渗透 Agent&body=Check out this article: https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&name=Baselines Before Architecture：早想 Diss 所谓渗透 Agent&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&t=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Attribution-Gap"><span class="toc-number">1.</span> <span class="toc-text">1. Attribution Gap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9B%9B%E4%B8%AA-RQ%E3%80%81%E5%9B%9B%E4%B8%AA%E2%80%9C%E5%8F%8D%E7%9B%B4%E8%A7%89%E2%80%9D%E7%AD%94%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">2. 四个 RQ、四个“反直觉”答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-where-why-harness-works"><span class="toc-number">3.</span> <span class="toc-text">3. where &amp; why harness works</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Harness-%E6%98%AF%E6%8B%BF%E7%81%B5%E6%B4%BB%E6%80%A7%E6%8D%A2%E5%85%A8%E8%87%AA%E5%8A%A8%E7%9A%84%E4%BA%A4%E6%98%93"><span class="toc-number">4.</span> <span class="toc-text">4. Harness 是拿灵活性换全自动的交易</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Baselines Before Architecture：早想 Diss 所谓渗透 Agent
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-03T15:30:00.000Z" class="dt-published" itemprop="datePublished">2026-08-03</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Agent-Security/" rel="tag">Agent Security</a>, <a class="p-category" href="/tags/Automated-Penetration-Testing/" rel="tag">Automated Penetration Testing</a>, <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>论文：<strong>Baselines Before Architecture: Evaluating Coding Agents for Autonomous Penetration Testing</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2607.13085">arXiv:2607.13085</a><br>Artifact：<a target="_blank" rel="noopener" href="https://github.com/krodalabs/coding-agent-research-artifact">krodalabs&#x2F;coding-agent-research-artifact</a><br>Benchmark：<a target="_blank" rel="noopener" href="https://github.com/xbow-engineering/validation-benchmarks">XBOW Validation Benchmarks</a></p>
+<blockquote>
+<p>一个 Pentest Agent 论文报了 SOTA。它换了架构，也换了模型。如何知道 Bonus 是架构的功劳，还是模型的？</p>
+</blockquote>
+<p>我个人的观点也许会比较激进：模型能力是真正主要的，harness能做的优化是极其有限且低复杂度的。</p>
+<p>更第一性原理的path，是用模型吃掉好的 harness&#x2F;skill，把暂时过渡的“桥”修成长期价值的“路”。</p>
+<h2 id="1-Attribution-Gap"><a href="#1-Attribution-Gap" class="headerlink" title="1. Attribution Gap"></a>1. Attribution Gap</h2><p>过去一年出现的一批自主渗透 Agent 论文，几乎都在做同一件事：把某个当下最强的 LLM 塞进一套多组件安全 harness 里，然后在 XBOW &#x2F; CTF-style benchmark 上报一个漂亮数字，宣称自己的 architecture 带来了显著提升。MAPTA、PentestGPT V2、Red-MIRROR、AWE 都属于这个模式。</p>
+<p>问题是——<strong>它们几乎从来不给一个”同模型、无架构”的对照组</strong>。</p>
+<blockquote>
+<p>当 architecture 和 backbone model 同时变动时，观察到的性能提升在方法上是<strong>不可归因</strong>的。你没法把”模型自身变强”和”harness 设计巧妙”的贡献切开。</p>
+</blockquote>
+<p><img src="/images/19/1-attribution-gap.svg" alt="Attribution Gap：架构与模型同时变，涨点归谁的"></p>
+<p>之前我们在 <a href="/2026/07/03/PentestGPT-v2%EF%BC%9AA-Good-LLM-Agent-for-RW-Pentest/">PentestGPT v2</a> 那篇里讲过 TDA + EGATS，把 pentest 从线性 ReAct 抬升为攻击树搜索，这个抽象本身没问题。但这篇论文要问的是另一个层次的问题——<strong>如果什么都不加呢？</strong> 一个默认的通用 coding CLI，同样是 GPT-5，能走多远？</p>
+<p>如果答案是”差不多远”，那 TDA + EGATS 的贡献就得重新称一遍重量。</p>
+<h2 id="2-四个-RQ、四个“反直觉”答案"><a href="#2-四个-RQ、四个“反直觉”答案" class="headerlink" title="2. 四个 RQ、四个“反直觉”答案"></a>2. 四个 RQ、四个“反直觉”答案</h2><p>论文的四个研究问题（RQ，Research Question——把一个总目标拆成的、可以独立回答的具体问题）是一条链：</p>
+<ul>
+<li><strong>RQ1</strong>：GPT-5 同模型下，Codex、OpenCode、Pi 谁最强 → 挑出 baseline</li>
+<li><strong>RQ2</strong>：给 Codex 加安全领域 prompt 有没有用 → <strong>负控制</strong></li>
+<li><strong>RQ3</strong>：Codex 默认 scaffold vs MAPTA vs PentestGPT V2，在最接近的模型上对比 → 主对比</li>
+<li><strong>RQ4</strong>：同 Codex scaffold，把模型从 GPT-5 换到 GPT-5.2 &#x2F; GPT-5.5 → 隔离模型缩放贡献</li>
+</ul>
+<p>RQ1 挑出 baseline，RQ2 排除 prompt 变量，RQ3 拉真正的架构对比，RQ4 隔离模型进步的贡献——每一条都在削掉一个可能的混淆变量。四条 RQ 各自的答案，都是“反直觉”的。</p>
+<p><strong>RQ1｜裸 Codex 已经 77.9%</strong></p>
+<p>同一个 GPT-5、同样的预算和 target interface，跑 Codex、OpenCode、Pi 三个通用 coding CLI 各两次。Codex 单次 pass@1 &#x3D; 67.3%，两次 union coverage &#x3D; 81&#x2F;104（77.9%），另外两个明显落后。</p>
+<blockquote>
+<p>这个数字意味着——<strong>任何 pentest agent 架构，在 GPT-5 时代的最低门槛就是 77.9%<strong>。低于这个数字，你的架构便不是”有点收益但设计精巧”的粉饰，而是一个</strong>减分项</strong>。</p>
+</blockquote>
+<p>一个专门为渗透测试设计的多组件 harness，要证明自己配得上”architecture”这个词，第一件事得先站在这条线上。</p>
+<p><strong>RQ2｜加安全专家 prompt 反而更差</strong></p>
+<p>同一个 Codex + GPT-5，只换 prompt：默认的通用 coding prompt、detailed 安全任务 prompt、whole-system 安全 prompt。结果是——<strong>两种自定义安全 prompt 都比默认更差还更贵</strong>。</p>
+<p>这条负结果的杀伤范围比它看起来大。过去两年一大批”pentest agent”论文的贡献其实只是”我写了一份很详细的安全领域 system prompt”，然后套一个 ReAct 循环。论文用这一条直接把这类工作从架构类论文里除名——<strong>如果 prompt engineering 就够，那你比不上一个连”safety”两个字都没有的默认 Codex</strong>。</p>
+<p>而”比不上默认”其实不奇怪——<strong>Codex 默认 prompt 是 OpenAI 用大量真实用户反馈迭代出来的产物，且是跟 Codex scaffold 与 GPT 模型协同调优的</strong>。研究者拍脑袋写的一份”安全专家 prompt”，本质上是拿一个还没经过严格反馈闭环的产物去挑战一个已经打磨过成千上万轮的产物；注入到 Codex 里可能反而破坏了默认 prompt 与 scaffold &#x2F; 模型之间既有的默契。也许”加 domain prompt 更差”在某种意义上不是巧合，是<strong>必然会发生的适配退化</strong>。</p>
+<p><strong>RQ3｜架构只赢了 5-10 个点，重跑几次还能被反超</strong></p>
+<p>Codex 默认 scaffold 对上 MAPTA 和 PentestGPT V2，用最接近的模型匹配。两组残差：</p>
+<p><img src="/images/19/2-fig1-rq3.png" alt="论文 Figure 1：RQ3 matched-model 对比。Plain P@2 已超过 MAPTA 与 PentestGPT V2 的公开分"></p>
+<ul>
+<li><strong>MAPTA（GPT-5）</strong>：76.9% vs Codex 平均 67.3%，残差 +9.6 pp。有货，但只有 10 点</li>
+<li><strong>PentestGPT V2（GPT-5.2-thinking）</strong>：85.0% vs Codex 平均 79.8%，残差 +5.2 pp</li>
+<li><strong>两组的 Plain P@2 都反超了公开分</strong>（77.9% vs 76.9%、88.5% vs 85.0%）</li>
+</ul>
+<p>也就是说——<strong>架构相对 baseline 只赢在”单次尝试的效率”上</strong>，而单次尝试的差距，可以被”多跑一次”的裸 baseline 抹平。MAPTA 唯一真正的护城河其实在 cost（0.206 美元&#x2F;case vs Codex 的 0.266 美元），不在 pass rate。</p>
+<p>或许会有质疑：”P@2 允许多跑一次，是不是在钻空子？” 论文里的另一个数据回应了这条——同一套 Codex + GPT-5 + 默认 prompt 跑两次，第一次 solve 70 道、第二次也 solve 70 道，但<strong>两次都 solve 的只有 59 道</strong>——22 道题在两次之间来回翻，21% 的 flip rate。</p>
+<p>这意味着<strong>单次 pass@1 排行榜本身就是不可信的</strong>：你报的 pass@1 &#x3D; 75%？其中可能有 15% 是”这次运气好蒙对了”；论文之间比 pass@1 差 2-3 个点，很可能只是抖动，不是能力差异。由此推出的新评测范式：<strong>pass@1 只是能力下限，reliable solves 才是稳定性指标，pass@2 union 才是能力上限</strong>。</p>
+<blockquote>
+<p>P@2 反超公开分不是”钻空子”，而是”用一个更诚实的指标去看，架构的优势本来就没那么稳”。</p>
+</blockquote>
+<p><strong>RQ4｜GPT-5.5 光换模型就打到 95.2%，反超 PentestGPT V2</strong></p>
+<p>固定 Codex 默认 scaffold，只换模型：</p>
+<p><img src="/images/19/3-table9-model-scaling.png" alt="论文 Table IX：同 Codex scaffold 换模型的 pass@1、P@2 与 cost"></p>
+<p>从 GPT-5 → GPT-5.2 → GPT-5.5，pass@1 从 67.3% → 79.8% → 92.3%，P@2 union 从 77.9% → 88.5% → 95.2%。</p>
+<p><strong>光换模型，就干翻了 PentestGPT V2 在 Opus 4.5 上报的 91% headline。</strong> 这个”覆盖”过程没有引入任何安全领域的知识、没有任何 pentest-specific 的设计，就是套一层通用 coding CLI。</p>
+<p>结合 RQ3 的 5-10 点残差看这条：<strong>架构派论文的整个进步幅度，可能一次模型升级就能吞掉</strong>。你去年发的架构论文，今年只要有人拿更新的模型套一层默认 CLI，你的 SOTA 就没了。</p>
+<p>这也预告了一件事——<strong>pentest agent benchmark 的精度赛道正在快速关闭</strong>。GPT-5.5 已经把 XBOW 打到 95.2%，只剩 5 道题（99&#x2F;104），未来一两代模型就会让 XBOW 变得和早年的 SQuAD 一样，所有系统都在 96-99% 之间，看不出谁强谁弱。到那时候 architecture 论文要么去找更难的 benchmark，要么把评测轴从 accuracy 换到 cost &#x2F; stability &#x2F; generalization。</p>
+<h2 id="3-where-why-harness-works"><a href="#3-where-why-harness-works" class="headerlink" title="3. where &amp; why harness works"></a>3. where &amp; why harness works</h2><blockquote>
+<p><strong>harness 仍然有价值，只是并不需要多么精妙的设计，It’s ez to reach.</strong></p>
+</blockquote>
+<p>论文给出了一份 residual 判读标尺：</p>
+<p><img src="/images/19/4-table14-residual-interp.png" alt="论文 Table XIV：residual gap 的四档判读标尺"></p>
+<ul>
+<li><strong>MAPTA 有 +9.6 点残差</strong>：76.9% vs Codex two-pass pass@1 平均 67.3%，差距落在 5-15 pp 档，”architecture 可能有用，但要看 category 和 trace”</li>
+<li><strong>MAPTA 平均单挑战 cost 比 plain baseline 低</strong>：这个可能才是 architecture 真正的长期价值</li>
+</ul>
+<p>architecture 真正可能加分的四条通道——这四条恰好是 plain coding CLI 在结构上就没有的东西：</p>
+<ol>
+<li><p><strong>State tracking</strong>——跨轮 credential &#x2F; cookie &#x2F; privilege 追踪。一个多阶段 exploit 链常常是：SQLi → dump hash → crack → login &#x2F;admin → session cookie → 内网 endpoint → JWT → privileged API。这些”中间产物”全靠塞在 context window 里，轮数一多模型就会记混、忘记当前身份、拿到新凭据后不会回退去激活旧路径。显式的 state store 是传统 pentest 工具（Burp、Metasploit）里的基础设施，plain CLI 缺这一块。</p>
+</li>
+<li><p><strong>Search control</strong>——防止在弱路径上死磕。模型有强烈的 sunk cost bias，已经在 SQLi 上试了 20 轮 payload，下一轮更倾向于”再改个 payload 试试”而不是”停下来换 IDOR”。attack tree + 显式路径打分 + 每条路径 budget cap 才能强制切换。这也是 PentestGPT V2 的 TDA 想解决的问题。</p>
+</li>
+<li><p><strong>Verification loop</strong>——针对的是<strong>假阳性</strong>：模型主观确信”这里有 SSRF&#x2F;IDOR&#x2F;RCE”、每一步也都规规矩矩执行了，但客观上那个”exploit”根本站不住脚——可能只是把公开 endpoint 误认成越权、把某种响应差异过度解读成注入点、或者推理链自洽但结论跟事实对不上。独立 verifier 就是外部仲裁者，用客观标准（比如 XBOW 的 flag hash 匹配），把模型的主观确信按到客观事实上校准。</p>
+</li>
+<li><p><strong>Browser-heavy tasks</strong>——DOM &#x2F; JS &#x2F; 视觉确认。现代 SPA、XSS 触发验证、点击后才发的 API 请求、需要看 DOM 状态判断”登录成功了没”、反爬 JS challenge——这些 curl + python requests 都是瞎打。Codex&#x2F;OpenCode&#x2F;Pi 默认的 shell + file editing 交互模型没有真实浏览器运行时，一个内嵌 Playwright + VLM 判定 DOM 状态是 architecture 能做而 plain CLI 做不到的事。</p>
+</li>
+</ol>
+<blockquote>
+<p>这四条的共同点是——<strong>它们不是 prompt 能补的，也是模型升级所较难获得的</strong>。</p>
+</blockquote>
+<h2 id="4-Harness-是拿灵活性换全自动的交易"><a href="#4-Harness-是拿灵活性换全自动的交易" class="headerlink" title="4. Harness 是拿灵活性换全自动的交易"></a>4. Harness 是拿灵活性换全自动的交易</h2><blockquote>
+<p>我在 <a href="/2026/07/12/%E8%81%8A%E8%81%8A%E8%BF%91%E5%86%B5--%E8%A1%8C%E4%B8%9A%E8%A7%82%E5%AF%9F%E4%B8%8E%E4%B8%AA%E4%BA%BA%E6%80%9D%E8%80%83/">聊聊近况</a> 里说过：Harness 的价值在于把重复任务交付给 Agent 全自动跑完，但纯以单任务效果为导向，一定跑不赢专家半自动用 Coding Agent 挖掘。这篇论文用 XBOW 的数据给了这个判断一个实证脚注。</p>
+</blockquote>
+<p>Harness 本质上是把一套流程固化下来。它的隐含假设是：<strong>agent 面对的 meta 决策——什么时候切换假设、什么时候相信自己成功了、什么时候放弃当前路径——可以被枚举成规则</strong>。</p>
+<p>这条假设在渗透场景里不完全成立。</p>
+<p>pentest 里的知识层其实早就被 LLM 内化了——rememberMe 联想 Shiro 反序列化、错误栈见 PHP 联想 type juggling、看到 .gitlab-ci 想 Runner Token 泄露，这些 HackTricks 密度极高的联想任何一个当代模型纯 QA 都答得出。真正难被固化的是<strong>在长执行里做出正确的 meta 决策</strong>——同一个 SQLi payload 试了 20 轮该不该换 IDOR、拿到 low-priv shell 后该继续横向还是回去补侦察、返回的 HTML 到底算不算注入成功。这些决策没有稳定的先验规则可写，因为它们依赖当下这个 target 的具体上下文。</p>
+<blockquote>
+<p><strong>专家的 in-the-loop 价值不在知识本身，在做这些 meta 决策时的判断力</strong>——而这类判断力恰恰是最难写进 attack tree 的 score function 的。</p>
+</blockquote>
+<p>Harness 的真实定位是——<strong>它用灵活性交换了全自动化</strong>：</p>
+<ul>
+<li><strong>换来的</strong>：7×24 无人值守、批量并发、成本可预估、结果可复现</li>
+<li><strong>让出的</strong>：专家 in-the-loop 时的临场 meta 决策</li>
+</ul>
+<p>这也解释了为什么这篇论文里 MAPTA 的最强卖点不是 pass rate 而是 cost——harness 的正当理由本来就在”便宜且能规模化”，而不是”更聪明”。裸 Codex + 专家半自动督导，在单任务能力天花板上一定赢过任何 harness；harness 只能赢在”专家不在场时的底线保障”。</p>
+<p>论文所提到 architecture 真正可能加分的四条通道——state tracking、search control、verification、browser——<strong>全是可以被写死的流程</strong>。反过来说，architecture 没有加分的地方，恰是最需要专家临场 Sense 的地方。<strong>Harness 能吃下的能力上限，就是”能被枚举成规则的那部分能力”。</strong></p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Attribution-Gap"><span class="toc-number">1.</span> <span class="toc-text">1. Attribution Gap</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E5%9B%9B%E4%B8%AA-RQ%E3%80%81%E5%9B%9B%E4%B8%AA%E2%80%9C%E5%8F%8D%E7%9B%B4%E8%A7%89%E2%80%9D%E7%AD%94%E6%A1%88"><span class="toc-number">2.</span> <span class="toc-text">2. 四个 RQ、四个“反直觉”答案</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-where-why-harness-works"><span class="toc-number">3.</span> <span class="toc-text">3. where &amp; why harness works</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-Harness-%E6%98%AF%E6%8B%BF%E7%81%B5%E6%B4%BB%E6%80%A7%E6%8D%A2%E5%85%A8%E8%87%AA%E5%8A%A8%E7%9A%84%E4%BA%A4%E6%98%93"><span class="toc-number">4.</span> <span class="toc-text">4. Harness 是拿灵活性换全自动的交易</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&text=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&is_video=false&description=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Baselines Before Architecture：早想 Diss 所谓渗透 Agent&body=Check out this article: https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&title=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&name=Baselines Before Architecture：早想 Diss 所谓渗透 Agent&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/&t=Baselines Before Architecture：早想 Diss 所谓渗透 Agent"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
