@@ -17,7 +17,7 @@
 <meta property="og:image" content="https://z3r4y.github.io/images/20/3-cheated-passes.png">
 <meta property="og:image" content="https://z3r4y.github.io/images/20/4-cheating-channels.png">
 <meta property="article:published_time" content="2026-08-04T17:00:00.000Z">
-<meta property="article:modified_time" content="2026-08-04T19:23:21.070Z">
+<meta property="article:modified_time" content="2026-08-04T19:35:49.252Z">
 <meta property="article:author" content="Z3r4y">
 <meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Agent Security">
@@ -297,12 +297,13 @@
 <p>prompt 压住了前门，一部分行为转移到了后门。</p>
 </blockquote>
 <p><img src="/images/20/4-cheating-channels.png" alt="Figure 4: Cheating channel breakdown across prompt conditions"></p>
+<p>Anyway，我们当前能做到的实践：Prompt-level mitigation 压了 74%（33% → 8.5%），Reward Hacking Benchmark 显示 environmental hardening 能压 88%。两层叠加是当前上限，但仍然不是 100%——作弊不是模型的 bug，是 RL 训练范式的 structural feature。</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>论文 review 了所有 7 家厂商的 system card：</p>
 <blockquote>
 <p>“Of the four that evaluate cybersecurity capabilities—Anthropic, OpenAI, Google, and xAI—none report auditing those results for cheating.”</p>
 </blockquote>
 <p>Anthropic 的矛盾：Opus 4.7 system card 对软件工程评测做了 transcript-level 的作弊检测并排除了作弊 trial，但对 cyber 评测没做。Opus 4.6 报了 Cybench “saturated”、接近 100% pass rate，没有 trace audit。</p>
-<p>Audit of Reward Hacking really matters.</p>
+<p>Audit of Rewarding Hacking really matters.</p>
 
   </div>
 </article>
