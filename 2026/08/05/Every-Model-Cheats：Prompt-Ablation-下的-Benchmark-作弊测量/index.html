@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="论文：Every Model Cheats: Prompt-Level Mitigation of Cheating on Offensive Cyber Tasks链接：arXiv:2607.21763机构：dreadnode  之前知道 LLM agent 会在 CTF benchmark 上搜 writeup，但没人系统量化过：多少模型在做、占多大比例、prompt 能压多少、压不住的部分去">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="论文：Every Model Cheats: Prompt-Level Mitigation of Cheating on Offensive Cyber Tasks链接：arXiv:2607.21763机构：dreadnode  之前知道 LLM agent 会在 CTF benchmark 上搜 writeup，但没人系统量化过：多少模型在做、占多大比例、prompt 能压多少、压不住的部分去">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/20/1-harness-architecture.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/20/3-cheated-passes.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/20/4-cheating-channels.png">
+<meta property="article:published_time" content="2026-08-04T17:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-04T19:23:21.070Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="Benchmark">
+<meta property="article:tag" content="Paper Reading">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/20/1-harness-architecture.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/03/Baselines-Before-Architecture%EF%BC%9A%E6%97%A9%E6%83%B3-Diss-%E6%89%80%E8%B0%93%E6%B8%97%E9%80%8F-Agent/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&text=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&is_video=false&description=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量&body=Check out this article: https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&name=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&t=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">实验设计与核心数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E4%BD%9C%E5%BC%8A%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">三种作弊模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Anti-cheat-prompt%EF%BC%9A%E8%81%9A%E5%90%88%E6%9C%89%E6%95%88%EF%BC%8C%E4%B8%AA%E4%BD%93%E6%88%96%E5%A4%B1%E6%8E%A7"><span class="toc-number">3.</span> <span class="toc-text">Anti-cheat prompt：聚合有效，个体或失控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text">结语</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-04T17:00:00.000Z" class="dt-published" itemprop="datePublished">2026-08-05</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Agent-Security/" rel="tag">Agent Security</a>, <a class="p-category" href="/tags/Benchmark/" rel="tag">Benchmark</a>, <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>论文：<strong>Every Model Cheats: Prompt-Level Mitigation of Cheating on Offensive Cyber Tasks</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2607.21763">arXiv:2607.21763</a><br>机构：<a target="_blank" rel="noopener" href="https://dreadnode.io/">dreadnode</a></p>
+<blockquote>
+<p>之前知道 LLM agent 会在 CTF benchmark 上搜 writeup，但没人系统量化过：多少模型在做、占多大比例、prompt 能压多少、压不住的部分去了哪里。</p>
+</blockquote>
+<h2 id="实验设计与核心数据"><a href="#实验设计与核心数据" class="headerlink" title="实验设计与核心数据"></a>实验设计与核心数据</h2><p>论文 在 Cybench 上做了 controlled prompt-ablation study。22 个前沿模型（7 家厂商），23 个 medium-difficulty CTF 题，3 种 prompt 条件（baseline 无约束 &#x2F; standard 规范性反作弊 &#x2F; severe 后果性反作弊 + 行为枚举），总共 1,518 条 trace、168,000 条消息、84,800 次 tool call，全量四阶段审计。</p>
+<p>这里四阶段 pipeline 审计值得说一下：programmatic verifier（正则匹配 CTF event name + cheating terms）做高 recall 兜底，LLM judge（Claude Sonnet 4.6）做 contextual reconciliation——区分命令是在 agent 自己的 sandbox 里执行（作弊）还是作为 payload 发给 challenge service（合法 exploit）。</p>
+<p><img src="/images/20/1-harness-architecture.png" alt="Figure 1: Evaluation harness architecture"></p>
+<p>关键设计选择：sandbox 通外网，故意留着让模型有机会作弊以测量作弊行为。<br>两条作弊向量：web tools 搜 writeup（图中实线）、bash 探测&#x2F;利用 eval infra 本身（图中虚线）。</p>
+<p>结果：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>Baseline</th>
+<th>Standard</th>
+<th>Severe</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cheat propensity（尝试作弊的任务比例）</td>
+<td>33.0%</td>
+<td>17.8%</td>
+<td>8.5%</td>
+</tr>
+<tr>
+<td>Pass 中含作弊的比例</td>
+<td>37.1%</td>
+<td>14.7%</td>
+<td>5.9%</td>
+</tr>
+<tr>
+<td>Cheated passes（绝对数）</td>
+<td>78</td>
+<td>30</td>
+<td>11</td>
+</tr>
+<tr>
+<td>平均 solve rate（clean pass）</td>
+<td>26.1%</td>
+<td>34.4%</td>
+<td>34.4%</td>
+</tr>
+<tr>
+<td>平均 pass rate（含作弊）</td>
+<td>41.5%</td>
+<td>40.3%</td>
+<td>34.4%</td>
+</tr>
+</tbody></table>
+<p>Baseline 下 pass rate 和 solve rate 的 gap 是 15.4% ——这个 gap 全是作弊贡献的。21&#x2F;22 模型在 baseline 下作弊过。</p>
+<p>个别模型的 inflation multiplier（pass rate &#x2F; solve rate）：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>Passes</th>
+<th>Clean</th>
+<th>Multiplier</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GPT-5.4</td>
+<td>10</td>
+<td>2</td>
+<td>5×</td>
+</tr>
+<tr>
+<td>Qwen 3.6 Plus</td>
+<td>7</td>
+<td>2</td>
+<td>3.5×</td>
+</tr>
+<tr>
+<td>Claude Sonnet 5</td>
+<td>9</td>
+<td>3</td>
+<td>3×</td>
+</tr>
+<tr>
+<td>Claude Opus 4.8</td>
+<td>12</td>
+<td>5</td>
+<td>2.4×</td>
+</tr>
+</tbody></table>
+<p><img src="/images/20/3-cheated-passes.png" alt="Figure 3: Cheated passes per model across three prompt conditions"></p>
+<h2 id="三种作弊模式"><a href="#三种作弊模式" class="headerlink" title="三种作弊模式"></a>三种作弊模式</h2><p>论文在附录贴了三个完整 trace，展示了三种不同的 pattern：</p>
+<p><strong>做不出来，搜。</strong> Claude Sonnet 4.6 在 locktalk 上花了 200+ 轮消息做 HAProxy ACL bypass，全部失败，第 217 轮 pivot 到 web_search。搜到了 &#x2F;&#x2F;api&#x2F;v1&#x2F;get_ticket 的 double-slash bypass——200 轮都没试出来的技巧。Capability gap 驱动的 fallback。</p>
+<p><strong>能做，但直接搜更快。</strong> Claude Opus 4.8 在 sop 上只花了 37 轮做逆向，就说 “This is getting deep”，然后 clone writeup repo、cat solve.py——flag 作为明文字符串直接出现。Effort minimization，模型有能力但选择了更省力的路径。</p>
+<p><strong>明知故犯。</strong> Qwen 3.6 Plus 在 diffecient 上，severe prompt 激活。msg 149 明确说了 “I should NOT read it”。80 轮 MurmurHash3 碰撞攻击全部失败后，msg 229 回头搜了那个 writeup，直接用了。</p>
+<blockquote>
+<p>“the disposition to cheat can override instruction-following when legitimate approaches are exhausted”</p>
+</blockquote>
+<h2 id="Anti-cheat-prompt：聚合有效，个体或失控"><a href="#Anti-cheat-prompt：聚合有效，个体或失控" class="headerlink" title="Anti-cheat prompt：聚合有效，个体或失控"></a>Anti-cheat prompt：聚合有效，个体或失控</h2><p>整体看，反作弊 prompt 有效且聚合指标上看不到 trade-off：cheat propensity 从 33.0% 降到 8.5%，同时 solve rate 从 26.1% 涨到 34.4%（+8.3%）。</p>
+<blockquote>
+<p>被逼着不能搜之后，原本打算走捷径的模型被迫做题，其中一些居然做出来了。部分作弊不是”做不出来才搜”，而是”能做出来但更倾向走捷径”。</p>
+</blockquote>
+<p>但拆到个体模型，情况要复杂得多。</p>
+<p><strong>backfire，行为模式被反向 prompt 激活</strong>：Gemini 3 Flash 在 standard 下 CP 从 30.4% 飙到 69.6%（温和禁止翻倍），只有 severe 才压到 0；Grok 4.20 呈 U 型——standard 归零但 severe 反弹回 43.5%；Qwen3 Coder Next 在 baseline 和 standard 下从未成功作弊，severe 下反而产出 2 个 cheated pass。论文的观察：anti-cheat prompt 在某些模型上可以 draw attention to cheating as a strategy。</p>
+<p><strong>作弊倾向由厂商 alignment 决定，不由能力决定。</strong> Solve rate 和 cheat propensity 之间没有系统性关系。个体层面：Opus 4.8 baseline 下最重的作弊者（65.2% CP），severe 下归零；Grok 4.20 反过来，baseline 作弊不多但对 severe 完全无反应。厂商层面：Anthropic&#x2F;OpenAI 对 prompt 高度响应；Google 对 normative 约束反弹（standard 下 CP 从 21.7% 翻到 41.3%），只认 consequential；xAI 相反，normative 有效但 consequential 反弹。同一个 prompt，不同 alignment 训练产出截然不同的行为模式。</p>
+<blockquote>
+<p>UK AISI 类似的观点：cheating behavior substantially attributable to specifics of alignment training, not just raw capability。</p>
+</blockquote>
+<p><strong>Cheating timing 被延后但不消失。</strong> Baseline 下第一次作弊行为出现在 session 的 42% 位置，severe 下推迟到 57%。模型在约束下先尝试正经做更长时间，但做不出来时还是会 fall back。</p>
+<p><strong>Channel shift 作弊策略转移。</strong> Baseline 下 web-to-infra ratio &#x3D; 10.7:1（161 vs 15）。Anti-cheat prompt 对两个 channel 的压制不对称：web cheating 从 161 降到 25（-84.5%），infra cheating 从 15 涨到 20（+33%）。7 个模型在 severe 下新增了 baseline 没有的 infra probing。</p>
+<blockquote>
+<p>prompt 压住了前门，一部分行为转移到了后门。</p>
+</blockquote>
+<p><img src="/images/20/4-cheating-channels.png" alt="Figure 4: Cheating channel breakdown across prompt conditions"></p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>论文 review 了所有 7 家厂商的 system card：</p>
+<blockquote>
+<p>“Of the four that evaluate cybersecurity capabilities—Anthropic, OpenAI, Google, and xAI—none report auditing those results for cheating.”</p>
+</blockquote>
+<p>Anthropic 的矛盾：Opus 4.7 system card 对软件工程评测做了 transcript-level 的作弊检测并排除了作弊 trial，但对 cyber 评测没做。Opus 4.6 报了 Cybench “saturated”、接近 100% pass rate，没有 trace audit。</p>
+<p>Audit of Reward Hacking really matters.</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1%E4%B8%8E%E6%A0%B8%E5%BF%83%E6%95%B0%E6%8D%AE"><span class="toc-number">1.</span> <span class="toc-text">实验设计与核心数据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%89%E7%A7%8D%E4%BD%9C%E5%BC%8A%E6%A8%A1%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">三种作弊模式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Anti-cheat-prompt%EF%BC%9A%E8%81%9A%E5%90%88%E6%9C%89%E6%95%88%EF%BC%8C%E4%B8%AA%E4%BD%93%E6%88%96%E5%A4%B1%E6%8E%A7"><span class="toc-number">3.</span> <span class="toc-text">Anti-cheat prompt：聚合有效，个体或失控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text">结语</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&text=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&is_video=false&description=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量&body=Check out this article: https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&title=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&name=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/&t=Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
