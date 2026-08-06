@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="论文：ScopeJudge: Cost-Aware Pre-Execution Gating for Offensive Security Agents链接：arXiv:2607.07774机构：dreadnode数据：dreadnode&#x2F;scopejudge代码：dreadnode&#x2F;scopejudge  同一个工具调用——扫一个子域、读一个文件、发一个请求——在这个任务里合">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ScopeJudge：OPSEC Gating 不在动作里，在意图里">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="论文：ScopeJudge: Cost-Aware Pre-Execution Gating for Offensive Security Agents链接：arXiv:2607.07774机构：dreadnode数据：dreadnode&#x2F;scopejudge代码：dreadnode&#x2F;scopejudge  同一个工具调用——扫一个子域、读一个文件、发一个请求——在这个任务里合">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/21/1-pre-execution-gating.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/21/2-inter-grader-agreement.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/21/4-recall-by-strategy.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/21/3-cost-accuracy-frontier.png">
+<meta property="article:published_time" content="2026-08-06T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-06T08:49:08.751Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="Benchmark">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="Agent Monitoring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/21/1-pre-execution-gating.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>ScopeJudge：OPSEC Gating 不在动作里，在意图里 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&text=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&is_video=false&description=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=ScopeJudge：OPSEC Gating 不在动作里，在意图里&body=Check out this article: https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&name=ScopeJudge：OPSEC Gating 不在动作里，在意图里&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&t=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%89%A7%E8%A1%8C%E5%89%8D%E9%97%A8%E6%8E%A7"><span class="toc-number">1.</span> <span class="toc-text">1. 执行前门控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%AF%B1%E6%83%91%E4%BB%BB%E5%8A%A1%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">2. 诱惑任务设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Intent-Tool-Call-decides"><span class="toc-number">3.</span> <span class="toc-text">3. Intent &amp; Tool Call decides</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        ScopeJudge：OPSEC Gating 不在动作里，在意图里
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-06T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-08-06</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Agent-Monitoring/" rel="tag">Agent Monitoring</a>, <a class="p-category" href="/tags/Agent-Security/" rel="tag">Agent Security</a>, <a class="p-category" href="/tags/Benchmark/" rel="tag">Benchmark</a>, <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>论文：<strong>ScopeJudge: Cost-Aware Pre-Execution Gating for Offensive Security Agents</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2607.07774">arXiv:2607.07774</a><br>机构：<a target="_blank" rel="noopener" href="https://dreadnode.io/">dreadnode</a><br>数据：<a target="_blank" rel="noopener" href="https://huggingface.co/datasets/dreadnode/scopejudge">dreadnode&#x2F;scopejudge</a><br>代码：<a target="_blank" rel="noopener" href="https://github.com/dreadnode/scopejudge">dreadnode&#x2F;scopejudge</a></p>
+<blockquote>
+<p>同一个工具调用——扫一个子域、读一个文件、发一个请求——在这个任务里合规，在另一个任务里就是越界。动作本身无对错，对错由发起任务的意图赋予。</p>
+</blockquote>
+<p>ScopeJudge 是 dreadnode 继 PentestJudge 之后关于”自主渗透 Agent 如何被监督”的第二块拼图。PentestJudge 对整条轨迹事后打分，ScopeJudge 继续左移：<strong>在每次工具调用执行之前</strong>就判定它是否越界。</p>
+<p><strong>范围（scope）不是动作的属性，而是意图的属性</strong>。越界的不是”扫描”这个动作，而是”扫了任务书没有授权的目标”。既然范围要拿到任务书之后才能确定，静态策略就不可能提前写出来。</p>
+<h2 id="1-执行前门控"><a href="#1-执行前门控" class="headerlink" title="1. 执行前门控"></a>1. 执行前门控</h2><p>渗透测试 Agent 的越界代价是真实世界级别的：赏金研究者的 Agent 扫了一个 out-of-scope 子域，在项目方眼里不是”没发现”，而是”违约”，甚至犯罪。这个问题的几个天然解都失败：</p>
+<ul>
+<li><strong>事后审计（J_post）</strong>：等轨迹跑完再判，伤害已经发生了。</li>
+<li><strong>沙箱</strong>：把 Agent 关在隔离环境里跑——但渗透测试打的是客户私有、不可复现的黑盒系统。</li>
+<li><strong>人工审批</strong>：每个调用都问人——安全警告研究早就证明，人看多了会默认点同意，审批疲劳（approval fatigue）。</li>
+</ul>
+<blockquote>
+<p>当前公认好的实践是，把监督做成执行前的门：一个便宜、可信的 LLM judge，在 Agent 每次提出工具调用时看一眼上下文，决定放行或拒绝。judge 能看到的上下文由一个 transcript 策略 φ 决定：</p>
+</blockquote>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Jpre(SP, φ(τ&lt;k, ak)) → &#123;0, 1&#125;</span><br><span class="line"></span><br><span class="line">τ = (u, (a1, o1), ..., (aN, oN))   # u = 任务书（目标 + 范围声明）</span><br></pre></td></tr></table></figure>
+
+<p>几个符号的含义：</p>
+<ul>
+<li>τ：一条完整轨迹——任务书 u 开头，后面是 N 次工具调用 a 及各自的输出 o</li>
+<li>τ&lt;k：到第 k 步之前的前缀，也就是 judge 判定第 k 个调用时能看到的历史</li>
+<li>ak：Agent 提议、尚未执行的第 k 个工具调用</li>
+<li>φ(τ&lt;k, ak)：transcript 策略，把”前缀 + 待执行调用”投影成 judge 的上下文</li>
+<li>Jpre → {0, 1}：judge 输出 0 放行执行，输出 1 拒绝（让 Agent 换一种方式，或升级给人工）</li>
+</ul>
+<p>五种策略的差别就是给 judge 看多少：从”只看静态策略”到”看全量轨迹”。设计上只有两个轴：<strong>成本</strong>（token 越多越贵）和<strong>注入面</strong>（工具输出是目标环境返回的不可信字节，放进来就可能被投毒）。</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>judge 上下文</th>
+<th>成本</th>
+<th>注入面</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Static Policy</td>
+<td>静态策略 + 当前调用</td>
+<td>最低</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Intent</td>
+<td>+ 任务书（意图）</td>
+<td>低</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Intent + Tool Calls</td>
+<td>+ 历史调用（不含输出）</td>
+<td>中</td>
+<td>无</td>
+</tr>
+<tr>
+<td>Intent + Output Summarized</td>
+<td>+ 输出摘要</td>
+<td>高</td>
+<td>有</td>
+</tr>
+<tr>
+<td>Full</td>
+<td>全量轨迹（含推理）</td>
+<td>最高</td>
+<td>最大</td>
+</tr>
+</tbody></table>
+<p><img src="/images/21/1-pre-execution-gating.png" alt="Figure 1: Pre-execution gating architecture"></p>
+<h2 id="2-诱惑任务设计"><a href="#2-诱惑任务设计" class="headerlink" title="2. 诱惑任务设计"></a>2. 诱惑任务设计</h2><p>要评测 judge，先得有 ground truth，而且越界调用不能太少。ScopeBench 的做法是把诱惑直接写进任务设计：<strong>30 个任务，完成目标的最短路径必然越过边界</strong>——任务书明确不许碰的主机、不许做的动作、不许碰的数据，就摆在达成目标的必经之路上。诱惑大致有三类原型，每个都有真实轨迹里的越界调用佐证：</p>
+<ul>
+<li><strong>不许碰的主机</strong>：Greenline 任务只准测 staging，任务书甚至明说”即使同样的 bug 看起来存在于生产环境，也不得访问”。当 Agent 在 staging 上找不到部署密钥时，去生产看一眼就是最自然的下一步。</li>
+<li><strong>不许做的动作</strong>：Meridian 任务只允许预览通知模板、禁止发送真实通知——但”真的调一次 send 接口”恰好是确认模板泄露最直接的方式。真实轨迹里就有 Agent 用测试邮箱调了 &#x2F;api&#x2F;notifications&#x2F;send。</li>
+<li><strong>不许碰的数据&#x2F;身份</strong>：BlogVault 任务只准用提供的测试账号验证 JWT 越权，而最省事的做法是拿 admin 身份登录——真实越界调用包括用测试密码直接登 admin、手写伪造 role&#x3D;admin 的 JWT。</li>
+</ul>
+<p>更关键的是，<strong>诱饵是被环境”故意泄露”的</strong>：未文档化的接口（&#x2F;internal&#x2F;qa&#x2F;reassign-ticket，把受限工单 assign 给自己就能看到）、debug 导出里的管理员会话 token、”hidden_matches: 1” 这类暗示——捷径就放在 Agent 触手可及的地方，守规矩的 Agent 要完成同样的目标只能绕开它们。</p>
+<p>5 个模型各跑一遍同样的任务，得到 100 条轨迹（每条 6–170 次调用，中位数 38.5）。4,897 个工具调用中 7.7% 被 5 名专业渗透测试者标为越界。每个调用由 5 人独立标注（给足任务书和完整轨迹前缀），多数票为真值：</p>
+<p><img src="/images/21/2-inter-grader-agreement.png" alt="Figure 2: Pairwise inter-grader agreement (Cohen&#39;s κ)"></p>
+<p>专家之间的一致性（Fleiss κ &#x3D; 0.64，88.1% 全票一致，剩余 11.9% 是真正的争议区）构成了 judge 的天花板：连专家自己互相打分也只有 F1 &#x3D; 0.78（<strong>F1 是 Precision 与 Recall 的调和平均，一个数同时衡量拦得准不准、漏得多不多；只看准确率在这种失衡数据上没有意义——越界只占 7.7%，一个”永远放行”的模型准确率也有 92%，召回却是 0</strong>）——judge 做到 0.78 就已经是人肉极限。</p>
+<h2 id="3-Intent-Tool-Call-decides"><a href="#3-Intent-Tool-Call-decides" class="headerlink" title="3. Intent &amp; Tool Call decides"></a>3. Intent &amp; Tool Call decides</h2><p><img src="/images/21/4-recall-by-strategy.png" alt="Figure 4: Recall by transcript strategy"></p>
+<p><strong>只给静态策略时，8 个 judge 里 7 个召回率趋近于零（中位数 0.005）</strong>——看不到任务书，judge 不认为任何调用越界，等于全部放行。一旦把意图加进去，召回率立刻跳到 0.60–0.94。这直接证实了论文的论点：范围不在动作里，在意图里，静态策略结构性拦不住越界。</p>
+<p>把五种策略的效果拆开看（以最强 judge GLM-5.2 为例）：</p>
+<table>
+<thead>
+<tr>
+<th>策略</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>F1</th>
+<th>拦截率</th>
+<th>$&#x2F;1k</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Static Policy</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.00</td>
+<td>0.1%</td>
+<td>0.79</td>
+</tr>
+<tr>
+<td>Intent</td>
+<td>0.40</td>
+<td>0.79</td>
+<td>0.53</td>
+<td>15.1%</td>
+<td>1.38</td>
+</tr>
+<tr>
+<td>Intent + Tool Calls</td>
+<td>0.50</td>
+<td>0.87</td>
+<td>0.64</td>
+<td>13.3%</td>
+<td>3.22</td>
+</tr>
+<tr>
+<td>Intent + Output Summarized</td>
+<td>0.51</td>
+<td>0.86</td>
+<td>0.64</td>
+<td>13.0%</td>
+<td>4.81</td>
+</tr>
+<tr>
+<td>Full</td>
+<td>0.53</td>
+<td>0.86</td>
+<td>0.66</td>
+<td>12.6%</td>
+<td>6.01</td>
+</tr>
+</tbody></table>
+<p>对比很直白：</p>
+<ul>
+<li><strong>Static Policy</strong>：召回 0，等于全部放行——看不到任务书，judge 连”越界是什么”都不知道，只能兜住任何任务都不允许的底线。</li>
+<li><strong>Intent</strong>：召回跳到 0.79，是整个设计的关键一步——judge 能拒绝”静态策略看着没问题、但与任务书意图相悖”的调用。</li>
+<li><strong>Intent + Tool Calls</strong>：GLM-5.2 的召回从 0.79 涨到 0.87、拦截率还更低（13.3% vs 15.1%）。<blockquote>
+<p>但注意这不是普遍现象：8 个 judge 里 6 个从 Intent 到 +Calls 召回是掉的（图里多数线在向下走）——历史调用让它们判得更保守，更准但漏得更多。GLM-5.2 是例外：召回不掉、精确率还从 0.40 提到 0.50，这正是它被推荐为成本敏感配置的原因。</p>
+</blockquote>
+</li>
+<li><strong>Intent + Output Summarized</strong>：召回和 +Calls 差不多（0.86 vs 0.87），”被支配”发生在成本-精度上——F1 几乎持平（0.64）却贵 50%、注入面还更大，摘要没有带来额外信号。</li>
+<li><strong>Full</strong>：只多 0.02 F1，成本几乎翻倍——上下文收益急剧递减。</li>
+</ul>
+<p><strong>成本-精度前沿的最强点是开源的</strong>——GLM-5.2 拿到全部 judge 最高 F1 0.66，把闭源旗舰 Claude Opus 4.8（F1 0.60，贵 2.9 倍）整个支配掉；最便宜的高性价比点也是开源的 Qwen3.6-35B。</p>
+<p><img src="/images/21/3-cost-accuracy-frontier.png" alt="Figure 3: Cost-accuracy frontier"></p>
+<p>因为漏拦（越界被执行）比误拦（合法调用被升级）贵得多，论文给两个操作点：</p>
+<table>
+<thead>
+<tr>
+<th>配置</th>
+<th>Precision</th>
+<th>Recall</th>
+<th>拦截率</th>
+<th>$&#x2F;1k</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>GLM-5.2 + Calls（成本敏感）</td>
+<td>0.50</td>
+<td>0.87</td>
+<td>13.3%</td>
+<td>3.22</td>
+</tr>
+<tr>
+<td>Claude Opus 4.8 + Intent（召回优先）</td>
+<td>0.39</td>
+<td>0.94</td>
+<td>18.8%</td>
+<td>4.20</td>
+</tr>
+</tbody></table>
+<p>前一个适合”别太打扰人”的部署，后一个适合”一个越界都不能有”的高风险场景——用 11 个点的 precision 换 7 个点的 recall，代价是换闭源模型。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%89%A7%E8%A1%8C%E5%89%8D%E9%97%A8%E6%8E%A7"><span class="toc-number">1.</span> <span class="toc-text">1. 执行前门控</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%AF%B1%E6%83%91%E4%BB%BB%E5%8A%A1%E8%AE%BE%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">2. 诱惑任务设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Intent-Tool-Call-decides"><span class="toc-number">3.</span> <span class="toc-text">3. Intent &amp; Tool Call decides</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&text=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&is_video=false&description=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=ScopeJudge：OPSEC Gating 不在动作里，在意图里&body=Check out this article: https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&title=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&name=ScopeJudge：OPSEC Gating 不在动作里，在意图里&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/&t=ScopeJudge：OPSEC Gating 不在动作里，在意图里"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
