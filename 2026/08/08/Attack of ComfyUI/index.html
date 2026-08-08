@@ -37,7 +37,7 @@
 <meta property="og:image" content="https://z3r4y.github.io/images/22/victim-hacker.png">
 <meta property="og:image" content="https://z3r4y.github.io/images/22/fix-14734-folder-paths.png">
 <meta property="article:published_time" content="2026-08-08T04:00:00.000Z">
-<meta property="article:modified_time" content="2026-08-08T09:19:34.632Z">
+<meta property="article:modified_time" content="2026-08-08T20:59:23.115Z">
 <meta property="article:author" content="Z3r4y">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://z3r4y.github.io/images/22/cover.jpg">
@@ -122,6 +122,8 @@
     <br/>
     <span id="actions">
       <ul>
+        
+        <li><a class="icon" aria-label="上一篇" href="/2026/08/09/XSS2Shell-CVE-2026-64638-WordPress-CVE-2026-64638%20WordPress%201%20Click%20XSS%20to%20RCE/"><i class="fa-solid fa-chevron-left" aria-hidden="true" onmouseover="$('#i-prev').toggle();" onmouseout="$('#i-prev').toggle();"></i></a></li>
         
         
         <li><a class="icon" aria-label="下一篇" href="/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
@@ -330,7 +332,7 @@
 <p><img src="/images/22/13-browser-56672-userdata-xss-rce.png" alt="image17"><br>浏览器打开 &#x2F;userdata&#x2F;poc_56672_rce.html，stored XSS (56672) -&gt; pickle RCE，链 A 走通</p>
 <p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/pull/14734">PR #14734</a>（v0.28.0）同一提交把 56670 与 56672 一起修掉：&#x2F;view 与 &#x2F;userdata 统一走危险 MIME 强制下载（is_dangerous_content_type 集中判定），与 56671&#x2F;56673 路径穿越同批修复。</p>
 <p><img src="/images/22/fix-14734-routes-mime.png" alt="image27"><br>PR #14734：routes.py 把旧的 _DANGEROUS_MIME_TYPES 集合换成集中式 folder_paths.is_dangerous_content_type（旧集合漏了 image&#x2F;svg+xml 及 charset&#x2F;大小写&#x2F;+xml 方言绕过），危险类型统一强制 attachment 下载</p>
-<h2 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h2><p>ComfyUI 唯一的 CSRF 防线是 server.py 的 create_origin_only_middleware，只有一层 Origin host:port 比对，用 Origin: null（data: 页 &#x2F; sandbox iframe）即可干净绕过。官方没有给它独立 GHSA：v0.19.0 起中间件对所有带 Sec-Fetch-Site: cross-site 的请求直接 403（浏览器跨站请求必带该头且无法伪造，Origin: null 的 data: 页 &#x2F; sandbox iframe 也一样），服务端绕过被封死，只剩浏览器层 PNA 的版本差（Firefox 未实现 PNA）。</p>
+<h2 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h2><p>ComfyUI 唯一的 CSRF 防线是 server.py 的 create_origin_only_middleware，只有一层 Origin host:port 比对，用 Origin: null（data: 页 &#x2F; sandbox iframe）即可干净绕过。官方没有给它独立 GHSA：v0.19.0 起中间件对所有带 Sec-Fetch-Site: cross-site 的请求直接 403（浏览器跨站请求必带该头且无法伪造，Origin: null 的 data: 页 &#x2F; sandbox iframe 也一样），服务端绕过被封死（Firefox 实测同样带 Sec-Fetch-Site: cross-site，也被 403）；Firefox 未实现 PNA 是 &lt; 0.19.0 上它能打、Chrome 打不了的原因。</p>
 <h3 id="CVE-2026-6589"><a href="#CVE-2026-6589" class="headerlink" title="CVE-2026-6589"></a>CVE-2026-6589</h3><p>server.py 的 create_origin_only_middleware 是 ComfyUI 唯一的 CSRF 防线，在 &lt; 0.19.0 上可以干净地绕过。它只比对 Origin 的 host:port 与请求 Host：</p>
 <table>
 <thead>
@@ -378,11 +380,11 @@
 <p>几个关键点：</p>
 <ul>
 <li><strong>服务端防线随版本变强</strong>：&lt; 0.19.0 只有 Origin host:port 比对，Origin: null（data: 页 &#x2F; sandbox iframe）干净绕过；v0.19.0 起对所有 Sec-Fetch-Site: cross-site 请求直接 403（浏览器跨站请求必带且无法伪造），远程攻击页被挡死；</li>
-<li><strong>浏览器层 PNA 是新关卡</strong>：Chrome 130+ 默认拦 public 页面（含 data: 页）到 127.0.0.1 的请求（TypeError: Failed to fetch，服务端零请求）；Firefox 未实现 PNA，所以 &lt; 0.19.0 上 data: 页仍能打。</li>
+<li><strong>浏览器层 PNA 是新关卡</strong>：Chrome 130+ 默认拦 public 页面（含 data: 页 &#x2F; sandbox iframe）到 127.0.0.1 的请求（TypeError: Failed to fetch，服务端零请求）；Firefox 未实现 PNA，所以 &lt; 0.19.0 上 data: 页仍能打。</li>
 </ul>
 <p><img src="/images/22/9-firefox-sandbox-iframe-csrf-rce.png" alt="image7"><br>Firefox 打开攻击页，沙箱 iframe（Origin: null）直连 127.0.0.1:8188（&lt; 0.19.0，无代理）：自动发起 upload pickle + &#x2F;prompt，两条 200，Calculator 弹出</p>
 <p><strong>这个 CVE 的价值</strong>：CSRF 本身只有 4.3 分，但它提供了「任意页面 -&gt; 本机 ComfyUI 任意请求」的通道，配合 pickle 上传即可形成 <strong>CSRF -&gt; RCE</strong> 链（见「XSS&#x2F;CSRF -&gt; RCE 链」的链 B）。</p>
-<p><strong>官方FIX</strong>：无独立 GHSA。官方在后续版本强化了中间件（v0.19.0 起对所有 Sec-Fetch-Site: cross-site 请求 403），Origin: null 的浏览器路径在服务端也被封死，只剩浏览器层 PNA 的版本差（Firefox 未实现 PNA）。</p>
+<p><strong>官方FIX</strong>：无独立 GHSA。官方在后续版本强化了中间件（v0.19.0 起对所有 Sec-Fetch-Site: cross-site 请求 403），Origin: null 的浏览器路径在服务端也被封死（Firefox 实测同样带 cross-site）；Firefox 未实现 PNA 只在 &lt; 0.19.0 上让它区别于 Chrome。</p>
 <p><img src="/images/22/fix-6589-sec-fetch-site.png" alt="image8"><br>commit 76b75f3（#13261）：origin 中间件新增 Sec-Fetch-Site: cross-site -&gt; 403 校验；commit 说明也点名了 PNA（「给 Firefox 实现 PNA 留时间」）</p>
 <h2 id="图片读取"><a href="#图片读取" class="headerlink" title="图片读取"></a>图片读取</h2><p>两族「路径拼接无包含校验」的任意图片读：Model Preview 端点（6590&#x2F;56671）与 LoadImage 族（6591&#x2F;56673）。VulDB 按「低权限」评 3.5 ~ 4.3，官方收编为 GHSA（CVSS 7.5）后按「未认证」口径重评，v0.28.0（PR #14734）统一恢复目录包含校验。</p>
 <h3 id="CVE-2026-6590-CVE-2026-56671（Model-Preview-端点路径穿越）"><a href="#CVE-2026-6590-CVE-2026-56671（Model-Preview-端点路径穿越）" class="headerlink" title="CVE-2026-6590 &#x2F; CVE-2026-56671（Model Preview 端点路径穿越）"></a>CVE-2026-6590 &#x2F; CVE-2026-56671（Model Preview 端点路径穿越）</h3><p>get_model_preview（app&#x2F;model_manager.py）用 os.path.join(folder, filename) 拼接路径，其中 filename 是 {filename:.*} 无限制路由捕获：字面 ..&#x2F;、编码穿越 %2e%2e%2f、绝对路径、无界 path_index 都能逃逸模型目录。目标文件会被 Pillow 重新编码为 WEBP 返回，所以泄露面是「图像可解码文件 + 文件存在性&#x2F;路径枚举」，而不是任意文件读取。</p>

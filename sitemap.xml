@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://z3r4y.github.io/2026/08/09/XSS2Shell-CVE-2026-64638-WordPress-CVE-2026-64638%20WordPress%201%20Click%20XSS%20to%20RCE/</loc>
+    
+    <lastmod>2026-08-08</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/</loc>
     
     <lastmod>2026-08-08</lastmod>
@@ -553,6 +562,48 @@
   
   <url>
     <loc>https://z3r4y.github.io/tags/Source-Code-Analysis/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/CVE/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/WordPress/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/XSS/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/DOM-Clobbering/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/SOME/</loc>
+    <lastmod>2026-08-08</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/RCE/</loc>
     <lastmod>2026-08-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
