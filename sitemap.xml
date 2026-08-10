@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/</loc>
+    <loc>https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5self-consistency%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/</loc>
     
     <lastmod>2026-08-10</lastmod>
     
@@ -353,6 +353,27 @@
   </url>
   
   <url>
+    <loc>https://z3r4y.github.io/tags/LLM-Interpretability/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Mechanistic-Interpretability/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Alignment/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/tags/Cyber-Range/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -395,21 +416,28 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/LLM-Interpretability/</loc>
+    <loc>https://z3r4y.github.io/tags/LLM-Architecture/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Mechanistic-Interpretability/</loc>
+    <loc>https://z3r4y.github.io/tags/Sparse-Attention/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Alignment/</loc>
+    <loc>https://z3r4y.github.io/tags/Long-Context/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Multimodal/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -465,34 +493,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/LLM-Architecture/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Sparse-Attention/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Long-Context/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Multimodal/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/tags/Activation-Monitoring/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -528,20 +528,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Knowledge-Distillation/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Self-Distillation/</loc>
-    <lastmod>2026-08-10</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/tags/Claude/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
@@ -557,6 +543,20 @@
   
   <url>
     <loc>https://z3r4y.github.io/tags/Reverse-Engineering/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Knowledge-Distillation/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Self-Distillation/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

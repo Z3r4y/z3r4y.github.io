@@ -9,12 +9,12 @@ Also have fun on Cyber Post-Training & AI Security 😊]]>
     </description>
     <language>zh-CN</language>
     <copyright>All rights reserved 2026, Z3r4y</copyright>
-    <lastBuildDate>Mon, 10 Aug 2026 20:19:25 GMT</lastBuildDate>
+    <lastBuildDate>Mon, 10 Aug 2026 20:22:52 GMT</lastBuildDate>
     <generator>Hexo</generator>
     <atom:link href="https://z3r4y.github.io/rss.xml" rel="self" type="application/rss+xml"/>
     <item>
-      <title>U-OPSD：以自我一致性取代真值监督的无监督自蒸馏</title>
-      <link>https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/</link>
+      <title>U-OPSD：以self-consistency取代真值监督的无监督自蒸馏</title>
+      <link>https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5self-consistency%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/</link>
       <description>
         <![CDATA[<blockquote>
 <p>OPD 和 OPSD 都没有真正摆脱外部监督：要么需要更强教师，要么需要参考答案。U-OPSD 把 OPSD 里的真值参考答案替换成模型自己对同一道题的多数投票共识，反而反超了所有有监督基线。</p>
