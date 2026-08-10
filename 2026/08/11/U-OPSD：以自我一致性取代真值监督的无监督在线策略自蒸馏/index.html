@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="OPD 和 OPSD 都没有真正摆脱外部监督：要么需要更强教师，要么需要参考答案。U-OPSD 把 OPSD 里的真值参考答案替换成模型自己对同一道题的多数投票共识，反而反超了所有有监督基线。  1. 论文信息论文：On-Policy Self-Distillation without Any Supervision链接：arXiv:2608.06296机构：UC San Diego &amp;#x2F">
+<meta property="og:type" content="article">
+<meta property="og:title" content="U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="OPD 和 OPSD 都没有真正摆脱外部监督：要么需要更强教师，要么需要参考答案。U-OPSD 把 OPSD 里的真值参考答案替换成模型自己对同一道题的多数投票共识，反而反超了所有有监督基线。  1. 论文信息论文：On-Policy Self-Distillation without Any Supervision链接：arXiv:2608.06296机构：UC San Diego &amp;#x2F">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/24/1-framework-comparison.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/24/2-uopsd-overview.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/24/3-loss-formula.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/24/4-algorithm.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/24/5-training-curves.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/24/6-ablations.png">
+<meta property="article:published_time" content="2026-08-10T17:30:00.000Z">
+<meta property="article:modified_time" content="2026-08-10T20:17:58.399Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="LLM Training">
+<meta property="article:tag" content="Knowledge Distillation">
+<meta property="article:tag" content="Self-Distillation">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/24/1-framework-comparison.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/09/XSS2Shell-CVE-2026-64638-WordPress-CVE-2026-64638%20WordPress%201%20Click%20XSS%20to%20RCE/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&text=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&is_video=false&description=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏&body=Check out this article: https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&name=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&t=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-OPD-%E5%88%B0-OPSD%EF%BC%8C%E2%80%9Dself%E2%80%9D-%E8%BF%98%E5%B7%AE%E5%9C%A8%E5%93%AA"><span class="toc-number">2.</span> <span class="toc-text">2. 从 OPD 到 OPSD，”self” 还差在哪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Sample-%E2%86%92-Vote-%E2%86%92-Distill"><span class="toc-number">3.</span> <span class="toc-text">3. Sample → Vote → Distill</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D"><span class="toc-number">4.</span> <span class="toc-text">4. 实验结果与消融</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-10T17:30:00.000Z" class="dt-published" itemprop="datePublished">2026-08-11</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Knowledge-Distillation/" rel="tag">Knowledge Distillation</a>, <a class="p-category" href="/tags/LLM-Training/" rel="tag">LLM Training</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>, <a class="p-category" href="/tags/Self-Distillation/" rel="tag">Self-Distillation</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>OPD 和 OPSD 都没有真正摆脱外部监督：要么需要更强教师，要么需要参考答案。U-OPSD 把 OPSD 里的真值参考答案替换成模型自己对同一道题的多数投票共识，反而反超了所有有监督基线。</p>
+</blockquote>
+<h2 id="1-论文信息"><a href="#1-论文信息" class="headerlink" title="1. 论文信息"></a>1. 论文信息</h2><p>论文：<strong>On-Policy Self-Distillation without Any Supervision</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2608.06296">arXiv:2608.06296</a><br>机构：UC San Diego &#x2F; Georgia Tech &#x2F; University of Maryland &#x2F; ByteDance</p>
+<p>OPD（On-Policy Distillation）指学生在自己采样的轨迹上训练、由教师提供逐 token 分布的蒸馏范式，解决 teacher-forced SFT 的 train-inference mismatch；</p>
+<p>OPSD（On-Policy Self-Distillation，<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2601.18734">arXiv:2601.18734</a>）进一步把教师和学生做成同一个模型，教师通过额外看到真值参考答案（privileged information）而”比自己强”；</p>
+<p>U-OPSD 去掉的正是这份参考答案——教师看到的特权上下文，变成模型自己多数投票得到的伪解答。</p>
+<h2 id="2-从-OPD-到-OPSD，”self”-还差在哪"><a href="#2-从-OPD-到-OPSD，”self”-还差在哪" class="headerlink" title="2. 从 OPD 到 OPSD，”self” 还差在哪"></a>2. 从 OPD 到 OPSD，”self” 还差在哪</h2><p><strong>OPD：外部教师 + 学生自己的轨迹。</strong> 教师是一个独立且更强的模型，学生只看到题目、按推理时的状态生成轨迹，教师逐 token 给出完整词表分布，学生做 token 级蒸馏。信号是 dense 的，但监督来自一个必须已经超过当前模型的外部教师。</p>
+<p><strong>OPSD：同一模型，教师多看一份参考答案。</strong> 学生策略 πS(·|x) &#x3D; πθ(·|x) 只看题目；教师策略 πT(·|x, y⋆) &#x3D; π̄(·|x, y⋆) 额外看到真值解答 y⋆，π̄ 是冻结梯度的同一网络。教师共享参数，却在”知道答案”的条件下给每个位置一个更准的分布——这正是”self”与”privileged”并存的地方：模型还是同一个，但特权信息来自外部。</p>
+<p>把现有方法摊开看，外部监督无非三种入口：</p>
+<table>
+<thead>
+<tr>
+<th>监督来源</th>
+<th>代表方法</th>
+<th>形式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Gold answer</td>
+<td>RLVR &#x2F; GRPO</td>
+<td>序列级标量 reward</td>
+</tr>
+<tr>
+<td>更强外部教师</td>
+<td>OPD &#x2F; GKD</td>
+<td>外部模型逐 token 分布</td>
+</tr>
+<tr>
+<td>特权上下文</td>
+<td>OPSD &#x2F; SDFT（GT 或 ICL）</td>
+<td>参考答案或示例</td>
+</tr>
+</tbody></table>
+<p><img src="/images/24/1-framework-comparison.png" alt="不同 on-policy 蒸馏框架的监督来源对比"></p>
+<p><em>左：OPSD&#x2F;SDFT 依赖真值解答或 ICL；中：SDPO 依赖环境反馈；右：U-OPSD 完全无监督，用多数投票构造伪标签。</em></p>
+<blockquote>
+<p>“self” 只解决了教师身份，没有解决监督来源。U-OPSD 的观察是：模型多次独立生成的一致性（self-consistency）本身就是可用的监督信号，可以构造出问题专属的 self-teacher。</p>
+</blockquote>
+<h2 id="3-Sample-→-Vote-→-Distill"><a href="#3-Sample-→-Vote-→-Distill" class="headerlink" title="3. Sample → Vote → Distill"></a>3. Sample → Vote → Distill</h2><p>U-OPSD 对每个无标注题目 x ~ U 走三步，全程不需要标签：</p>
+<p><img src="/images/24/2-uopsd-overview.png" alt="U-OPSD 框架：Sample → Vote → Distill"></p>
+<p><em>U-OPSD 用模型自身的多数投票共识取代 OPSD 中的真值参考答案：教师条件于一致（winning）轨迹，学生沿不一致（losing）轨迹的前缀做逐 token 蒸馏。</em></p>
+<p><strong>(1) Sample。</strong> 用当前策略（梯度冻结，记为 π̄）在训练温度下采样 G 条独立 rollout，解析每条生成的最终答案 a(g) &#x3D; Ans(y(g))：这类推理模型习惯把最终答案写在 boxed 方框里（例如 $\boxed{42}$），解析器提取方框内的内容，再做归一化、canonicalization。解析不出答案的 rollout 记为无效（通常是被截断的生成）。</p>
+<p><strong>(2) Vote。</strong> 在有效答案上做多数投票得到伪答案 ã(x)，平票时均匀随机打破。投票把 rollout 分成两类：与共识一致的 Y⁺ 和与共识不一致的 Y⁻；无效 rollout 两边都不属于——它既不能证明对，也不能证明错。一致性分数 c(x) 是有效 rollout 中同意共识的比例。</p>
+<blockquote>
+<p>这里的”伪”指它没有真值背书——不是外部给出的参考答案，而是模型自己多数投票得到的代理标签，质量取决于模型自身的一致性（第 4 节报告 86.7% 的伪标签与真值一致）。</p>
+</blockquote>
+<p><strong>(3) Distill。</strong> 当 c(x) ≥ τ（默认 τ&#x3D;0.5；τ 是信任投票的阈值，一致性不够的题不拿伪答案当老师），选一条一致 rollout 作为教师参考（默认取最短的一致轨迹 y⁺），把教师分布蒸馏进不一致轨迹的前缀：教师条件于 (x, y⁺, y⁻<sub>&lt;t</sub>)，学生只条件于 (x, y⁻<sub>&lt;t</sub>)，逐 token 最小化两者分布的 forward KL（β&#x3D;0，沿袭 OPSD 的逐 token pointwise clipping）。</p>
+<p><img src="/images/24/3-loss-formula.png" alt="U-OPSD 目标函数"></p>
+<p><em>教师分布条件于伪解答 y⁺ 与不一致轨迹前缀，蒸馏目标是最长错误完成；Dβ 默认为 forward KL。</em></p>
+<p>y⁺ 是投票一致集合里选出的伪解答，默认取最短一致轨迹，替代 OPSD 中的真值 y⋆；y⁻<sub>&lt;t</sub> 是第 i 条不一致轨迹在第 t 个 token 之前的前缀，即学生”已经写错到这里”的位置；π̄ 与 πθ 分别是梯度冻结的教师和可训练的学生，每一步都给出完整词表的 next-token 分布；W<sub>k</sub> 是参与蒸馏的不一致轨迹集合（默认一条）；Dβ 是两分布间的散度，默认 forward KL（β&#x3D;0）。</p>
+<p>需要澄清的是，蒸馏并不生成文本——y⁺ 与 y⁻ 早在 sampling 阶段就写好了，全程只是把这两条固定序列当作输入。损失沿着 y⁻ 逐位置计算，且各位置互不相干：教师读入 (x, y⁺, 已写前缀)，只回答”知道答案的话，这里下一步该写什么”；这个回答不会被接续下去——下一步看的是 y⁻ 实际写下的（可能已出错）前缀，而不是上一步的预测。这个”读入内容后的下一步预测”正是模型的思考产物——在自回归模型里，想得对不对，就体现在下一步概率分得准不准。</p>
+<blockquote>
+<p>前缀是逐位增长的，所以一次 teacher-forcing 前向就能同时得到所有位置的 next-token 分布（causal mask 让位置 t 只看得到前面），无需逐位置重跑。损失改的是学生参数，让模型以后遇到类似前缀更可能写对；y⁻ 的 token 本身不动。蒸馏的实质，就是把”看到答案时模型会怎么想”，变成学生”不看答案也能这么想”。</p>
+</blockquote>
+<p>算法的完整流程：</p>
+<p><img src="/images/24/4-algorithm.png" alt="U-OPSD 算法"></p>
+<p><em>Algorithm 1：单个 prompt 上的 U-OPSD 流程，默认取最短一致轨迹为教师参考、蒸馏一条不一致轨迹。</em></p>
+<p>两个被跳过的样本类别很关键：模型完全不会的题（c(x) &lt; τ）不训练，避免把多数投票的噪音学进去；完全一致的题（Y⁻ &#x3D; ∅）没有不一致可纠正。训练因此恰好落在模型的 <strong>competence frontier</strong>——“会做、但做的时候会翻车”的题上：</p>
+<blockquote>
+<p>完全不会的不学，完全一致的没得学。U-OPSD 只在”会但会不一致”的题上蒸馏，构成一个隐式的自课程学习：题目难度随模型能力自动对齐。</p>
+</blockquote>
+<h2 id="4-实验结果与消融"><a href="#4-实验结果与消融" class="headerlink" title="4. 实验结果与消融"></a>4. 实验结果与消融</h2><p>主实验在 Qwen3-4B &#x2F; Qwen3-8B 的思考与非思考两种模式上跑，评测 AIME24、AIME25、HMMT25、MATH500、AMC23 五个竞赛数学 benchmark。</p>
+<p><strong>非思考模式（表 1）。</strong> U-OPSD 把 4B 从 40.96 提到 49.49（+8.5）、8B 从 43.57 提到 54.31（+10.7），五榜平均反超有监督 OPSD 3.2 &#x2F; 2.3 分，且各拿到五个 benchmark 中的四个最优。同样无监督的 RL 方法（TTRL &#x2F; RENT &#x2F; Intuitor）最多只提升 1.5 分，U-OPSD 比它们高 7.0–11.3——同一个多数投票，当标量 reward 用几乎没用，当蒸馏上下文用却大幅反超。</p>
+<table>
+<thead>
+<tr>
+<th>Qwen3-4B 非思考</th>
+<th>AIME24</th>
+<th>AIME25</th>
+<th>HMMT25</th>
+<th>MATH500</th>
+<th>AMC23</th>
+<th>Avg</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base</td>
+<td>25.83</td>
+<td>17.78</td>
+<td>10.83</td>
+<td>84.10</td>
+<td>66.25</td>
+<td>40.96</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + SFT</td>
+<td>26.67</td>
+<td>19.72</td>
+<td>13.06</td>
+<td>84.85</td>
+<td>69.38</td>
+<td>42.73</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + GRPO</td>
+<td>25.00</td>
+<td>22.50</td>
+<td>15.00</td>
+<td>86.20</td>
+<td>80.62</td>
+<td>45.86</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + OPSD</td>
+<td>32.22</td>
+<td>20.83</td>
+<td>16.39</td>
+<td>85.75</td>
+<td>76.25</td>
+<td>46.29</td>
+</tr>
+<tr>
+<td>+ TTRL</td>
+<td>25.00</td>
+<td>20.83</td>
+<td>11.94</td>
+<td>83.60</td>
+<td>67.50</td>
+<td>41.77</td>
+</tr>
+<tr>
+<td>+ RENT</td>
+<td>22.22</td>
+<td>20.28</td>
+<td>11.39</td>
+<td>84.00</td>
+<td>74.38</td>
+<td>42.45</td>
+</tr>
+<tr>
+<td>+ Intuitor</td>
+<td>23.89</td>
+<td>20.00</td>
+<td>11.67</td>
+<td>83.70</td>
+<td>70.62</td>
+<td>41.98</td>
+</tr>
+<tr>
+<td><strong>+ U-OPSD</strong></td>
+<td><strong>37.50</strong></td>
+<td><strong>27.78</strong></td>
+<td>14.44</td>
+<td>86.50</td>
+<td>81.25</td>
+<td><strong>49.49</strong></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>Qwen3-8B 非思考</th>
+<th>AIME24</th>
+<th>AIME25</th>
+<th>HMMT25</th>
+<th>MATH500</th>
+<th>AMC23</th>
+<th>Avg</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base</td>
+<td>27.50</td>
+<td>23.33</td>
+<td>13.61</td>
+<td>84.05</td>
+<td>69.38</td>
+<td>43.57</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + SFT</td>
+<td>26.94</td>
+<td>21.67</td>
+<td>11.94</td>
+<td>84.10</td>
+<td>72.50</td>
+<td>43.43</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + GRPO</td>
+<td>30.56</td>
+<td>21.94</td>
+<td>13.06</td>
+<td>87.85</td>
+<td>73.75</td>
+<td>45.43</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + OPSD</td>
+<td>41.67</td>
+<td>28.06</td>
+<td>18.33</td>
+<td>87.15</td>
+<td>85.00</td>
+<td>52.04</td>
+</tr>
+<tr>
+<td>+ TTRL</td>
+<td>27.22</td>
+<td>21.11</td>
+<td>13.06</td>
+<td>84.45</td>
+<td>71.88</td>
+<td>43.54</td>
+</tr>
+<tr>
+<td>+ RENT</td>
+<td>28.33</td>
+<td>21.67</td>
+<td>10.83</td>
+<td>84.00</td>
+<td>70.00</td>
+<td>42.97</td>
+</tr>
+<tr>
+<td>+ Intuitor</td>
+<td>26.11</td>
+<td>22.50</td>
+<td>11.67</td>
+<td>84.20</td>
+<td>73.12</td>
+<td>43.52</td>
+</tr>
+<tr>
+<td><strong>+ U-OPSD</strong></td>
+<td><strong>45.56</strong></td>
+<td><strong>34.72</strong></td>
+<td>18.61</td>
+<td><strong>89.55</strong></td>
+<td>83.12</td>
+<td><strong>54.31</strong></td>
+</tr>
+</tbody></table>
+<p><strong>思考模式（表 2，只列五榜平均）。</strong> 增益收窄到 +2.2 &#x2F; +1.9，与有监督 OPSD 打平、稳定超 GRPO；base 已 74.85 &#x2F; 76.09，可挖掘的 headroom 本来就小。</p>
+<table>
+<thead>
+<tr>
+<th>Avg（思考模式）</th>
+<th>4B</th>
+<th>8B</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Base</td>
+<td>74.85</td>
+<td>76.09</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + GRPO</td>
+<td>76.35</td>
+<td>76.92</td>
+</tr>
+<tr>
+<td>w&#x2F; GT. + OPSD</td>
+<td>76.20</td>
+<td>77.97</td>
+</tr>
+<tr>
+<td>+ TTRL &#x2F; RENT &#x2F; Intuitor</td>
+<td>75.76 &#x2F; 75.65 &#x2F; 76.07</td>
+<td>76.95 &#x2F; 77.16 &#x2F; 76.64</td>
+</tr>
+<tr>
+<td><strong>+ U-OPSD</strong></td>
+<td><strong>77.05</strong></td>
+<td><strong>77.99</strong></td>
+</tr>
+</tbody></table>
+<p><img src="/images/24/5-training-curves.png" alt="Qwen3-4B 训练曲线"></p>
+<p>训练曲线印证了同样的图景：非思考模式 U-OPSD 从 step 50 起在每个 checkpoint 都高于所有方法（AIME 的冲顶也发生在 step 50 而非最后 checkpoint），思考模式所有方法都挤在 base ±2 分内——收益来自早期快速纠正不一致轨迹，不是长训练堆出来的。</p>
+<p><strong>消融与机制。</strong></p>
+<p><strong>配置消融：τ、G 与教师更新。</strong> 三个超参数的行为都很反直觉：</p>
+<p><img src="/images/24/6-ablations.png" alt="配置消融：τ、G、教师更新"></p>
+<p><em>左：一致性阈值 τ，接受所有样本（τ&#x3D;0）反而最好；中：每 prompt 采样数 G，G&#x3D;12 更优、G&#x3D;16 回吐；右：教师更新方式，EMA 教师带来进一步提升。</em></p>
+<ul>
+<li><strong>τ&#x3D;0 最好。</strong> 平均准确率随 τ 单调下降：59.21（τ&#x3D;0）&gt; 53.93（τ&#x3D;0.5）&gt; 44.40（τ&#x3D;0.9）——多学比学得干净更重要。</li>
+<li><strong>G&#x3D;12 优于 8。</strong> G&#x3D;4&#x2F;8 几乎无差别，G&#x3D;12 再涨 4.7 分、G&#x3D;16 回吐；默认 G&#x3D;8 只为与 OPSD 成本对齐，G&#x3D;12 是更优工作点。</li>
+<li><strong>EMA 教师还有空间。</strong> decay 0.995 的 EMA 教师再 +2.4 分。</li>
+</ul>
+<p><strong>教师参考：完整推理轨迹是刚需。</strong> 教师条件于最长一致轨迹最优（59.00）；裁到只剩 boxed 伪答案（label-only）掉 11.4–15.6 分、低于 base——伪标签只给”答案是什么”，推理轨迹才给”怎么走到答案”。蒸馏轨迹也不宜贪多：k&#x3D;1&#x2F;2&#x2F;3 都超过有监督 OPSD，全量蒸馏反而最差。</p>
+<p><strong>蒸馏目标：full-vocabulary &gt;&gt; sampled token。</strong> 词表级蒸馏在每一步对整个词表逐项比较教师与学生分布，无需采样；sampled-token 方案则先让学生从自己的分布里采一个 token、只在该 token 上打分，平均低 13.7 分——伪标签监督下，完整词表分布比真值监督下更重要。</p>
+<p><strong>散度选择：forward KL 是刚需。</strong> forward KL 57.10；JSD 掉到 43.34；reverse KL 训练不收敛（生成长度涨到 99k、可解析答案掉到 33%，<strong>loss of termination</strong>）。机制上 forward KL 是 zero-avoiding、eos 不会被推没，reverse KL 是 zero-seeking、token 一旦归零就拉不回来——这是目标方向性的本质差异。</p>
+<p><strong>伪标签质量。</strong> 96.3% 的 rollout 可解析、94.0% 的题过阈值、86.7% 的伪标签与真值一致，蒸馏集小而集中；但多数投票复现的是 base 最高频答案，仍有 13.3% 伪标签是错的，且论文没做投票被刻意污染的鲁棒性实验。</p>
+<blockquote>
+<p>U-OPSD 没有发明新的训练目标，只是把 OPSD 里的真值参考答案换成模型自己的多数投票共识。适用前提是答案可抽取、可 canonicalize 投票的场景，开放式任务要么换软共识（judge&#x2F;embedding）、要么引入验证器，没有免费午餐；限制自我提升的从来不是 gold solution，而是暴露并纠正自身不一致的机制。</p>
+</blockquote>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-OPD-%E5%88%B0-OPSD%EF%BC%8C%E2%80%9Dself%E2%80%9D-%E8%BF%98%E5%B7%AE%E5%9C%A8%E5%93%AA"><span class="toc-number">2.</span> <span class="toc-text">2. 从 OPD 到 OPSD，”self” 还差在哪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Sample-%E2%86%92-Vote-%E2%86%92-Distill"><span class="toc-number">3.</span> <span class="toc-text">3. Sample → Vote → Distill</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D"><span class="toc-number">4.</span> <span class="toc-text">4. 实验结果与消融</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&text=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&is_video=false&description=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏&body=Check out this article: https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&title=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&name=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/&t=U-OPSD：以自我一致性取代真值监督的无监督在线策略自蒸馏"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>

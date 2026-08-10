@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5%E8%87%AA%E6%88%91%E4%B8%80%E8%87%B4%E6%80%A7%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E5%9C%A8%E7%BA%BF%E7%AD%96%E7%95%A5%E8%87%AA%E8%92%B8%E9%A6%8F/</loc>
+    
+    <lastmod>2026-08-10</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/2026/08/09/XSS2Shell-CVE-2026-64638-WordPress-CVE-2026-64638%20WordPress%201%20Click%20XSS%20to%20RCE/</loc>
     
     <lastmod>2026-08-09</lastmod>
@@ -604,6 +613,20 @@
   
   <url>
     <loc>https://z3r4y.github.io/tags/RCE/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Knowledge-Distillation/</loc>
+    <lastmod>2026-08-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Self-Distillation/</loc>
     <lastmod>2026-08-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
