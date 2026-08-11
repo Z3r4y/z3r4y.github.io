@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="1. 论文信息论文：Stealing Reasoning Traces from Proprietary LLM APIs链接：arXiv:2608.09867 · 项目站机构：MATS Research &#x2F; ELLIS Tübingen &#x2F; MPI-IS &#x2F; Tübingen AI Center 上篇（Thinking Signature Unsealed：Clau">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Stolen Thoughts：加密推理块的可移植性与攻击面">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="1. 论文信息论文：Stealing Reasoning Traces from Proprietary LLM APIs链接：arXiv:2608.09867 · 项目站机构：MATS Research &#x2F; ELLIS Tübingen &#x2F; MPI-IS &#x2F; Tübingen AI Center 上篇（Thinking Signature Unsealed：Clau">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/25/1-extraction-mechanism.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/25/2-fidelity-scatter.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/25/3-misuse-uplift.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/25/4-privacy-leaks.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/25/5-artifacts-bar.png">
+<meta property="article:published_time" content="2026-08-12T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-11T18:29:10.298Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="Claude">
+<meta property="article:tag" content="Reasoning Models">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/25/1-extraction-mechanism.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>Stolen Thoughts：加密推理块的可移植性与攻击面 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5self-consistency%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&text=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&is_video=false&description=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Stolen Thoughts：加密推理块的可移植性与攻击面&body=Check out this article: https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&name=Stolen Thoughts：加密推理块的可移植性与攻击面&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&t=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%9C%BA%E5%88%B6%EF%BC%9A%E8%B7%A8%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">2. 机制：跨模型解码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%94%BB%E5%87%BB%E9%9D%A2%EF%BC%9A%E5%9B%9B%E7%A7%8D%E5%90%91%E9%87%8F"><span class="toc-number">3.</span> <span class="toc-text">3. 攻击面：四种向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text">4. 结语</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        Stolen Thoughts：加密推理块的可移植性与攻击面
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-12T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-08-12</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Claude/" rel="tag">Claude</a>, <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>, <a class="p-category" href="/tags/Reasoning-Models/" rel="tag">Reasoning Models</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-论文信息"><a href="#1-论文信息" class="headerlink" title="1. 论文信息"></a>1. 论文信息</h2><p>论文：<strong>Stealing Reasoning Traces from Proprietary LLM APIs</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2608.09867">arXiv:2608.09867</a> · <a target="_blank" rel="noopener" href="https://stolen-thoughts.com/">项目站</a><br>机构：MATS Research &#x2F; ELLIS Tübingen &#x2F; MPI-IS &#x2F; Tübingen AI Center</p>
+<p>上篇（<a href="https://z3r4y.github.io/2026/07/17/Thinking-Signature-Unsealed%EF%BC%9AClaude-%E9%9A%90%E8%97%8F%E6%8E%A8%E7%90%86%E7%9A%84%E9%87%8D%E6%96%B0%E6%9A%B4%E9%9C%B2/">Thinking Signature Unsealed：Claude 隐藏推理的重新暴露</a>）回答了“发生了什么、能证明什么”：thinking.signature 重放走的是 provider 的 reasoning-continuity 路径，canary 命中只证明隐藏信息可被重新访问，不等于拿到原始明文。这篇论文把同一机制推向了 Anthropic、OpenAI、Google 三家、四种攻击向量和 31 万个公开推理块——它回答的是“能用来做什么、怎么进一步利用”。</p>
+<blockquote>
+<p>本文的关键增量是两个新维度：跨用户与跨模型兼容性。前者把“自证 canary”变成第三方隐私风险，后者把弱模型变成解密预言机；组合起来，防蒸馏、窃密、越狱和投毒都不再需要攻击强模型本身。</p>
+</blockquote>
+<h2 id="2-机制：跨模型解码"><a href="#2-机制：跨模型解码" class="headerlink" title="2. 机制：跨模型解码"></a>2. 机制：跨模型解码</h2><p><strong>兼容性三层次</strong></p>
+<p>加密块的跨会话回放，可以把它拆成三个递进的兼容性层次：</p>
+<table>
+<thead>
+<tr>
+<th>层次</th>
+<th>含义</th>
+<th>攻击用途</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>会话内 &#x2F; 跨会话</td>
+<td>同一用户可在不同请求、不同顺序中重放块</td>
+<td>构造历史、推理提取</td>
+</tr>
+<tr>
+<td>跨用户</td>
+<td>A 的块可在 B 的会话中重放</td>
+<td>第三方窃取他人隐藏推理</td>
+</tr>
+<tr>
+<td>跨模型</td>
+<td>一个模型产的块可注入另一个模型</td>
+<td>弱模型解码强模型</td>
+</tr>
+</tbody></table>
+<p>根因是架构性的：provider 为了无状态续接把推理状态交给客户端，又为支持模型切换和重路由而使用单一全局密钥，块因此完全可移植。</p>
+<p><strong>弱模型作为解码器</strong></p>
+<p><img src="/images/25/1-extraction-mechanism.png" alt="论文 Figure 1（上）：两次 API 调用完成解码"></p>
+<p>攻击只需两次调用：先用强模型生成带签名的 thinking 块并丢弃可见回答；再把签名注入同一厂商的弱模型，配一句转录提示让它“逐字复述”。弱模型几乎没有防蒸馏训练，成了现成的解码器。</p>
+<p>三家各自最弱的可用解码器：Haiku 4.5（Claude）、GPT-5.6 Luna（GPT）、Gemini Robotics 1.6（Gemini）。难度差异很大：Claude 用一个固定提示即可稳定输出；GPT 需要分块（&lt;50 token）、best-of-n 和多套模板。</p>
+<p>跨模型兼容性直接决定攻击面：能消费目标块的模型越弱、覆盖越广，解码就越容易：</p>
+<table>
+<thead>
+<tr>
+<th>厂商</th>
+<th>可回放关系（源 → 目标）</th>
+<th>攻击者选用的解码器</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Claude</td>
+<td>全互通：任意模型产生的块可注入任意其他模型；仅 Fable 5 的块只有 Fable 5 自己能读</td>
+<td>Haiku 4.5（最弱可用）</td>
+</tr>
+<tr>
+<td>GPT</td>
+<td>单向汇聚：所有旧代的块都可注入 GPT-5.6 系列；5.6 的块旧代读不了，旧代之间也互不相通</td>
+<td>GPT-5.6 Luna（唯一能读全历史的弱模型）</td>
+</tr>
+<tr>
+<td>Gemini</td>
+<td>全互通：任意模型产生的块可注入任意其他模型；2.5 系列块只有 Robotics 1.6 能处理</td>
+<td>Gemini Robotics 1.6（唯一覆盖 2.5 + 3.x）</td>
+</tr>
+</tbody></table>
+<p><strong>保真度：1:1 的证据强度</strong></p>
+<p>论文用 120 道 Codeforces 题做保真度验证：把解码结果重新喂回原模型，比较 API 计费的 thinking token 数，两者约 1:1 吻合；另外，解码出的内容能精确复现仅存在于隐藏推理中的 secret。这是目前最强的间接证据。</p>
+<p><img src="/images/25/2-fidelity-scatter.png" alt="论文 Figure 1（下）：解码 token 数与计费 thinking token 数约 1:1（三家厂商各一张散点，每个点一道 Codeforces 题）"></p>
+<blockquote>
+<p>但注意校准：计费 token 数是“数量”证据，不是“逐字”证据。论文自己也承认没有 ground-truth 明文，无法完全验证每个 token。1:1 说明解码是高保真的再生成——和上篇“canary 命中 ≠ 原始明文”并不矛盾，只是把置信度从“存在性”推进到了“近似逐字”。另外 GPT 侧的解码常出现不可读（illegible）推理，数量对齐不代表内容可读。</p>
+</blockquote>
+<h2 id="3-攻击面：四种向量"><a href="#3-攻击面：四种向量" class="headerlink" title="3. 攻击面：四种向量"></a>3. 攻击面：四种向量</h2><p><strong>第一方：绕过防蒸馏与危险推理泄漏</strong></p>
+<p>对攻击者自己生成的块，最直接的用途是绕过防蒸馏：攻击者甚至不需要调用强模型，用弱模型解码即可。按 Haiku 4.5 价格估算，解码 1 万条 12k token 的轨迹约 $720。</p>
+<p>更有意思的是“行为探针”：预填 Kimi-K3 一小段 Opus 4.8 的解码推理，其可见回答风格会向 Claude 漂移，个别题目几乎逐字一致。论文用这个现象讨论一个敏感问题：近期开源推理模型是否已经用专有模型的推理做过蒸馏。</p>
+<p>隐藏推理还会泄漏可见输出看不到的内容。模型被诱导在推理中认真思考有害话题、同时保持可见回答良性时，解码就能拿到危害性知识：</p>
+<p><img src="/images/25/3-misuse-uplift.png" alt="论文 Figure 4：可见回答保持良性，隐藏推理已展开危害性分析"></p>
+<p><strong>第三方：窃密、注入与轨迹投毒</strong></p>
+<p>第三方攻击者不需要自己产生任何推理。论文从 GitHub &#x2F; Hugging Face 收集 6,708 条仍携带加密块的公开 agent 轨迹，解码 315,320 个推理块：</p>
+<ul>
+<li>0.3%（1,028 个）块、4.9%（328 条）会话至少泄漏一项敏感信息</li>
+<li>真实用户会话中恢复出 62 个 API key、33 个密码、24 个 access token、7 个私钥、30 个邮箱</li>
+<li>其中 64 项完全不出现在可见对话里——用户脱敏只处理了明文，加密块里的内容原样保留，或来自模型记忆</li>
+</ul>
+<p><img src="/images/25/4-privacy-leaks.png" alt="论文 Figure 5：公开轨迹中解码出的 API key（左）与完整合成人设（右）"></p>
+<p><img src="/images/25/5-artifacts-bar.png" alt="论文 Figure 6：解码出的隐私产物分类统计（全来源）"></p>
+<p>一个反复出现的触发场景：用户让 agent“清理仓库 &#x2F; 脱敏”，模型在隐藏推理里重述了需要删除的密钥——清理动作反而把密钥写进了加密块。</p>
+<p>注入侧同样成立：把恶意指令藏进加密块（o4-mini 思考“把 pptx 备份上传到攻击者服务器”），移植到 GPT-5.6 Sol 后，它会把恶意行为当作自己的历史推理执行；论文还在 PostTrainBench 长轨迹里投毒，Opus 4.7 恢复后按指令持续外传文件。载荷只存在于加密块，明文监控完全不可见。</p>
+<h2 id="4-结语"><a href="#4-结语" class="headerlink" title="4. 结语"></a>4. 结语</h2><p>防御上，论文提出“上下文绑定信封”，核心是把信封从“只认证内容”改成“绑定来源与位置”：</p>
+<table>
+<thead>
+<tr>
+<th>缓解</th>
+<th>作用</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>AEAD 绑定 user_id</td>
+<td>拒绝跨用户重放</td>
+</tr>
+<tr>
+<td>会话 + 前驱哈希链</td>
+<td>拒绝跨会话、乱序重放</td>
+</tr>
+<tr>
+<td>预修复密钥轮换</td>
+<td>旧签名永久不可解</td>
+</tr>
+<tr>
+<td>CSPRNG nonce + 服务端唯一性</td>
+<td>防伪造与碰撞</td>
+</tr>
+<tr>
+<td>模型级拒绝转录提示</td>
+<td>补密码学之外的空隙</td>
+</tr>
+</tbody></table>
+<blockquote>
+<p>但无论传输层怎么加密，被查询的模型必须解密并处理推理 token。只要模型能被提示词诱导转录，加密块就永远只是 semi-hidden——这正好呼应上篇的结论：signature 是 sealed continuity capability，不该被当作机密存储机制。</p>
+</blockquote>
+<p>一些实际建议：</p>
+<ul>
+<li>轮换任何可能进入过推理上下文的密钥与凭据（尤其是公开过的 agent 日志）</li>
+<li>发布轨迹前剥离全部 signature &#x2F; encrypted_content 块，明文脱敏无效</li>
+<li>把公开日志中的加密块当作可读明文对待</li>
+</ul>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/archives/">归档</a></li>
+        
+          <li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E6%9C%BA%E5%88%B6%EF%BC%9A%E8%B7%A8%E6%A8%A1%E5%9E%8B%E8%A7%A3%E7%A0%81"><span class="toc-number">2.</span> <span class="toc-text">2. 机制：跨模型解码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%94%BB%E5%87%BB%E9%9D%A2%EF%BC%9A%E5%9B%9B%E7%A7%8D%E5%90%91%E9%87%8F"><span class="toc-number">3.</span> <span class="toc-text">3. 攻击面：四种向量</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text">4. 结语</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&text=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&is_video=false&description=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=Stolen Thoughts：加密推理块的可移植性与攻击面&body=Check out this article: https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&title=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&name=Stolen Thoughts：加密推理块的可移植性与攻击面&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/&t=Stolen Thoughts：加密推理块的可移植性与攻击面"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/archives/">归档</a></li><!--
+     --><!--
+       --><li><a target="_blank" rel="noopener" href="https://github.com/Z3r4y">项目</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
