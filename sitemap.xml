@@ -11,24 +11,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/2026/08/19/RangeFactory-RangeBench%EF%BC%9A%E4%BB%8E%E6%BC%8F%E6%B4%9E%E7%8E%AF%E5%A2%83%E8%87%AA%E5%8A%A8%E7%BC%96%E6%8E%92%E5%A4%9A%E8%B7%B3%E6%94%BB%E5%87%BB%E9%93%BE%E9%9D%B6%E5%9C%BA/</loc>
-    
-    <lastmod>2026-08-18</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/2026/08/16/cc-gateway%EF%BC%9AClaude-Code-%E9%A3%8E%E6%8E%A7%E5%AF%B9%E6%8A%97%E8%A7%A3%E5%89%96%E4%B8%8E%E5%8F%B7%E6%B1%A0%E4%BF%9D%E6%B4%BB%E7%9C%9F%E7%9B%B8/</loc>
-    
-    <lastmod>2026-08-16</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/2026/08/12/Stolen-Thoughts%EF%BC%9A%E5%8A%A0%E5%AF%86%E6%8E%A8%E7%90%86%E5%9D%97%E7%9A%84%E5%8F%AF%E7%A7%BB%E6%A4%8D%E6%80%A7%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/</loc>
     
     <lastmod>2026-08-11</lastmod>
@@ -389,27 +371,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/LLM-Interpretability/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Mechanistic-Interpretability/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Alignment/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/tags/Cyber-Range/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
@@ -431,6 +392,20 @@
   </url>
   
   <url>
+    <loc>https://z3r4y.github.io/tags/Multi-Agent/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Evolutionary-Algorithm/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/tags/LLM-Training/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
@@ -446,6 +421,27 @@
   
   <url>
     <loc>https://z3r4y.github.io/tags/Reinforcement-Learning/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/LLM-Interpretability/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Mechanistic-Interpretability/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Alignment/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -515,20 +511,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Abliteration/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Model-Editing/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/tags/Activation-Monitoring/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
@@ -550,6 +532,20 @@
   </url>
   
   <url>
+    <loc>https://z3r4y.github.io/tags/Abliteration/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>https://z3r4y.github.io/tags/Model-Editing/</loc>
+    <lastmod>2026-08-20</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>https://z3r4y.github.io/tags/Agent-Monitoring/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
@@ -564,13 +560,6 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Claude/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
     <loc>https://z3r4y.github.io/tags/Reasoning-Models/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
@@ -578,7 +567,7 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Reverse-Engineering/</loc>
+    <loc>https://z3r4y.github.io/tags/Claude/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -669,49 +658,7 @@
   </url>
   
   <url>
-    <loc>https://z3r4y.github.io/tags/Claude-Code/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Reverse-Proxy/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Telemetry/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Risk-Control/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/OAuth/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Multi-Agent/</loc>
-    <lastmod>2026-08-20</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>https://z3r4y.github.io/tags/Evolutionary-Algorithm/</loc>
+    <loc>https://z3r4y.github.io/tags/Reverse-Engineering/</loc>
     <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
