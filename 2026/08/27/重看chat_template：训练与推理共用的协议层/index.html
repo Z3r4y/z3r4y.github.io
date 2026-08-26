@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="chat_template 是一份同时约束训练数据编码、输入渲染与输出解析的协议  1. Introchat_template 是 tokenizer_config.json 里的一段 Jinja2 模板：把”对话”按格式渲染，再交给 tokenizer 编码成 token。 模板的执行入口是 HuggingFace transformers 里 tokenizer 的标准方法 apply_ch">
+<meta property="og:type" content="article">
+<meta property="og:title" content="重看chat_template：训练与推理共用的协议与攻击面">
+<meta property="og:url" content="https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="chat_template 是一份同时约束训练数据编码、输入渲染与输出解析的协议  1. Introchat_template 是 tokenizer_config.json 里的一段 Jinja2 模板：把”对话”按格式渲染，再交给 tokenizer 编码成 token。 模板的执行入口是 HuggingFace transformers 里 tokenizer 的标准方法 apply_ch">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2026-08-27T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-08-26T19:20:09.822Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Prompt Injection">
+<meta property="article:tag" content="LLM Training">
+<meta property="article:tag" content="Reasoning Models">
+<meta property="article:tag" content="MiniMax">
+<meta name="twitter:card" content="summary">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>重看chat_template：训练与推理共用的协议与攻击面 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/08/23/Agent%20Runtime%20%E6%A6%82%E8%A7%88/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&text=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&is_video=false&description=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=重看chat_template：训练与推理共用的协议与攻击面&body=Check out this article: https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&name=重看chat_template：训练与推理共用的协议与攻击面&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&t=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Intro"><span class="toc-number">1.</span> <span class="toc-text">1. Intro</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%AE%AD%E7%BB%83%E4%BE%A7"><span class="toc-number">2.</span> <span class="toc-text">2. 训练侧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8E%A8%E7%90%86%E4%BE%A7"><span class="toc-number">3.</span> <span class="toc-text">3. 推理侧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%94%BB%E5%87%BB%E9%9D%A2"><span class="toc-number">4.</span> <span class="toc-text">4. 攻击面</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        重看chat_template：训练与推理共用的协议与攻击面
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-08-27T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-08-27</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Infrastructure/">Infrastructure</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/LLM-Training/" rel="tag">LLM Training</a>, <a class="p-category" href="/tags/MiniMax/" rel="tag">MiniMax</a>, <a class="p-category" href="/tags/Prompt-Injection/" rel="tag">Prompt Injection</a>, <a class="p-category" href="/tags/Reasoning-Models/" rel="tag">Reasoning Models</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>chat_template 是一份同时约束训练数据编码、输入渲染与输出解析的协议</p>
+</blockquote>
+<h2 id="1-Intro"><a href="#1-Intro" class="headerlink" title="1. Intro"></a>1. Intro</h2><p>chat_template 是 tokenizer_config.json 里的一段 Jinja2 模板：把”对话”按格式渲染，再交给 tokenizer 编码成 token。</p>
+<p>模板的执行入口是 HuggingFace transformers 里 tokenizer 的标准方法 apply_chat_template：tokenizer 从 tokenizer_config.json 读入 chat_template 字段，把 messages 交给这段 Jinja2 模板渲染成协议文本。M3 复用这套接口，所以调用形态就是它的签名：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">apply_chat_template(</span><br><span class="line">    messages,                    <span class="comment"># 对话：角色 + 内容</span></span><br><span class="line">    add_generation_prompt=<span class="literal">True</span>,  <span class="comment"># 是否追加 assistant 起始段</span></span><br><span class="line">    tools=...,                   <span class="comment"># 工具定义（可选）</span></span><br><span class="line">    chat_template_kwargs=...,    <span class="comment"># 透传参数，如 thinking_mode</span></span><br><span class="line">) -&gt; <span class="built_in">str</span>                         <span class="comment"># 渲染后的协议文本</span></span><br></pre></td></tr></table></figure>
+
+<p>tools、thinking_mode 这些变量决定渲染出什么结构：有没有工具块、思考指令怎么下、生成前缀是什么。</p>
+<p>一次交互涉及两个方向：</p>
+<ul>
+<li>编码（输入侧）：把 API 请求里的 messages + tools + thinking_mode 渲染成协议文本、再分词成 token 流，喂给模型；</li>
+<li>解析（输出侧）：把模型吐出的协议文本（&lt;mm:think&gt;、&lt;tool_call&gt; 这些）用 reasoning parser &#x2F; tool parser 拆回结构化响应（reasoning_content &#x2F; content &#x2F; tool_calls）。</li>
+</ul>
+<p>模型没有语法知识，只有 token 分布：训练数据用同一套模板编码，推理时输入渲染同构，模型就会继续输出同构的协议文本——所以输出”看起来像模板”，本质是模型在模仿协议，而不是模板在处理输出。</p>
+<h2 id="2-训练侧"><a href="#2-训练侧" class="headerlink" title="2. 训练侧"></a>2. 训练侧</h2><p>典型 SFT 流水线：</p>
+<pre class="mermaid">graph LR
+    A["采样 dataspec"] --> B["清洗 Clean"]
+    B --> C["模板化 Context(ChatML)"]
+    C --> D["BIN tokenize + packing"]
+    D --> E["NPY 索引 / 掩码"]
+    E --> F["Data-str 数据流"]
+    F --> G["SFT 训练"]
+    G --> H["评测 / 门禁"]</pre>
+
+<p>各层职责：采样（dataspec 控制混合比例与难度）→ 清洗轨迹 → 模板化（把原始样本转成 ChatML 协议文本，即训练侧的 chat_template）→ BIN（tokenizer 编码 + packing 成固定长度稠密序列）→ NPY（样本边界与 loss 掩码索引）→ Data-str（混合数据流，支持断点续训）→ SFT → 评测门禁。</p>
+<p>为什么必须先转 chat_template，有四个硬约束：</p>
+<ul>
+<li><strong>分布一致性</strong>：训练学的是 token 序列分布，而推理输入正是模板渲染文本，编码不一致则输出语法漂移（角色标记缺失、EOS 乱发）；</li>
+<li><strong>packing 边界</strong>：多个样本拼进一条序列，靠协议 token 切分起止；</li>
+<li><strong>loss masking</strong>：只对 assistant 段算 loss，掩码区间按角色标记定位；</li>
+<li><strong>词表耦合</strong>：&lt;mm:think&gt;、ns_token 等必须以 added token 注册，训练与推理共用同一份 tokenizer。</li>
+</ul>
+<h2 id="3-推理侧"><a href="#3-推理侧" class="headerlink" title="3. 推理侧"></a>3. 推理侧</h2><p>vLLM 对 M3 的适配分两条（<a target="_blank" rel="noopener" href="https://vllm.ai/blog/2026-06-12-minimax-m3-vllm">官方博客</a>）：</p>
+<ul>
+<li>--tool-call-parser minimax_m3：把模型输出的 &lt;tool_call&gt; 解析成结构化 tool_calls；</li>
+<li>--reasoning-parser minimax_m3：把 &lt;mm:think&gt;…&lt;&#x2F;mm:think&gt; 提取为 reasoning_content。</li>
+</ul>
+<blockquote>
+<p>parsers turn model-specific text conventions into structured API responses——解析器把模型吐出的协议文本翻译回结构化 API 结果。</p>
+</blockquote>
+<p><strong>thinking_mode 三态</strong>：API 层的思考意图由服务端翻译成模板 kwarg，模板据此渲染系统指令与生成前缀：</p>
+<table>
+<thead>
+<tr>
+<th>thinking_mode</th>
+<th>生成前缀（add_generation_prompt 后）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>adaptive</td>
+<td>]~b]ai（无标记，模型自决）</td>
+</tr>
+<tr>
+<td>enabled</td>
+<td>]~b]ai\n&lt;mm:think&gt;（预填起始标记）</td>
+</tr>
+<tr>
+<td>disabled</td>
+<td>]~b]ai\n&lt;&#x2F;mm:think&gt;（预填结束标记）</td>
+</tr>
+</tbody></table>
+<p>注意 disabled 预填的是<strong>闭合</strong>标记——模型要从”思考已结束”的中间状态续写，所以解析器必须容忍开头的 stray closer。</p>
+<p><strong>M3 协议 token 全部注册为 added token</strong>（tokenizer_config.json 共 61 个）：</p>
+<table>
+<thead>
+<tr>
+<th>token</th>
+<th>id</th>
+<th>角色</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>]!p~[</td>
+<td>200000</td>
+<td>pad</td>
+</tr>
+<tr>
+<td>]~b]</td>
+<td>200019</td>
+<td>BOS &#x2F; 段起始 + 角色</td>
+</tr>
+<tr>
+<td>[e~[</td>
+<td>200020</td>
+<td>EOS &#x2F; 段结束</td>
+</tr>
+<tr>
+<td>]~!b[</td>
+<td>200034</td>
+<td>BOD 文档起始</td>
+</tr>
+<tr>
+<td>&lt;tool_call&gt;</td>
+<td>200052</td>
+<td>工具块开始</td>
+</tr>
+<tr>
+<td>&lt;&#x2F;tool_call&gt;</td>
+<td>200053</td>
+<td>工具块结束</td>
+</tr>
+<tr>
+<td>]&lt;]minimax[&gt;[</td>
+<td>200058</td>
+<td>ns_token 命名空间</td>
+</tr>
+<tr>
+<td>&lt;mm:think&gt;</td>
+<td>200059</td>
+<td>思考开始</td>
+</tr>
+<tr>
+<td>&lt;&#x2F;mm:think&gt;</td>
+<td>200060</td>
+<td>思考结束</td>
+</tr>
+</tbody></table>
+<p>而 &lt;response&gt;、&lt;invoke&gt;、&lt;item&gt; 不是 added token，只是普通文本，靠 ns_token 前缀保证边界原子性——需要原子性的协议边界用单 id 特殊 token，语义性标签退化为普通文本。</p>
+<p><strong>段骨架与角色映射</strong></p>
+<ul>
+<li>角色映射：root → system（高优先级），system&#x2F;developer → developer（低优先级）；</li>
+<li>渲染骨架：BOD + BOS + system 开头，每个消息段以 [e~[ 结尾。</li>
+</ul>
+<p><strong>工具调用渲染</strong></p>
+<ul>
+<li>调用块用 ns_token + &lt;tool_call&gt; 包裹，每个调用再套 &lt;invoke name&#x3D;”…”&gt;；</li>
+<li>参数递归展开成 XML：数组 → &lt;item&gt;，对象 → 子元素，None 省略。</li>
+</ul>
+<p>下面的真实渲染示例，正好一次演示完这两层结构。</p>
+<p>真实渲染一轮多轮对话：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">]~!b[]~b]system</span><br><span class="line">You are a security research assistant. 严格遵守授权边界，只对授权目标执行操作。</span><br><span class="line"></span><br><span class="line">&lt;thinking_instructions&gt;... Current thinking mode: adaptive. ...&lt;/thinking_instructions&gt;[e~[</span><br><span class="line">]~b]developer</span><br><span class="line">你是渗透测试助手，所有动作必须基于用户明确授权。</span><br><span class="line"></span><br><span class="line"># Tools</span><br><span class="line">...（&lt;tools&gt; JSONSchema 定义，节选）...</span><br><span class="line">[e~[</span><br><span class="line">]~b]user</span><br><span class="line">这是目标主机的拓扑图，请结合图片和文字分析。]&lt;]image[&gt;[[e~[</span><br><span class="line">]~b]user</span><br><span class="line">帮我检查一下 10.0.0.5 的 80 端口是否开放[e~[</span><br><span class="line">]~b]ai</span><br><span class="line">&lt;mm:think&gt;用户要求检查目标主机 10.0.0.5 的 80 端口。我可以直接调用 nmap_scan 工具完成扫描。&lt;/mm:think&gt;好的，我来扫描。]&lt;]minimax[&gt;[&lt;tool_call&gt;</span><br><span class="line">]&lt;]minimax[&gt;[&lt;invoke name=&quot;nmap_scan&quot;&gt;]&lt;]minimax[&gt;[&lt;host&gt;10.0.0.5]&lt;]minimax[&gt;[&lt;/host&gt;]&lt;]minimax[&gt;[&lt;ports&gt;]&lt;]minimax[&gt;[&lt;item&gt;80]&lt;]minimax[&gt;[&lt;/item&gt;]&lt;]minimax[&gt;[&lt;item&gt;443]&lt;]minimax[&gt;[&lt;/item&gt;]&lt;]minimax[&gt;[&lt;/ports&gt;]&lt;]minimax[&gt;[&lt;options&gt;]&lt;]minimax[&gt;[&lt;timeout&gt;30]&lt;]minimax[&gt;[&lt;/timeout&gt;]&lt;]minimax[&gt;[&lt;/options&gt;]&lt;]minimax[&gt;[&lt;/invoke&gt;</span><br><span class="line">]&lt;]minimax[&gt;[&lt;/tool_call&gt;[e~[</span><br><span class="line">]~b]tool</span><br><span class="line">&lt;response&gt;PORT STATE SERVICE</span><br><span class="line">80/tcp open http</span><br><span class="line">443/tcp open https&lt;/response&gt;[e~[</span><br><span class="line">]~b]ai</span><br><span class="line">&lt;mm:think&gt;扫描结果显示 80 和 443 端口均开放。我可以直接给出结论。&lt;/mm:think&gt;扫描完成，10.0.0.5 的 80 端口开放（http），443 端口也开放（https）。[e~[</span><br></pre></td></tr></table></figure>
+
+<h2 id="4-攻击面"><a href="#4-攻击面" class="headerlink" title="4. 攻击面"></a>4. 攻击面</h2><p>协议属性即攻击面：渲染把多轮对话线性化成单一 token 流，角色标记只是普通 token，用户内容可与协议标记碰撞。ChatML 类模板的注入手法（<a target="_blank" rel="noopener" href="https://xz.aliyun.com/news/92098">先知社区</a>基于 DeepSeek-R1 的分析）在 M3 上等价：BOS 后伪造 system 段、伪造思考标记、伪造 tool 标签诱导工具调用。</p>
+<p>M3 的防御是 ns_token 防碰撞——<a target="_blank" rel="noopener" href="https://github.com/NVIDIA/TensorRT-LLM/blob/main/tensorrt_llm/serve/tool_parser/minimax_m3_parser.py">TensorRT-LLM 解析器注释</a>说它是 “opaque sentinel chosen so the tag set cannot collide with anything the model might naturally produce”。但防碰撞不等于防注入；更现实的脆弱点是引擎与模型的语法不匹配，vLLM 的 bugfix 也许就会演化成攻击面：streaming 时思考标记以可见文本泄漏（<a target="_blank" rel="noopener" href="https://app.semanticdiff.com/gh/vllm-project/vllm/pull/45713/overview">#45713</a>）、解析器被迫容忍坏格式（<a target="_blank" rel="noopener" href="https://app.semanticdiff.com/gh/vllm-project/vllm/pull/51075/overview">#51075</a>）、thinking 开启时结构化输出被静默忽略（<a target="_blank" rel="noopener" href="https://app.semanticdiff.com/gh/vllm-project/vllm/pull/51230/overview">#51230</a>）。</p>
+<blockquote>
+<p>容错与安全是张力关系：解析器越宽容，注入面越宽。</p>
+</blockquote>
+<script type="module"> import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.esm.min.mjs';	mermaid.initialize({startOnLoad: true, flowchart: {curve: 'linear'}}); </script>
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Intro"><span class="toc-number">1.</span> <span class="toc-text">1. Intro</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E8%AE%AD%E7%BB%83%E4%BE%A7"><span class="toc-number">2.</span> <span class="toc-text">2. 训练侧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E6%8E%A8%E7%90%86%E4%BE%A7"><span class="toc-number">3.</span> <span class="toc-text">3. 推理侧</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%94%BB%E5%87%BB%E9%9D%A2"><span class="toc-number">4.</span> <span class="toc-text">4. 攻击面</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&text=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&is_video=false&description=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=重看chat_template：训练与推理共用的协议与攻击面&body=Check out this article: https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&title=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&name=重看chat_template：训练与推理共用的协议与攻击面&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E5%B1%82/&t=重看chat_template：训练与推理共用的协议与攻击面"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
