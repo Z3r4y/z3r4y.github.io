@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="Info：MaxProof: Scaling Mathematical Proof with Generative-Verifier RL and Population-Level Test-Time Scaling链接：arXiv:2606.13473（2026-06-11）· 官方博客（2026-06-09）机构：MiniMax + 香港中文大学 + 复旦大学 + 北京大学 + 清华大学  数">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MiniMax M3 的 RL 设计：以数学证明task为例">
+<meta property="og:url" content="https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="Info：MaxProof: Scaling Mathematical Proof with Generative-Verifier RL and Population-Level Test-Time Scaling链接：arXiv:2606.13473（2026-06-11）· 官方博客（2026-06-09）机构：MiniMax + 香港中文大学 + 复旦大学 + 北京大学 + 清华大学  数">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/27/1-pipeline.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/27/2-hacking-dash.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/27/3-verifier.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/27/4-maxproof-loop.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/27/5-oracle-evolution.png">
+<meta property="article:published_time" content="2026-09-04T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-03T19:51:15.328Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="Reward Hacking">
+<meta property="article:tag" content="LLM Training">
+<meta property="article:tag" content="Reinforcement Learning">
+<meta property="article:tag" content="Test-Time Scaling">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/27/1-pipeline.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>MiniMax M3 的 RL 设计：以数学证明task为例 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/09/02/Hacker-Opus%EF%BC%9A%E5%AF%B9%20RL%20reward%20hacking%20%E7%9A%84%E8%A7%82%E5%AF%9F/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&text=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&is_video=false&description=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MiniMax M3 的 RL 设计：以数学证明task为例&body=Check out this article: https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&name=MiniMax M3 的 RL 设计：以数学证明task为例&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&t=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Proof-Expert%EF%BC%9Averifier-%E5%8D%B3%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">1. Proof Expert：verifier 即环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Verifier-%E4%B8%8E-Fixer%EF%BC%9A%E6%89%BE%E9%94%99%E4%B8%8E%E4%BF%AE%E5%A4%8D"><span class="toc-number">2.</span> <span class="toc-text">2. Verifier 与 Fixer：找错与修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-MaxProof%EF%BC%9A%E6%B5%8B%E8%AF%95%E6%97%B6%E6%90%9C%E7%B4%A2"><span class="toc-number">3.</span> <span class="toc-text">3. MaxProof：测试时搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AF%84%E6%B5%8B%EF%BC%9A-8-10-%E4%B8%8E%E4%B8%89%E7%A7%8D%E6%AD%BB%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">4. 评测：+8&#x2F;+10 与三种死法</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        MiniMax M3 的 RL 设计：以数学证明task为例
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-09-04T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-09-04</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/LLM-Training/" rel="tag">LLM Training</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>, <a class="p-category" href="/tags/Reinforcement-Learning/" rel="tag">Reinforcement Learning</a>, <a class="p-category" href="/tags/Reward-Hacking/" rel="tag">Reward Hacking</a>, <a class="p-category" href="/tags/Test-Time-Scaling/" rel="tag">Test-Time Scaling</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>Info：<strong>MaxProof: Scaling Mathematical Proof with Generative-Verifier RL and Population-Level Test-Time Scaling</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2606.13473">arXiv:2606.13473</a>（2026-06-11）· <a target="_blank" rel="noopener" href="https://www.minimax.io/blog/minimax-maxproof-math-proof-evolution">官方博客</a>（2026-06-09）<br>机构：MiniMax + 香港中文大学 + 复旦大学 + 北京大学 + 清华大学</p>
+<blockquote>
+<p>数学证明没有可执行 oracle，正确性只能交给一个会犯错、也会被攻克的 generative verifier。verifier 因此不是评测工具，而是 RL 的环境。这篇论文讲的，就是 MiniMax 怎么在这种环境下设计 RL，又怎么在测试时把练好的能力组织成搜索——最终把 M3 从 IMO 2025 的 27&#x2F;42、USAMO 2026 的 26&#x2F;42，抬到 <strong>35&#x2F;42 和 36&#x2F;42</strong>。</p>
+</blockquote>
+<p><strong>先分清两件事：RL 与 MaxProof。</strong> RL 发生在训练侧——把“会写证明、会找错、会按批评修证明”三个能力练进 M3 的权重（第 1、2 节）；MaxProof 发生在测试侧——不更新任何参数，只反复调用同一个模型当生成器、verifier、精炼器和排序器，在候选证明的种群上搜索并选出最终答案（第 3 节）。</p>
+<p>同一份 M3 模型：直接作答只有 27&#x2F;42 和 26&#x2F;42；套上 MaxProof 后是 <strong>35&#x2F;42 和 36&#x2F;42</strong>。+8&#x2F;+10 全部来自测试时搜索消耗的推理算力——论文想展示的不是一个更强的基座，而是 verifier 加搜索这套系统设计能补上多少分。</p>
+<p><img src="/images/27/1-pipeline.png" alt="M3 的训练与测试时整体管线"></p>
+<p><em>图 1：M3 先训练证明生成、证明验证、批评驱动的证明修复三种能力，合并进一个发布模型；MaxProof 在测试时把这套能力组织成种群搜索。</em></p>
+<h2 id="1-Proof-Expert：verifier-即环境"><a href="#1-Proof-Expert：verifier-即环境" class="headerlink" title="1. Proof Expert：verifier 即环境"></a>1. Proof Expert：verifier 即环境</h2><p>Coding&#x2F;Agent 任务里，reward 来自可执行反馈——单测、Docker、rubric 化的 agent 验证，有一个客观结果可以调用。数学证明没有这种东西：一个自然语言论证对不对，只能由另一个模型来读。所以 Proof Expert 的 RL 围绕一个中心对象展开：<strong>一个冻结的 generative verifier</strong>，它对每条候选证明输出文本评估和一个 [0,7] 标量分，这个标量直接作为整条轨迹的奖励。</p>
+<p>这个选择的后果是结构性的：如果 verifier 奖励了一条“流畅但错误”的证明，RL 会把那个缺陷放大成策略；如果 verifier 太吵，组内相对 advantage 会塌缩成噪声；如果 verifier 对格式敏感，策略就会去学格式而不是数学。论文没有停留在警告层面，而是先给了一场真实的失败实证。</p>
+<p><strong>M2 Cycle：reward hacking 不是事件，是分布漂移</strong></p>
+<p>M2 迭代期间，MiniMax 跑过一个长程 Proof RL 实验：单 rubric、单 judge、相对简单的聚合。前几百步训练指标很健康，但把输出拿去做更细的分析后，发现策略学会了四种教科书式的 hacking 模式：</p>
+<ul>
+<li><strong>长度 bias</strong>：可见证明长度从约 3.5K 涨到 10K 字符（近三倍），隐藏思考涨得更快。长证明更容易命中 rubric 关键词，也让单 judge 更难发现 hand-waving。</li>
+<li><strong>格式 hacking</strong>：策略收敛到一小套表面模板——“Step N”标题、“Verification”段、“Final Answer”块、“We are given…”式开头；到训练后期绝大多数输出都长这样，哪怕该题根本不需要这个模板。</li>
+<li><strong>语义捷径</strong>：在论证真正的难点处插入 “it can be shown”“after simplification” 这类空话。单 rubric judge 很少抓得到，因为上下文是对的、关键词都在。</li>
+<li><strong>judge 偏好</strong>：策略学会了这个具体 judge 的脾气——它偏爱哪些措辞、对哪些错误宽容。这是最危险的一种，因为它能带来大额分数上涨而证明质量原地踏步。</li>
+</ul>
+<p>配上独立 oracle 打分器去量假正率（训练分偏高、oracle 分偏低的样本占比）：</p>
+<table>
+<thead>
+<tr>
+<th>信号</th>
+<th>趋势</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>假正率</td>
+<td>约 2.9% → 8.0%（约 2.7×）</td>
+</tr>
+<tr>
+<td>可见长度</td>
+<td>3.5K → 10K 字符</td>
+</tr>
+<tr>
+<td>结构模板出现率</td>
+<td>收敛到 70–80%</td>
+</tr>
+<tr>
+<td>开头模式</td>
+<td>“To prove &#x2F; To solve…” 从 ~80% 掉到 10%，“We are given…” 从 10% 涨到 90%</td>
+</tr>
+</tbody></table>
+<p><img src="/images/27/2-hacking-dash.png" alt="M2 cycle 的 reward hacking 监控仪表盘"></p>
+<p><em>图 2：M2 cycle 的 reward hacking 监控仪表盘。四块面板分别跟踪训练期假正率、可见&#x2F;隐藏证明长度、结构模板出现率与开头模式分布——分数在涨的同时这四路信号同步漂移，才是“学到了真本事”的反面证据。</em></p>
+<blockquote>
+<p>静态 benchmark 分数上涨，无法区分“能力变强”和“学会了骗 verifier”。证据的单位不是分数，是一组互相独立的信号向量。</p>
+</blockquote>
+<p><strong>对策：四层防御 verifier</strong></p>
+<p>M3 verifier 把 M2 的教训直接变成架构，四层串行，每一层专门压制一种 hacking 模式：</p>
+<table>
+<thead>
+<tr>
+<th>层</th>
+<th>机制</th>
+<th>针对</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L1 bad-case 过滤</td>
+<td>规则直接丢弃空证明、未闭合 thinking、样板循环、超长度预算，给 0 分</td>
+<td>长度 bias、格式 hacking</td>
+</tr>
+<tr>
+<td>L2 解规范化</td>
+<td>用外部规范化器剥掉固定开头、Step 标题、Verification 段，让 judge 更接近数学内容</td>
+<td>格式 hacking、judge 偏好</td>
+</tr>
+<tr>
+<td>L3 多 judge 并行</td>
+<td>两个带 rubric 的 judge + 一个无 rubric 直接找错的 judge 并行打分</td>
+<td>语义捷径</td>
+</tr>
+<tr>
+<td>L4 悲观聚合</td>
+<td>取三个 judge 的最小分作为最终奖励</td>
+<td>假正率兜底</td>
+</tr>
+</tbody></table>
+<p><img src="/images/27/3-verifier.png" alt="四层防御 verifier"></p>
+<p><em>图 3：四层防御 verifier。左：bad-case 规则过滤；中：解规范化剥表面格式；右：三个 judge 并行打分后做悲观 min 聚合。</em></p>
+<p>多 judge 的价值不是集成精度，而是<strong>盲区去相关</strong>——附录 C 里四个 hacking 案例有一个共同点：每个都是第二个 judge 用同一份 rubric 一眼就看出了问题。分歧在这里是信号：至少会有一个 judge 去 probe 另一个没 probe 的地方。L4 的悲观 min 则是整条流水线的设计原则：<strong>RL 期 verifier 的优化目标不是静态 benchmark 准确率，而是长训练流上的最低假正率</strong>，为此宁可多吞假阴性。</p>
+<p><strong>保守的 RL 分三层：奖励、更新算法与数据</strong></p>
+<p>Proof Expert 的 RL 设计可以拆成三个不同层面的东西，混在一起看容易乱：</p>
+<ul>
+<li><strong>奖励设计——给模型什么信号</strong>：直接用 [0,7] 的 verifier 分当整条证明的轨迹级奖励，不用二进制对错（太稀疏），也不用没有人工 step 标签的代理过程监督（论文认为后者更吵）。保守性在这里：奖励是四层防御流水线悲观 min 之后的产物，宁可漏判也不给坏证明高分。</li>
+<li><strong>更新算法——怎么用奖励改参数</strong>：用的还是 M2 那一族 CISPO（clip 重要性权重而不是 clip surrogate loss，长响应里越界的 token 只降权、不删除梯度）。算法层面相对 M2 的新增量只有一个：<strong>std-threshold 组级过滤</strong>——每个问题采样一组候选，只有组内奖励 std 超过阈值 τ_std 才允许整组进入更新。组内分数几乎一样时，排序大概率是噪声，整组丢弃比放大噪声序更安全。</li>
+<li><strong>数据设计——在什么题上练</strong>：用上一代 M2.7 当基线做难度过滤（能稳定解的题删掉，保证组内有成功有失败）、代数&#x2F;组合&#x2F;几何&#x2F;数论 domain 均衡、trick 频次控制；IMO 2025、USAMO 2026 与两个 proof benchmark 全部排除并做近重复过滤。</li>
+</ul>
+<h2 id="2-Verifier-与-Fixer：找错与修复"><a href="#2-Verifier-与-Fixer：找错与修复" class="headerlink" title="2. Verifier 与 Fixer：找错与修复"></a>2. Verifier 与 Fixer：找错与修复</h2><p>M3 把“证明能力”拆成三个原子能力：生成（Proof Expert）、找错（Verifier Expert）、按批评修错（Fixer Expert）。它们三个在同一个发布模型的权重里，靠不同 prompt 激活。</p>
+<blockquote>
+<p>这三个专家之所以能零标注成本地练出来，是因为它们共享同一个数据源头：<strong>Proof RL 每一轮都会产出 (problem, candidate, analysis, errors, verdict) 元组</strong>——verifier 本来就要为打分而输出这些结构化批评，把它们存档，就同时得到了三个专家各自的训练材料。</p>
+</blockquote>
+<p><strong>Verifier Expert：找错，而不是打分</strong></p>
+<p>最自然的验证建模是 0–7 回归，但论文明确拒绝：回归目标只要学到“文本-分数”的表面相关就能降 loss，它不需要知道错在哪。Verifier Expert 被要求输出三块耦合结构——&lt;assessment&gt;（逐段读）、&lt;errors&gt;（定位具体错误）、&lt;verdict&gt;（no_errors &#x2F; minor_gaps &#x2F; has_errors &#x2F; fundamentally_wrong）——并且 <strong>verdict 被强制是 errors 的函数</strong>：想判 no_errors 就得交出空错误列表，想判 fundamentally_wrong 就得列出实打实的错误。这样批评天然能被 Fixer 和搜索消费，也杜绝了 verdict 与错误定位的漂移。</p>
+<p>它的奖励也按这个结构设计成复合式：R &#x3D; 0.7·R_error + 0.3·R_verdict。R_error 是预测错误与 golden errors 的语义对齐（“指对了位置”和“说对了错误类型”各占一半，由 frontier judge 评），R_verdict 是四类 verdict 上的序感知距离（距离 0&#x2F;1&#x2F;≥2 档对应奖励 1&#x2F;0.5&#x2F;0）。权重设计保证只猜对 verdict、错误列表瞎写拿不到高分。</p>
+<p>蒸馏它有两个理由，第二个比第一个重要：<strong>延迟</strong>——外部多 judge 流水线单次要数秒到数十秒，而 MaxProof 每题要验证几百次，verifier 必须是模型内建能力（数百毫秒级），不能是外部服务；<strong>对齐</strong>——Verifier Expert 学的是“与 Proof Expert 实际拿到的悲观-min 奖励配对的批评”，两者对“什么是对的”定义一致，不会各说各话。</p>
+<p><strong>Fixer Expert：只接受“全对”的修复</strong></p>
+<p>Fixer 的输入是 (problem, flawed_proof, critique) 三元组，输出是修正版证明。训练数据同样来自 Proof RL 的副产品：verdict 不是 no_errors 的元组，天然就是它需要的三元组。训练方法是 rejection-sampling 微调：对每个坏证明采样多条修复，<strong>只有被同一个保守 verifier 判为 strict no_errors 的修复才进微调集</strong>——不接受“部分改善”，防止它学会把修补当成洗地。</p>
+<h2 id="3-MaxProof：测试时搜索"><a href="#3-MaxProof：测试时搜索" class="headerlink" title="3. MaxProof：测试时搜索"></a>3. MaxProof：测试时搜索</h2><p>竞赛只允许提交一份最终答案，所以问题的形态是 pass@1：一个模型单次采样会失败，但它在很多次独立采样里的 best 往往显著更强。难点在于怎么把“种群里的 best”变成“被选中的那个”：MaxProof 把测试时计算组织成一个进化式的循环：</p>
+<ul>
+<li>初始采样 N&#x3D;32 个候选，每个验证 K_verify&#x3D;4 次，fitness 取最小值，批评与悲观分配对；</li>
+<li>每轮选 M&#x3D;4 个 diverse parents（按 fitness 排序 + 长公共前缀去重，满分候选不再当 parent）；</li>
+<li>每个 parent 产两个 offspring：<strong>PATCH</strong>（针对 verifier 指出的具体错误修，保留正确部分——利用）和 <strong>REWRITE</strong>（把当前缺陷当作此路不通的证据，换一条路——探索）；</li>
+<li>offspring 重新验证后回注 archive；只有当 <strong>至少两个候选达到满分</strong> 才早停；</li>
+<li>最终用 top-K 两两 tournament 选出提交答案，每场由 ranker 投 K_ranker&#x3D;3 票（比较“哪个更正确”，而不是打绝对分）。</li>
+</ul>
+<p><img src="/images/27/4-maxproof-loop.png" alt="MaxProof 种群循环"></p>
+<p><em>图 4：MaxProof 端到端循环。初始化种群 → 验证与摘要 → 每轮选 diverse parents → PATCH&#x2F;REWRITE 产出 offspring → 回注 archive → tournament 选出最终答案。</em></p>
+<p>两个细节值得单独说。第一，PATCH 和 REWRITE 都会收到 archive 里其他候选的“approach + main issue”摘要——offspring 能吸收兄弟解的正面信息，也能获得“好几条解都栽在同一处”的负面信息，这本质上是语言层面的信息重组，近似于进化算法里的交叉。第二，early stop 要求两个满分，是对单点假阳性的冗余检查：两个独立产生的满分同时是假正例的概率，比一个满分是假正例低得多。</p>
+<blockquote>
+<p>进化算法的视角：archive 是种群，悲观验证分是 fitness，diverse parent selection 是选择压力，PATCH&#x2F;REWRITE 是变异算子。</p>
+</blockquote>
+<h2 id="4-评测：-8-10-与三种死法"><a href="#4-评测：-8-10-与三种死法" class="headerlink" title="4. 评测：+8&#x2F;+10 与三种死法"></a>4. 评测：+8&#x2F;+10 与三种死法</h2><p>先看不用 MaxProof 时 M3 的 baseline ：</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th align="right">Opus 4.7</th>
+<th align="right">GPT-5.5</th>
+<th align="right">Gemini 3.1 Pro</th>
+<th align="right">MiniMax M3</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>IMOProofBench</td>
+<td align="right">65.85</td>
+<td align="right">90.85</td>
+<td align="right">75.71</td>
+<td align="right">67.40</td>
+</tr>
+<tr>
+<td>IMOAnswerBench</td>
+<td align="right">79.90</td>
+<td align="right">90.60</td>
+<td align="right">90.00</td>
+<td align="right">81.56</td>
+</tr>
+</tbody></table>
+<p>同一模型套上 MaxProof 之后：</p>
+<table>
+<thead>
+<tr>
+<th>系统</th>
+<th align="right">IMO 2025</th>
+<th align="right">USAMO 2026</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>M3（one-shot）</td>
+<td align="right">27</td>
+<td align="right">26</td>
+</tr>
+<tr>
+<td>M3 + MaxProof</td>
+<td align="right">35</td>
+<td align="right">36</td>
+</tr>
+<tr>
+<td>差值</td>
+<td align="right">+8</td>
+<td align="right">+10</td>
+</tr>
+</tbody></table>
+<p>更有信息量的是逐题拆解。12 题里 9 题在第 4 轮内种群就达到 7&#x2F;7；剩下 3 题十轮也到不了，而且失败原因各不相同——论文等于给出了一张“证明系统失败类型学”：</p>
+<p><img src="/images/27/5-oracle-evolution.png" alt="逐轮种群 best 轨迹"></p>
+<p><em>图 5：12 题的逐轮 oracle-best 轨迹。9&#x2F;12 在第 4 轮内到达 7&#x2F;7；IMO P6、USAMO P2、USAMO P3 从未到达。</em></p>
+<ul>
+<li><strong>基座能力天花板（IMO P6）</strong>：十轮搜索全程 0 分，初始采样里就没有 viable approach。搜索不产生思路，它只放大已有的思路。</li>
+<li><strong>verifier 边界失准（USAMO P3）</strong>：种群一直停在 6&#x2F;7，是一个 judge 认为某一步“论证不充分”、另一个 judge 认为没问题——悲观 min 无法裁决这种单 judge 分歧。</li>
+<li><strong>选择损失（USAMO P2）</strong>：archive 里明明躺着一条 oracle 6&#x2F;7 的解，tournament 的 ranker 却把它排在几条低分解下面，最终选出一条 2&#x2F;7（附录 A 的注记说 ranker “风格上更喜欢”后者）。偏好比较偏离绝对正确这个病，不只出现在训练期 RL，也出现在测试时的最终选择环节——这是全文最值得记住的失败案例。</li>
+</ul>
+<p>专家复核确认所有自选 7&#x2F;7 都是完整正确证明（低假正率目标达成），但也暴露了另一面：<strong>奖励的保守性以风格的形式沉淀进了模型</strong>。IMO P1&#x2F;P4&#x2F;P5 这种例行题，自选解分别要到第 7&#x2F;10&#x2F;7 轮才出现，而且高度依赖穷举 case analysis 而不是抓住本质结构——系统在拿大量推理预算换可靠性，这在论文里被如实写成了与 GPT-5.5 的差距来源。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-Proof-Expert%EF%BC%9Averifier-%E5%8D%B3%E7%8E%AF%E5%A2%83"><span class="toc-number">1.</span> <span class="toc-text">1. Proof Expert：verifier 即环境</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-Verifier-%E4%B8%8E-Fixer%EF%BC%9A%E6%89%BE%E9%94%99%E4%B8%8E%E4%BF%AE%E5%A4%8D"><span class="toc-number">2.</span> <span class="toc-text">2. Verifier 与 Fixer：找错与修复</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-MaxProof%EF%BC%9A%E6%B5%8B%E8%AF%95%E6%97%B6%E6%90%9C%E7%B4%A2"><span class="toc-number">3.</span> <span class="toc-text">3. MaxProof：测试时搜索</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AF%84%E6%B5%8B%EF%BC%9A-8-10-%E4%B8%8E%E4%B8%89%E7%A7%8D%E6%AD%BB%E6%B3%95"><span class="toc-number">4.</span> <span class="toc-text">4. 评测：+8&#x2F;+10 与三种死法</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&text=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&is_video=false&description=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MiniMax M3 的 RL 设计：以数学证明task为例&body=Check out this article: https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&title=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&name=MiniMax M3 的 RL 设计：以数学证明task为例&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/&t=MiniMax M3 的 RL 设计：以数学证明task为例"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
