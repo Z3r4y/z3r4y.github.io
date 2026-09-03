@@ -9,11 +9,11 @@ Also have fun on Cyber Post-Training & AI Security 😊]]>
     </description>
     <language>zh-CN</language>
     <copyright>All rights reserved 2026, Z3r4y</copyright>
-    <lastBuildDate>Thu, 03 Sep 2026 19:51:15 GMT</lastBuildDate>
+    <lastBuildDate>Thu, 03 Sep 2026 19:57:24 GMT</lastBuildDate>
     <generator>Hexo</generator>
     <atom:link href="https://z3r4y.github.io/rss.xml" rel="self" type="application/rss+xml"/>
     <item>
-      <title>MiniMax M3 的 RL 设计：以数学证明task为例</title>
+      <title>MiniMax M3 的 RL 设计：以数学证明 task 为例</title>
       <link>https://z3r4y.github.io/2026/09/04/MiniMax-M3-%E7%9A%84-RL-%E8%AE%BE%E8%AE%A1%EF%BC%9A%E4%BB%A5%E6%95%B0%E5%AD%A6%E8%AF%81%E6%98%8Etask%E4%B8%BA%E4%BE%8B/</link>
       <description>
         <![CDATA[<p>Info：<strong>MaxProof: Scaling Mathematical Proof with Generative-Verifier RL and Population-Level Test-Time Scaling</strong><br>链接：<a hr]]>
@@ -279,8 +279,8 @@ Also have fun on Cyber Post-Training & AI Security 😊]]>
       </description>
       <author>Z3r4y</author>
       <category domain="https://z3r4y.github.io/categories/Cyber-Security/">Cyber Security</category>
-      <category domain="https://z3r4y.github.io/tags/Automated-Penetration-Testing/">Automated Penetration Testing</category>
       <category domain="https://z3r4y.github.io/tags/Infrastructure/">Infrastructure</category>
+      <category domain="https://z3r4y.github.io/tags/Automated-Penetration-Testing/">Automated Penetration Testing</category>
       <category domain="https://z3r4y.github.io/tags/Cyber-Range/">Cyber Range</category>
       <category domain="https://z3r4y.github.io/tags/Proxmox/">Proxmox</category>
       <pubDate>Fri, 31 Jul 2026 12:00:00 GMT</pubDate>
