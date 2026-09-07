@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="论文：RangeFactory: Scalable Construction of Multi-Hop Cyber Ranges链接：arXiv:2608.09526 · HTML 全文  把“链语义”从专家手写变成攻击提取与实测验证，让能打通的攻击链可以被规模化、可验证地产出。  RangeFactory 把多跳靶场构建当成一道依赖解析问题：漏洞间的依赖语义不是从 CVE 元数据里读出来的，而是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="RangeFactory：多跳靶场的规模化构建与执行验证">
+<meta property="og:url" content="https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="论文：RangeFactory: Scalable Construction of Multi-Hop Cyber Ranges链接：arXiv:2608.09526 · HTML 全文  把“链语义”从专家手写变成攻击提取与实测验证，让能打通的攻击链可以被规模化、可验证地产出。  RangeFactory 把多跳靶场构建当成一道依赖解析问题：漏洞间的依赖语义不是从 CVE 元数据里读出来的，而是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/28/1-workflow.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/28/2-attack-depth.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/28/3-info-level.png">
+<meta property="article:published_time" content="2026-09-08T12:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-07T20:07:02.694Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Automated Penetration Testing">
+<meta property="article:tag" content="Benchmark">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="Cyber Range">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/28/1-workflow.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>RangeFactory：多跳靶场的规模化构建与执行验证 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/09/07/Agent%20Runtime%20%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E4%B8%8E%20K8s%20%E6%94%BB%E5%87%BB%E9%9D%A2/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&text=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&is_video=false&description=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RangeFactory：多跳靶场的规模化构建与执行验证&body=Check out this article: https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&name=RangeFactory：多跳靶场的规模化构建与执行验证&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&t=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9E%84%E5%BB%BA%E6%9C%BA%E5%88%B6%EF%BC%9A%E4%BB%8E%E8%83%BD%E5%8A%9B%E5%8E%9F%E5%AD%90%E5%8C%96%E5%88%B0%E7%AB%AF%E5%88%B0%E7%AB%AF%E9%AA%8C%E8%AF%81"><span class="toc-number">1.</span> <span class="toc-text">1. 构建机制：从能力原子化到端到端验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%AB%AF%E5%88%B0%E7%AB%AF%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7"><span class="toc-number">2.</span> <span class="toc-text">2. 端到端执行验证的必要性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-RangeBench-%E8%AF%84%E6%B5%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%B8%BB%E8%A6%81%E5%8F%91%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">3. RangeBench 评测设计与主要发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text">4. 结语</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        RangeFactory：多跳靶场的规模化构建与执行验证
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-09-08T12:00:00.000Z" class="dt-published" itemprop="datePublished">2026-09-08</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Agent-Security/" rel="tag">Agent Security</a>, <a class="p-category" href="/tags/Automated-Penetration-Testing/" rel="tag">Automated Penetration Testing</a>, <a class="p-category" href="/tags/Benchmark/" rel="tag">Benchmark</a>, <a class="p-category" href="/tags/Cyber-Range/" rel="tag">Cyber Range</a>, <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <p>论文：<strong>RangeFactory: Scalable Construction of Multi-Hop Cyber Ranges</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2608.09526">arXiv:2608.09526</a> · <a target="_blank" rel="noopener" href="https://arxiv.org/html/2608.09526v1">HTML 全文</a></p>
+<blockquote>
+<p>把“链语义”从专家手写变成攻击提取与实测验证，让能打通的攻击链可以被规模化、可验证地产出。</p>
+</blockquote>
+<p>RangeFactory 把多跳靶场构建当成一道<strong>依赖解析</strong>问题：漏洞间的依赖语义不是从 CVE 元数据里读出来的，而是让 Agent 真实攻击单漏洞环境“打”出来的；拼链交给规则化编排；拼完再整链执行验证，只有真能打通的靶场才会被保留。由此量产 1,148 个经验证的靶场实例（287 条有序链 × 4 个网络上下文）与 5,541 条带结果标注的攻击轨迹。</p>
+<p>把它放进同题材工作的坐标系里（PACEbench 与 AgentCyberRange 均在此前介绍过）：</p>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>PACEbench</th>
+<th>AgentCyberRange</th>
+<th>RangeFactory</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>链语义来源</td>
+<td>专家手写 Compose &#x2F; 初始化数据</td>
+<td>专家设计攻击图</td>
+<td>真实攻击提取 + 规则化匹配</td>
+</tr>
+<tr>
+<td>拓扑来源</td>
+<td>固定场景</td>
+<td>专家手工拓扑</td>
+<td>模板族 × 资产规模参数化</td>
+</tr>
+<tr>
+<td>链通性证据</td>
+<td>依赖环境终态</td>
+<td>marker 状态验证</td>
+<td>整链实测 + 私有目标校验</td>
+</tr>
+<tr>
+<td>发布状态</td>
+<td>开源</td>
+<td>部分开源</td>
+<td>受控发布</td>
+</tr>
+</tbody></table>
+<h2 id="1-构建机制：从能力原子化到端到端验证"><a href="#1-构建机制：从能力原子化到端到端验证" class="headerlink" title="1. 构建机制：从能力原子化到端到端验证"></a>1. 构建机制：从能力原子化到端到端验证</h2><p>先看流水线全貌：</p>
+<p><img src="/images/28/1-workflow.png" alt="RangeFactory workflow"></p>
+<p>两个独立漏洞要能串成“一跳”，需要两类依赖同时成立。<strong>能力依赖</strong>决定前一跳的结果能否支撑后一跳的利用（如文件读支撑不了需要命令执行的利用）；<strong>运行期依赖</strong>决定具体利用过程在新立足点上是否仍然可执行（网络策略挡住回调、目标机缺少工具）。前者可以静态判定，后者只有在组合部署之后才会暴露。RangeFactory 据此把构建拆成三个阶段。</p>
+<p><strong>能力原子化（Atomization）</strong>。Exploiter 对每个 CVE 环境执行真实攻击，独立 verifier 校验私有目标；成功后 Explorer 复用立足点做能力探针，只把验证过的后渗透能力登记为 grant。单漏洞环境经此一步变成 CVE Capability Atom，包含 exploit_access（结构化前置条件）、capability_grants（探针验证过的能力）、exploit_guide（可复用攻击流程）与 poc_materials（PoC 材料）。复现不稳定或构建产物缺失的环境在入口即被淘汰（18&#x2F;257）。这套语义是<strong>打出来的，不是从 CVE 元数据或源码里读出来的</strong>——这正是它与攻击图方法、专家预定义场景的分野。</p>
+<p>能力本体是封闭的六元集合（如下表）；其中每个 grant 都按作用域、主体与证据级别独立记账，不允许混为一谈：</p>
+<table>
+<thead>
+<tr>
+<th>能力</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>execute_command</td>
+<td>以记录主体在绑定主机上执行命令</td>
+</tr>
+<tr>
+<td>read_file &#x2F; write_file</td>
+<td>以记录主体权限读写绑定主机上的文件</td>
+</tr>
+<tr>
+<td>network_vantage</td>
+<td>从绑定主机所附着的网络发起网络交互</td>
+</tr>
+<tr>
+<td>read_credential</td>
+<td>获取一个以场景资产表示的凭据</td>
+</tr>
+<tr>
+<td>authenticate</td>
+<td>用已获取的凭据建立认证访问</td>
+</tr>
+</tbody></table>
+<p><strong>编排（Orchestration）</strong>。这一阶段分两步：Generator 先定“骨架”，Composer 再往骨架里填漏洞。</p>
+<p>Generator 依据公开架构参考生成模板——本质是一份“攻击链骨架 + 网络约束 + 私有目标”的声明（形式化记为 𝒯 &#x3D; ⟨N, S, D, Γ, O, B⟩，对应拓扑、槽位、依赖序、槽约束、私有目标与背景资产）：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">DMZ（1 个 CVE 槽位） → 内网应用（1 个 CVE 槽位） → 数据网（1 个 CVE 槽位）</span><br><span class="line">背景业务资产独立参数化，不参与攻击链</span><br></pre></td></tr></table></figure>
+
+<p>5 个模板族 × 4 档资产规模，共 20 种部署配置。</p>
+<p>Composer 沿依赖序逐个槽位挑选 Atom，并维护前缀状态 Σ &#x3D; ⟨H, K, Q, R⟩：已控主机、已验证能力、可用凭据与资产、可达服务。每放入一个 Atom，就按固定闭包规则更新 Σ，再检查下一跳的 exploit_access 是否已被前缀满足；不满足就剪掉该分支并回溯。闭包规则只有一条：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Exec(h, p)  ⇒  &#123; Read(h, p, F), Net(h, p, Z) &#125;</span><br></pre></td></tr></table></figure>
+
+<p>其中 h、p 是已控主机与主体，F 与 Z 分别是模板允许该主体访问的文件与网络集合；该推论<strong>不包含凭据与认证</strong>——命令执行无法推出 read_credential 与 authenticate，Agent 的自由推断也不能充当能力。</p>
+<p>一轮编排的结果：23,789 个提议 → 剪掉 21,949 个（92.3%）→ 1,840 个候选进入部署验证。</p>
+<p><strong>端到端验证（Validation）</strong>。候选部署后，Executor 依据各 Atom 的 exploit_guide 把各跳攻击串成整条攻击真实执行，verifier 独立校验按序的私有目标；失败交给 Diagnoser 分类——攻击执行失败则保留上下文有界重试，组合不兼容则形成证据并回灌后续编排。构造与验证使用 DeepSeek-V4-Pro（300 轮 &#x2F; 1 小时预算），最终 1,148 个实例通过验证，每个都留有完整的实测打通记录。</p>
+<h2 id="2-端到端执行验证的必要性"><a href="#2-端到端执行验证的必要性" class="headerlink" title="2. 端到端执行验证的必要性"></a>2. 端到端执行验证的必要性</h2><p>如果编排已经做到能力匹配严丝合缝，为什么还要把每条链真实打一遍？论文用一组同预算消融回答（各 200 个提议，除构造策略外完全一致）：</p>
+<table>
+<thead>
+<tr>
+<th>构造策略</th>
+<th align="right">环境有效</th>
+<th align="right">端到端有效</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>随机绑定</td>
+<td align="right">88.5%</td>
+<td align="right">4.0%</td>
+</tr>
+<tr>
+<td>元数据匹配</td>
+<td align="right">91.0%</td>
+<td align="right">13.5%</td>
+</tr>
+<tr>
+<td>能力匹配</td>
+<td align="right">94.0%</td>
+<td align="right">43.5%</td>
+</tr>
+<tr>
+<td>完整编排</td>
+<td align="right">95.0%</td>
+<td align="right">60.0%</td>
+</tr>
+</tbody></table>
+<p>能力匹配带来最大增益，但即便完整编排，端到端有效性也只有 60%。同一组样本进一步显示：190 个候选通过环境检查，Executor 首轮只有 89 个完整打通，诊断引导的重试再救回 31 个。也就是说，只凭“环境可部署 + 静态依赖检查”，会把 70 个其实并未整链打通的候选误收进来。这就是接受规则被写成五条合取的原因：环境就绪 ∧ 攻击图合法 ∧ 链连通 ∧ 引导式执行打通 ∧ 私有目标全部通过。</p>
+<p>Diagnoser 的两条反馈路径也各有量化：执行类失败在同等 100 轮预算下，无诊断的重试救回 14 个、诊断引导救回 31 个；组合类冲突若不记录会在下一批中复发 21&#x2F;24，检索不兼容记录后降至 8&#x2F;24。端到端执行不只是最后一道质检——它的失败证据本身就在改进后续构造。</p>
+<p>这里需要澄清 exploit_guide 的地位：它是<strong>构造侧特权</strong>——一份描述性的攻击配方，携带占位符目标、有序步骤、材料与运行期要求（如 callback），供验证阶段的 Executor 把各跳“串起来再打一次”。评测阶段的 Agent 在任何信息档位（L0&#x2F;L1&#x2F;L2）都拿不到 Guide 与 PoC。因此，“引导下 100% 能打通”与“零知识下 23.5–55.7%”之间的落差，测的正是这条信息差。</p>
+<h2 id="3-RangeBench-评测设计与主要发现"><a href="#3-RangeBench-评测设计与主要发现" class="headerlink" title="3. RangeBench 评测设计与主要发现"></a>3. RangeBench 评测设计与主要发现</h2><p>RangeBench 的 1,148 个实例 &#x3D; 287 条链 × 4 个网络上下文（可见节点约 7 &#x2F; 12 &#x2F; 31 &#x2F; 50 个）。同一链的四份上下文保持 Atom 绑定与任务信息不变，只改变背景业务资产的规模与构成，使网络规模成为受控变量而非新的攻击逻辑。任务信息分三档：L0 只给入口地址与目标，L1 增加网络拓扑，L2 再给出目标服务、CVE 映射与所需凭据。预算为 300 轮或 1 小时，每个模型在每档信息下对全部 1,148 个实例各 rollout 一次，即每模型 3,444 次运行（四模型合计 13,776），以 pass@1 计。评测对象为 Kimi-K3、GLM-5.2、DeepSeek-V4-Pro 与 GPT-5.6-Luna。</p>
+<p><img src="/images/28/2-attack-depth.png" alt="attack depth effect"></p>
+<p>L2 信息下的整体表现：</p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th align="right">端到端成功率</th>
+<th align="right">链进度</th>
+<th align="right">工具调用（中位）</th>
+<th align="right">耗时（中位）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Kimi-K3</td>
+<td align="right">55.7%</td>
+<td align="right">64.6%</td>
+<td align="right">138</td>
+<td align="right">44.6 min</td>
+</tr>
+<tr>
+<td>GLM-5.2</td>
+<td align="right">41.2%</td>
+<td align="right">51.2%</td>
+<td align="right">145</td>
+<td align="right">46.8 min</td>
+</tr>
+<tr>
+<td>DeepSeek-V4-Pro</td>
+<td align="right">36.2%</td>
+<td align="right">46.2%</td>
+<td align="right">152</td>
+<td align="right">48.5 min</td>
+</tr>
+<tr>
+<td>GPT-5.6-Luna</td>
+<td align="right">23.5%</td>
+<td align="right">32.9%</td>
+<td align="right">86</td>
+<td align="right">27.4 min</td>
+</tr>
+</tbody></table>
+<p>广泛存在的问题是<strong>持续攻陷缺口（sustained-compromise gap）</strong>：各模型第 1&#x2F;2&#x2F;3 跳成功率依次为 Kimi 73.8% → 64.2% → 55.7%，GLM 62.8% → 41.2%，DeepSeek 57.8% → 36.2%，Luna 44.3% → 23.5%。由于三层目标共享同一入口与链前缀，这一深度衰减不能用“入口难度不同”解释。条件化后更直白：<strong>在已经拿下入口的 rollout 里，仍有 24.5–47.0% 走不完剩余路径</strong>（整链完成率 75.5% &#x2F; 65.6% &#x2F; 62.6% &#x2F; 53.0%）。先打进，不等于打得穿。</p>
+<p>信息量的影响同样值得注意：</p>
+<p><img src="/images/28/3-info-level.png" alt="task information effect"></p>
+<p>L0 → L1 的增益很小（如 Kimi 15.4% → 20.1%），L1 → L2 才是主增益（→ 55.7%）。瓶颈更多在于“知道该打什么”，而非“知道网络长什么样”；论文也承认 L2 的提升可能混入模型对公开 CVE 的先验熟悉度。网络规模的影响则不对称：可见节点从 7 增至 50，成功率只降 9.8–10.6 个百分点，但工具调用增加 51–74%、墙钟时间增加 71–84%——背景资产主要在烧探索成本，而不是改变结局。</p>
+<h2 id="4-结语"><a href="#4-结语" class="headerlink" title="4. 结语"></a>4. 结语</h2><blockquote>
+<p>多跳靶场构建的瓶颈不在部署自动化，而在“链语义”。RangeFactory 的贡献，是把链语义从专家手写变成攻击提取与实测验证，让“能打通的链”可以被规模化、可验证地产出。</p>
+</blockquote>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%9E%84%E5%BB%BA%E6%9C%BA%E5%88%B6%EF%BC%9A%E4%BB%8E%E8%83%BD%E5%8A%9B%E5%8E%9F%E5%AD%90%E5%8C%96%E5%88%B0%E7%AB%AF%E5%88%B0%E7%AB%AF%E9%AA%8C%E8%AF%81"><span class="toc-number">1.</span> <span class="toc-text">1. 构建机制：从能力原子化到端到端验证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%AB%AF%E5%88%B0%E7%AB%AF%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81%E7%9A%84%E5%BF%85%E8%A6%81%E6%80%A7"><span class="toc-number">2.</span> <span class="toc-text">2. 端到端执行验证的必要性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-RangeBench-%E8%AF%84%E6%B5%8B%E8%AE%BE%E8%AE%A1%E4%B8%8E%E4%B8%BB%E8%A6%81%E5%8F%91%E7%8E%B0"><span class="toc-number">3.</span> <span class="toc-text">3. RangeBench 评测设计与主要发现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E7%BB%93%E8%AF%AD"><span class="toc-number">4.</span> <span class="toc-text">4. 结语</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&text=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&is_video=false&description=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=RangeFactory：多跳靶场的规模化构建与执行验证&body=Check out this article: https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&title=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&name=RangeFactory：多跳靶场的规模化构建与执行验证&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/&t=RangeFactory：多跳靶场的规模化构建与执行验证"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
