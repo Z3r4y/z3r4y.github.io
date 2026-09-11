@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    
     <meta name="description" content="最近看了下 JailbrokenAI&#x2F;wallbreaker。它更接近一个由 LLM 规划器驱动的黑盒优化器：给定一个测试目标，自动选择策略、生成候选、调用目标模型、评估回复，再根据反馈继续搜索。 flowchart LR     A[&quot;Objective&quot;] --&gt; B[&quot;Brain&quot;]     B --&gt; C[&quot;Tool&quot;]     C --&gt; D[&quot;Attacker&quot;]     D">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Wallbreaker：当 Jailbreak 变成一个黑盒优化问题">
 <meta property="og:url" content="https://z3r4y.github.io/2026/07/26/Wallbreaker%EF%BC%9A%E5%BD%93-Jailbreak-%E5%8F%98%E6%88%90%E4%B8%80%E4%B8%AA%E9%BB%91%E7%9B%92%E4%BC%98%E5%8C%96%E9%97%AE%E9%A2%98/">
-<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="最近看了下 JailbrokenAI&#x2F;wallbreaker。它更接近一个由 LLM 规划器驱动的黑盒优化器：给定一个测试目标，自动选择策略、生成候选、调用目标模型、评估回复，再根据反馈继续搜索。 flowchart LR     A[&quot;Objective&quot;] --&gt; B[&quot;Brain&quot;]     B --&gt; C[&quot;Tool&quot;]     C --&gt; D[&quot;Attacker&quot;]     D">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2026-07-26T04:00:00.000Z">
@@ -48,6 +49,8 @@
     
     <!-- title -->
     <title>Wallbreaker：当 Jailbreak 变成一个黑盒优化问题 | Z3r4y</title>
+    <!-- structured data: site name / author entity for search engines -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://github.com/Z3r4y"]}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 

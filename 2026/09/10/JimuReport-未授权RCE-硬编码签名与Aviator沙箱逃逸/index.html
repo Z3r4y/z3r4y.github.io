@@ -6,11 +6,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="HandheldFriendly" content="True">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    
     <meta name="description" content="硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。   IntroJimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：  自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。 Jim">
 <meta property="og:type" content="article">
 <meta property="og:title" content="JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸">
 <meta property="og:url" content="https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/">
-<meta property="og:site_name" content="Z3r4y｜Take it easy">
+<meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。   IntroJimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：  自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。 Jim">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://z3r4y.github.io/images/29/0-workbench.png">
@@ -54,6 +55,8 @@
     
     <!-- title -->
     <title>JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸 | Z3r4y</title>
+    <!-- structured data: site name / author entity for search engines -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://github.com/Z3r4y"]}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
