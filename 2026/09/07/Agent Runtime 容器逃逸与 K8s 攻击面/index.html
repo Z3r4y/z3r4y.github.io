@@ -14,6 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="容器逃逸与 K8s 攻击面的最大来源不是漏洞，而是平台为了让 Agent 容器”能干活”而主动下发的特权配置——privileged、rw 挂载、宿主 socket、高权 ServiceAccount，每一条都是一条现成的接管路径。 1. 容器到底裁剪了什么容器不是虚拟机：进程共享宿主内核，隔离只是”裁剪”。裁剪分四类：  namespace——裁剪视图：看不到宿主进程（pid）、网络（net）、">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-09-07T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-09-06T21:34:42.276Z">
 <meta property="article:author" content="Z3r4y">
@@ -22,6 +23,7 @@
 <meta property="article:tag" content="Kubernetes">
 <meta property="article:tag" content="Container Security">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -49,7 +51,7 @@
     <!-- title -->
     <title>Agent Runtime 容器逃逸与 K8s 攻击面 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/09/07/Agent%20Runtime%20%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E4%B8%8E%20K8s%20%E6%94%BB%E5%87%BB%E9%9D%A2/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/09/07/Agent%20Runtime%20%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E4%B8%8E%20K8s%20%E6%94%BB%E5%87%BB%E9%9D%A2/","url":"https://z3r4y.github.io/2026/09/07/Agent%20Runtime%20%E5%AE%B9%E5%99%A8%E9%80%83%E9%80%B8%E4%B8%8E%20K8s%20%E6%94%BB%E5%87%BB%E9%9D%A2/","headline":"Agent Runtime 容器逃逸与 K8s 攻击面","name":"Agent Runtime 容器逃逸与 K8s 攻击面","description":"容器逃逸与 K8s 攻击面的最大来源不是漏洞，而是平台为了让 Agent 容器”能干活”而主动下发的特权配置——privileged、rw 挂载、宿主 socket、高权 ServiceAccount，每一条都是一条现成的接管路径。 1. 容器到底裁剪了什么 容器不是虚拟机：进程共享宿主内核，隔离只是”裁剪”。裁剪分四类： namespace ——裁剪视图：看不到宿主进程（pid）、网络（net）、挂载（mnt）、主机名（uts）、用户（user）等； capabilities + seccomp ——裁剪权限：capability 是内核里按位授予的特权（CAP_SYS_ADMIN 等），s","datePublished":"2026-09-07T04:00:00.000Z","dateModified":"2026-09-07T04:00:00.000Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/og-default.png"],"articleSection":"Infrastructure","keywords":"Agent Security, Infrastructure, Kubernetes, Container Security","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 

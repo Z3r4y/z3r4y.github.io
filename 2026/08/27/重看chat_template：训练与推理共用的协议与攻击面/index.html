@@ -14,6 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="chat_template 是一份同时约束训练数据编码、输入渲染与输出解析的协议  1. Introchat_template 是 tokenizer_config.json 里的一段 Jinja2 模板：把”对话”按格式渲染，再交给 tokenizer 编码成 token。 模板的执行入口是 HuggingFace transformers 里 tokenizer 的标准方法 apply_ch">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-08-27T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-08-26T19:23:45.808Z">
 <meta property="article:author" content="Z3r4y">
@@ -23,6 +24,7 @@
 <meta property="article:tag" content="Reasoning Models">
 <meta property="article:tag" content="MiniMax">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -50,7 +52,7 @@
     <!-- title -->
     <title>重看chat_template：训练与推理共用的协议与攻击面 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/","url":"https://z3r4y.github.io/2026/08/27/%E9%87%8D%E7%9C%8Bchat_template%EF%BC%9A%E8%AE%AD%E7%BB%83%E4%B8%8E%E6%8E%A8%E7%90%86%E5%85%B1%E7%94%A8%E7%9A%84%E5%8D%8F%E8%AE%AE%E4%B8%8E%E6%94%BB%E5%87%BB%E9%9D%A2/","headline":"重看chat_template：训练与推理共用的协议与攻击面","name":"重看chat_template：训练与推理共用的协议与攻击面","description":"chat_template 是一份同时约束训练数据编码、输入渲染与输出解析的协议 1. Intro chat_template 是 tokenizer_config.json 里的一段 Jinja2 模板：把”对话”按格式渲染，再交给 tokenizer 编码成 token。 模板的执行入口是 HuggingFace transformers 里 tokenizer 的标准方法 apply_chat_template： 1 2 3 4 5 6 apply_chat_template( messages, # 对话：角色 + 内容 add_generation_prompt= True , #","datePublished":"2026-08-27T04:00:00.000Z","dateModified":"2026-08-27T04:00:00.000Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/og-default.png"],"articleSection":"Infrastructure","keywords":"LLM Security, Prompt Injection, LLM Training, Reasoning Models, MiniMax","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 

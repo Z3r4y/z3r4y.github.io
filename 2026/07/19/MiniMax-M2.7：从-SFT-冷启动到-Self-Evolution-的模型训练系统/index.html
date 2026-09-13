@@ -14,19 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="1. 论文信息论文：The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence链接：arXiv:2605.26494 · HTML 全文    一个预训练模型，怎样经过数据构建、SFT、长程 RL 和持续评测，变成可以完成真实任务的策略模型？  本文沿一条训练主线展开：Pretraining 与 De">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/5-progression.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/6-mtp-original.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/1-data-pipeline.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/10-eq-interleaved.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/3-interleaved-thinking.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/7-eq-mdp.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/9-eq-reward.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/11-advantage.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/8-eq-cispo.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/12-importance-ratio.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/2-forge.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/13-windowed-fifo.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/12/4-self-evolution.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-07-19T08:00:00.000Z">
 <meta property="article:modified_time" content="2026-07-19T11:48:38.670Z">
 <meta property="article:author" content="Z3r4y">
@@ -35,7 +23,7 @@
 <meta property="article:tag" content="Mixture of Experts">
 <meta property="article:tag" content="Reinforcement Learning">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/12/5-progression.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -63,7 +51,7 @@
     <!-- title -->
     <title>MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/","url":"https://z3r4y.github.io/2026/07/19/MiniMax-M2.7%EF%BC%9A%E4%BB%8E-SFT-%E5%86%B7%E5%90%AF%E5%8A%A8%E5%88%B0-Self-Evolution-%E7%9A%84%E6%A8%A1%E5%9E%8B%E8%AE%AD%E7%BB%83%E7%B3%BB%E7%BB%9F/","headline":"MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环","name":"MiniMax-M2 Series：Pretraining、SFT、RL 与训练外层循环","description":"1. 论文信息 论文： The MiniMax-M2 Series: Mini Activations Unleashing Max Real-World Intelligence 链接： arXiv:2605.26494 · HTML 全文 一个预训练模型，怎样经过数据构建、SFT、长程 RL 和持续评测，变成可以完成真实任务的策略模型？ 本文沿一条训练主线展开：Pretraining 与 Decay 建立底座，SFT 冷启动可运行策略并注入 Interleaved Thinking，RL 与 CISPO 根据任务结果改变动作概率，Forge 负责规模化训练，Self-Evolution 则","datePublished":"2026-07-19T08:00:00.000Z","dateModified":"2026-07-19T11:48:38.670Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/12/5-progression.png","https://z3r4y.github.io/images/12/6-mtp-original.png","https://z3r4y.github.io/images/12/1-data-pipeline.png"],"articleSection":"Paper Reading","keywords":"Paper Reading, LLM Training, Mixture of Experts, Reinforcement Learning","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -209,7 +197,7 @@
 <blockquote>
 <p>预训练决定模型拥有什么，SFT 决定模型从哪里开始行动，RL 决定哪些行动会被强化；Forge 和外层评测则决定这条参数更新链路能否持续运转。</p>
 </blockquote>
-<p><img src="/images/12/5-progression.png" alt="MiniMax-M2、M2.5 与 M2.7 的版本能力进展"></p>
+<p><img src="/images/12/5-progression.png" alt="MiniMax-M2、M2.5 与 M2.7 的版本能力进展" loading="eager" fetchpriority="high" decoding="async"></p>
 <p><em>M2 系列在 11 个三代均有结果的 benchmark 上的版本进展。图中是数据、RL、scaffold 和评测共同变化后的版本结果，不是单组件消融。</em></p>
 <h2 id="2-Pretraining：结构、数据与-MTP"><a href="#2-Pretraining：结构、数据与-MTP" class="headerlink" title="2. Pretraining：结构、数据与 MTP"></a>2. Pretraining：结构、数据与 MTP</h2><p><strong>模型结构</strong><br>M2 是一个 62 层 decoder-only Transformer，隐藏维度为 3,072，最大上下文为 192K。模型共有 229.9B 参数，但每个 token 只激活约 9.8B；MoE 降低的是单 token 计算量，不是 checkpoint 的权重规模。</p>
 <p>每个 Transformer block 的 FFN 都采用 MoE：共有 256 个细粒度专家，每个 token 选择 top-8，router 使用 sigmoid gating 和可学习的 expert bias。这种设计用条件计算换取更大的总参数量，同时也需要管理专家分工、路由决策和负载均衡。</p>
@@ -217,12 +205,12 @@
 <p><strong>数据与 Decay</strong><br>M2 共使用 29.2T 预训练 tokens。Constant phase 约 19.9T，Data mixture 是不同数据来源的采样分布；论文只说明代码、数学和 STEM 相对自然分布被显著上采样，没有公开各类数据的完整比例和重复次数。</p>
 <p>Decay phase 约 9.3T，混入更高质量的数据，并把上下文从 8K 逐步扩展到 32K、192K；长文本主要来自代码拼接、自然长文 PDF 和主题相关的 document packing。论文没有公开 learning-rate schedule，因此这里更适合把 Decay 理解成数据构成、上下文长度和辅助目标共同变化的继续预训练阶段，不能把后期收益简单归因给某个数据集。</p>
 <p><strong>MTP</strong><br>Multi-Token Prediction 在 next-token loss 之外继续预测更远的未来 token。它不是另一个完整模型，而是附加在主模型上的预测模块，并与主模型共享 embedding 和 output head：</p>
-<p><img src="/images/12/6-mtp-original.png" alt="Multi-Token Prediction 模块架构"></p>
+<p><img src="/images/12/6-mtp-original.png" alt="Multi-Token Prediction 模块架构" loading="lazy" decoding="async"></p>
 <p><em>Multi-Token Prediction（MTP）模块架构。</em></p>
 <p>预训练早期使用一个 MTP 模块，loss 权重为 0.3；Decay 阶段将权重退火到 0.1，并把模块扩展到三个。新增模块从主模型复制权重，先单独训练到 loss 稳定，再与主模型联合训练。推理时，MTP 生成多个 draft tokens，再由主模型一次性验证。因此它有两个角色：<strong>训练时增加未来 token 的监督信号，推理时通过 speculative decoding 提高吞吐。</strong></p>
 <h2 id="3-SFT-冷启动：数据与-Interleaved-Thinking"><a href="#3-SFT-冷启动：数据与-Interleaved-Thinking" class="headerlink" title="3. SFT 冷启动：数据与 Interleaved Thinking"></a>3. SFT 冷启动：数据与 Interleaved Thinking</h2><p>预训练后的模型已经有代码和推理知识，但还没有稳定学会什么时候调用工具、如何遵守协议、怎样根据 observation 继续，以及何时验证和结束。SFT 的作用，是给参数注入一套可运行的行为先验，为 RL 提供起点。</p>
 <p>论文的 SFT 数据覆盖 chat、reasoning、code 和 cowork 四个领域，流程是领域 reward rejection sampling 加多阶段清洗，留下高质量的 interleaved-thinking trajectories。</p>
-<p><img src="/images/12/1-data-pipeline.png" alt="SWE 与 AppDev 的可验证数据构建管线"></p>
+<p><img src="/images/12/1-data-pipeline.png" alt="SWE 与 AppDev 的可验证数据构建管线" loading="lazy" decoding="async"></p>
 <p><em>SWE 与 AppDev 的可验证数据构建管线。</em></p>
 <table>
 <thead>
@@ -247,10 +235,10 @@
 <p>在 AppDev 管线中，采样时 teacher 可以看到完整的专家提示，训练时再删掉其中一部分，通过 prompt distillation 让模型把工具规范、TODO 和自验证习惯内化，而不是依赖同一份 system prompt。论文还在部分数据管线中扰动 scaffold，降低模型对单一工具布局的共适应。</p>
 <p>在 SFT 中，一条轨迹会被拆成许多 state-action 训练样本；模型在每个 state 上拟合 teacher action。这样做能把工具协议和行为模式注入参数，但 SFT 更像行为模仿，不直接知道哪个动作最终提高了任务成功率。它仍可能遇到 teacher 状态分布和学生运行状态不一致、模型与 scaffold 共适应等问题，所以是冷启动策略，而不是最终的成功率优化。</p>
 <p>其中一个关键的行为先验是 Interleaved Thinking。M2 把 reasoning、action 和 observation 组织成交错序列：</p>
-<p><img src="/images/12/10-eq-interleaved.png" alt="Interleaved trajectory"></p>
+<p><img src="/images/12/10-eq-interleaved.png" alt="Interleaved trajectory" loading="lazy" decoding="async"></p>
 <p><em>交错轨迹与 reasoning state persistence。</em></p>
 <p>它区别于“不思考”和“先想完再行动”：每轮工具返回后，模型重新进入 thinking，并继续使用之前的状态。</p>
-<p><img src="/images/12/3-interleaved-thinking.png" alt="No Thinking、Extended Thinking 与 Interleaved Thinking"></p>
+<p><img src="/images/12/3-interleaved-thinking.png" alt="No Thinking、Extended Thinking 与 Interleaved Thinking" loading="lazy" decoding="async"></p>
 <p><em>三种 reasoning state 组织方式。图片展示模式对比；Plan–Act–Reflect 的循环关系需要结合正文理解。</em></p>
 <blockquote>
 <p>Interleaved Thinking 不只是让思考和工具调用交错出现，更关键的是 reasoning state persistence：上一轮的 thinking、action 和 tool response 都会进入下一轮上下文。</p>
@@ -259,24 +247,24 @@
 <h2 id="4-RL：Reward、CISPO-与-Mixed-Domain"><a href="#4-RL：Reward、CISPO-与-Mixed-Domain" class="headerlink" title="4. RL：Reward、CISPO 与 Mixed-Domain"></a>4. RL：Reward、CISPO 与 Mixed-Domain</h2><p>SFT 解决“教师通常怎么做”，RL 进一步问“当前模型怎样做更容易成功”。</p>
 <p>Rollout      ：让当前 policy 在环境里跑一次的过程<br>Trajectory   ：这次运行留下的完整序列<br>Training pair：从 trajectory 拆出的单步 (state, action)</p>
 <p>论文将 state transition 和完整 trajectory 定义为：</p>
-<p><img src="/images/12/7-eq-mdp.png" alt="State transition 与 trajectory 定义"></p>
+<p><img src="/images/12/7-eq-mdp.png" alt="State transition 与 trajectory 定义" loading="lazy" decoding="async"></p>
 <p><em>工具执行和上下文管理共同决定下一个 state，policy 则由模型参数化。</em></p>
 <p>模型 completion 是 action；工具返回、上下文管理和环境变化共同决定下一个 state。</p>
 <blockquote>
 <p>进入 Agent RL 后，Interleaved Thinking 继续作为 rollout 的状态组织方式；RL 优化的是在这些 state 下，哪些 action 更可能带来更高 reward。</p>
 </blockquote>
 <p>论文没有只使用最终 pass&#x2F;fail，而是组合三类 reward：</p>
-<p><img src="/images/12/9-eq-reward.png" alt="Composite reward"></p>
+<p><img src="/images/12/9-eq-reward.png" alt="Composite reward" loading="lazy" decoding="async"></p>
 <p><em>Process、speed 和 performance 三类 reward 的组合。</em></p>
 <p>process reward 提供工具格式和中间行为等密集信号；speed reward 根据相对完成时间鼓励更高效的路径；performance reward 反映最终任务结果。</p>
 <p>进入 CISPO 之前，原始 reward 会先被转换成 advantage：从当前动作开始累加后续 reward，再减去这条 trajectory 的 baseline。</p>
-<p><img src="/images/12/11-advantage.png" alt="Advantage 的计算方式"></p>
+<p><img src="/images/12/11-advantage.png" alt="Advantage 的计算方式" loading="lazy" decoding="async"></p>
 <p><em>Reward-to-go 衡量动作之后累积的收益，trajectory-level baseline 用于降低方差。</em></p>
 <p>Reward 给出结果好坏，advantage 将它变成相对基线的更新信号；接下来才由 CISPO 把这个信号转成 policy 更新。</p>
 <p>CISPO（Clipped Importance Sampling Policy Optimization）是一种基于重要性采样的策略优化方法：它允许当前 policy 继续利用旧 policy 产生的 rollout，用 importance ratio 校正两者的概率差异，再通过 clipping 限制旧数据造成的过大更新。其目标函数如下：</p>
-<p><img src="/images/12/8-eq-cispo.png" alt="CISPO 目标函数"></p>
+<p><img src="/images/12/8-eq-cispo.png" alt="CISPO 目标函数" loading="lazy" decoding="async"></p>
 <p>重要性权重来自当前策略与 rollout policy 对同一 token 的概率比，并进行非对称裁剪：</p>
-<p><img src="/images/12/12-importance-ratio.png" alt="重要性采样比率的非对称裁剪"></p>
+<p><img src="/images/12/12-importance-ratio.png" alt="重要性采样比率的非对称裁剪" loading="lazy" decoding="async"></p>
 <p><em>Ratio 使用 stop-gradient，并裁剪到 0 至 1 加上限系数的区间，不使用 PPO 式的对称下界。</em></p>
 <p>对这个目标函数求梯度后，每个 token 的更新信号可以读成<strong>三个因子</strong>的共同作用：</p>
 <blockquote>
@@ -305,7 +293,7 @@
 </tbody></table>
 <p>这只能降低遗忘，不能保证所有能力单调上升。表 4 中 M2.7 的 MMLU-Pro 为 81.8，低于 M2.5 的 85.2。</p>
 <h2 id="5-Forge：让长轨迹-RL-持续运转"><a href="#5-Forge：让长轨迹-RL-持续运转" class="headerlink" title="5. Forge：让长轨迹 RL 持续运转"></a>5. Forge：让长轨迹 RL 持续运转</h2><p>Forge 把 rollout、trajectory、reward、训练和权重同步接成可持续循环。</p>
-<p><img src="/images/12/2-forge.png" alt="Forge RL 系统架构"></p>
+<p><img src="/images/12/2-forge.png" alt="Forge RL 系统架构" loading="lazy" decoding="async"></p>
 <p><em>Forge 将 Agent Side、middleware 和 Training&#x2F;Inference Side 解耦，并同时支持 black-box 与 white-box Agent。</em></p>
 <p>Agent Side<br>  → Gateway &#x2F; Data Pool<br>  → Rollout Engine 生成 token<br>  → Train Engine 计算 CISPO<br>  → 同步新权重回 Rollout Engine</p>
 <p>black-box Agent 只需交出实际请求、completion 和 observation；内部如何压缩上下文、管理 memory 或协调子 Agent，可以对训练框架不透明。white-box Agent 则把 context management 注册给框架，以便训练时重建状态。</p>
@@ -315,7 +303,7 @@
 <li><strong>Length bias</strong>：严格 FIFO 会被长任务阻塞，完全 greedy 又会让短任务主导前面的 batch。Windowed FIFO 在两者之间控制吞吐与数据分布的平衡。</li>
 <li><strong>重复计算</strong>：Prefix-tree merging 只计算一次共享前缀，再分别计算分支；论文称最高 40× speedup，但没有公开硬件、平均加速、显存曲线或误差条，不能把“up to”写成普遍结果。</li>
 </ul>
-<p><img src="/images/12/13-windowed-fifo.png" alt="Windowed FIFO 调度机制"></p>
+<p><img src="/images/12/13-windowed-fifo.png" alt="Windowed FIFO 调度机制" loading="lazy" decoding="async"></p>
 <p><em>窗口锚定在当前最老的未消费 trajectory，并限制调度器能够向后查看的范围。</em></p>
 <p>Windowed FIFO 的机制可以压缩成三步：</p>
 <ol>
@@ -328,7 +316,7 @@
 <p>这些优化影响的是有效训练产量：</p>
 <p>更高吞吐 → 更多有效 trajectory → 更广的 reward 覆盖 → 更多参数更新</p>
 <h2 id="6-Self-Evolution：训练研发的外层循环"><a href="#6-Self-Evolution：训练研发的外层循环" class="headerlink" title="6. Self-Evolution：训练研发的外层循环"></a>6. Self-Evolution：训练研发的外层循环</h2><p>Self-Evolution 是这条训练链路的外层循环，不是模型实时修改自身权重：</p>
-<p><img src="/images/12/4-self-evolution.png" alt="Model Iteration System 与 RL 团队双循环"></p>
+<p><img src="/images/12/4-self-evolution.png" alt="Model Iteration System 与 RL 团队双循环" loading="lazy" decoding="async"></p>
 <p><em>Model Iteration System 与 RL team workflow。论文将其称为 self-evolution 的 early operational form。</em></p>
 <p>人类设定目标<br>    ↓<br>模型读取日志、分析失败、修改 scaffold&#x2F;config<br>    ↓<br>运行实验与 Evaluation<br>    ↓<br>人类 review，决定保留、回滚或进入下一轮</p>
 <p>论文中模型承接了 RL 团队约 30%–50% 的日常 iteration workload，并在内部 programming scaffold 上完成 100 轮全自主迭代、内部评测提升约 30%。这些是工作量和内部实验结果，不是公开 benchmark 上的模型权重增益；MLE Bench Lite 的 66.6% medal rate 也不能与它混为同一实验。</p>

@@ -14,20 +14,18 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="论文：RangeFactory: Scalable Construction of Multi-Hop Cyber Ranges链接：arXiv:2608.09526 · HTML 全文  把“链语义”从专家手写变成攻击提取与实测验证，让能打通的攻击链可以被规模化、可验证地产出。  RangeFactory 把多跳靶场构建当成一道依赖解析问题：漏洞间的依赖语义不是从 CVE 元数据里读出来的，而是">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/28/1-workflow.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/28/2-attack-depth.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/28/3-info-level.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-09-08T12:00:00.000Z">
 <meta property="article:modified_time" content="2026-09-07T20:07:02.694Z">
 <meta property="article:author" content="Z3r4y">
-<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Automated Penetration Testing">
 <meta property="article:tag" content="Benchmark">
 <meta property="article:tag" content="Paper Reading">
 <meta property="article:tag" content="Cyber Range">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/28/1-workflow.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -55,7 +53,7 @@
     <!-- title -->
     <title>RangeFactory：多跳靶场的规模化构建与执行验证 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/","url":"https://z3r4y.github.io/2026/09/08/RangeFactory%EF%BC%9A%E5%A4%9A%E8%B7%B3%E9%9D%B6%E5%9C%BA%E7%9A%84%E8%A7%84%E6%A8%A1%E5%8C%96%E6%9E%84%E5%BB%BA%E4%B8%8E%E6%89%A7%E8%A1%8C%E9%AA%8C%E8%AF%81/","headline":"RangeFactory：多跳靶场的规模化构建与执行验证","name":"RangeFactory：多跳靶场的规模化构建与执行验证","description":"论文： RangeFactory: Scalable Construction of Multi-Hop Cyber Ranges 链接： arXiv:2608.09526 · HTML 全文 把“链语义”从专家手写变成攻击提取与实测验证，让能打通的攻击链可以被规模化、可验证地产出。 RangeFactory 把多跳靶场构建当成一道 依赖解析 问题：漏洞间的依赖语义不是从 CVE 元数据里读出来的，而是让 Agent 真实攻击单漏洞环境“打”出来的；拼链交给规则化编排；拼完再整链执行验证，只有真能打通的靶场才会被保留。由此量产 1,148 个经验证的靶场实例（287 条有序链 × 4 个网络上","datePublished":"2026-09-08T12:00:00.000Z","dateModified":"2026-09-08T12:00:00.000Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/28/1-workflow.png","https://z3r4y.github.io/images/28/2-attack-depth.png","https://z3r4y.github.io/images/28/3-info-level.png"],"articleSection":"Paper Reading","keywords":"Agent Security, LLM Security, Automated Penetration Testing, Benchmark, Paper Reading, Cyber Range","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -234,7 +232,7 @@
 </tr>
 </tbody></table>
 <h2 id="1-构建机制：从能力原子化到端到端验证"><a href="#1-构建机制：从能力原子化到端到端验证" class="headerlink" title="1. 构建机制：从能力原子化到端到端验证"></a>1. 构建机制：从能力原子化到端到端验证</h2><p>先看流水线全貌：</p>
-<p><img src="/images/28/1-workflow.png" alt="RangeFactory workflow"></p>
+<p><img src="/images/28/1-workflow.png" alt="RangeFactory workflow" loading="eager" fetchpriority="high" decoding="async"></p>
 <p>两个独立漏洞要能串成“一跳”，需要两类依赖同时成立。<strong>能力依赖</strong>决定前一跳的结果能否支撑后一跳的利用（如文件读支撑不了需要命令执行的利用）；<strong>运行期依赖</strong>决定具体利用过程在新立足点上是否仍然可执行（网络策略挡住回调、目标机缺少工具）。前者可以静态判定，后者只有在组合部署之后才会暴露。RangeFactory 据此把构建拆成三个阶段。</p>
 <p><strong>能力原子化（Atomization）</strong>。Exploiter 对每个 CVE 环境执行真实攻击，独立 verifier 校验私有目标；成功后 Explorer 复用立足点做能力探针，只把验证过的后渗透能力登记为 grant。单漏洞环境经此一步变成 CVE Capability Atom，包含 exploit_access（结构化前置条件）、capability_grants（探针验证过的能力）、exploit_guide（可复用攻击流程）与 poc_materials（PoC 材料）。复现不稳定或构建产物缺失的环境在入口即被淘汰（18&#x2F;257）。这套语义是<strong>打出来的，不是从 CVE 元数据或源码里读出来的</strong>——这正是它与攻击图方法、专家预定义场景的分野。</p>
 <p>能力本体是封闭的六元集合（如下表）；其中每个 grant 都按作用域、主体与证据级别独立记账，不允许混为一谈：</p>
@@ -311,7 +309,7 @@
 <p>Diagnoser 的两条反馈路径也各有量化：执行类失败在同等 100 轮预算下，无诊断的重试救回 14 个、诊断引导救回 31 个；组合类冲突若不记录会在下一批中复发 21&#x2F;24，检索不兼容记录后降至 8&#x2F;24。端到端执行不只是最后一道质检——它的失败证据本身就在改进后续构造。</p>
 <p>这里需要澄清 exploit_guide 的地位：它是<strong>构造侧特权</strong>——一份描述性的攻击配方，携带占位符目标、有序步骤、材料与运行期要求（如 callback），供验证阶段的 Executor 把各跳“串起来再打一次”。评测阶段的 Agent 在任何信息档位（L0&#x2F;L1&#x2F;L2）都拿不到 Guide 与 PoC。因此，“引导下 100% 能打通”与“零知识下 23.5–55.7%”之间的落差，测的正是这条信息差。</p>
 <h2 id="3-RangeBench-评测设计与主要发现"><a href="#3-RangeBench-评测设计与主要发现" class="headerlink" title="3. RangeBench 评测设计与主要发现"></a>3. RangeBench 评测设计与主要发现</h2><p>RangeBench 的 1,148 个实例 &#x3D; 287 条链 × 4 个网络上下文（可见节点约 7 &#x2F; 12 &#x2F; 31 &#x2F; 50 个）。同一链的四份上下文保持 Atom 绑定与任务信息不变，只改变背景业务资产的规模与构成，使网络规模成为受控变量而非新的攻击逻辑。任务信息分三档：L0 只给入口地址与目标，L1 增加网络拓扑，L2 再给出目标服务、CVE 映射与所需凭据。预算为 300 轮或 1 小时，每个模型在每档信息下对全部 1,148 个实例各 rollout 一次，即每模型 3,444 次运行（四模型合计 13,776），以 pass@1 计。评测对象为 Kimi-K3、GLM-5.2、DeepSeek-V4-Pro 与 GPT-5.6-Luna。</p>
-<p><img src="/images/28/2-attack-depth.png" alt="attack depth effect"></p>
+<p><img src="/images/28/2-attack-depth.png" alt="attack depth effect" loading="lazy" decoding="async"></p>
 <p>L2 信息下的整体表现：</p>
 <table>
 <thead>
@@ -354,7 +352,7 @@
 </tbody></table>
 <p>广泛存在的问题是<strong>持续攻陷缺口（sustained-compromise gap）</strong>：各模型第 1&#x2F;2&#x2F;3 跳成功率依次为 Kimi 73.8% → 64.2% → 55.7%，GLM 62.8% → 41.2%，DeepSeek 57.8% → 36.2%，Luna 44.3% → 23.5%。由于三层目标共享同一入口与链前缀，这一深度衰减不能用“入口难度不同”解释。条件化后更直白：<strong>在已经拿下入口的 rollout 里，仍有 24.5–47.0% 走不完剩余路径</strong>（整链完成率 75.5% &#x2F; 65.6% &#x2F; 62.6% &#x2F; 53.0%）。先打进，不等于打得穿。</p>
 <p>信息量的影响同样值得注意：</p>
-<p><img src="/images/28/3-info-level.png" alt="task information effect"></p>
+<p><img src="/images/28/3-info-level.png" alt="task information effect" loading="lazy" decoding="async"></p>
 <p>L0 → L1 的增益很小（如 Kimi 15.4% → 20.1%），L1 → L2 才是主增益（→ 55.7%）。瓶颈更多在于“知道该打什么”，而非“知道网络长什么样”；论文也承认 L2 的提升可能混入模型对公开 CVE 的先验熟悉度。网络规模的影响则不对称：可见节点从 7 增至 50，成功率只降 9.8–10.6 个百分点，但工具调用增加 51–74%、墙钟时间增加 71–84%——背景资产主要在烧探索成本，而不是改变结局。</p>
 <h2 id="4-结语"><a href="#4-结语" class="headerlink" title="4. 结语"></a>4. 结语</h2><blockquote>
 <p>多跳靶场构建的瓶颈不在部署自动化，而在“链语义”。RangeFactory 的贡献，是把链语义从专家手写变成攻击提取与实测验证，让“能打通的链”可以被规模化、可验证地产出。</p>

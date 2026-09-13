@@ -14,21 +14,17 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="1. 论文信息论文：AgentCyberRange: Benchmarking Frontier AI Systems in Realistic Cyber Ranges链接：arXiv:2606.14295HTML：论文 v2代码：AgentCyberRange数据：Hugging Face  如何把开放式、长链、结果难判定的自主渗透，变成一个可部署、可重置、可重复和可自动评分的实验？   Be">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/13/1-overview.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/13/2-hint-levels.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/13/3-range-6.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/13/4-web-depth.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/13/5-post-failure.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-07-21T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-07-21T17:37:11.243Z">
 <meta property="article:author" content="Z3r4y">
-<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Automated Penetration Testing">
 <meta property="article:tag" content="Benchmark">
 <meta property="article:tag" content="Paper Reading">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/13/1-overview.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -56,7 +52,7 @@
     <!-- title -->
     <title>AgentCyberRange：自主渗透 Benchmark | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/07/21/AgentCyberRange%EF%BC%9A%E8%87%AA%E4%B8%BB%E6%B8%97%E9%80%8F%20Benchmark/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/07/21/AgentCyberRange%EF%BC%9A%E8%87%AA%E4%B8%BB%E6%B8%97%E9%80%8F%20Benchmark/","url":"https://z3r4y.github.io/2026/07/21/AgentCyberRange%EF%BC%9A%E8%87%AA%E4%B8%BB%E6%B8%97%E9%80%8F%20Benchmark/","headline":"AgentCyberRange：自主渗透 Benchmark","name":"AgentCyberRange：自主渗透 Benchmark","description":"1. 论文信息 论文： AgentCyberRange: Benchmarking Frontier AI Systems in Realistic Cyber Ranges 链接： arXiv:2606.14295 HTML： 论文 v2 代码： AgentCyberRange 数据： Hugging Face 如何把开放式、长链、结果难判定的自主渗透，变成一个可部署、可重置、可重复和可自动评分的实验？ Benchmark 有两个 track，但不是 266 个同粒度的独立任务： Track 环境 评测对象 WebExploitBench 15 个真实 Web 应用栈、110 个漏洞 che","datePublished":"2026-07-21T04:00:00.000Z","dateModified":"2026-07-21T17:37:11.243Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/13/1-overview.png","https://z3r4y.github.io/images/13/2-hint-levels.png","https://z3r4y.github.io/images/13/3-range-6.png"],"articleSection":"Paper Reading","keywords":"Agent Security, LLM Security, Automated Penetration Testing, Benchmark, Paper Reading","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -198,7 +194,7 @@
 <blockquote>
 <p>如何把开放式、长链、结果难判定的自主渗透，变成一个可部署、可重置、可重复和可自动评分的实验？</p>
 </blockquote>
-<p><img src="/images/13/1-overview.png" alt="AgentCyberRange overview"></p>
+<p><img src="/images/13/1-overview.png" alt="AgentCyberRange overview" loading="eager" fetchpriority="high" decoding="async"></p>
 <p>Benchmark 有两个 track，但不是 266 个同粒度的独立任务：</p>
 <table>
 <thead>
@@ -242,7 +238,7 @@
 <figure class="highlight text"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">分配独立 Compose project 和 subnet</span><br><span class="line">创建 Agent container，部署 target stack 并等待 ready</span><br><span class="line">只把 Agent 接入入口网络</span><br><span class="line">注入 prompt，记录 model call、token 和 trajectory</span><br><span class="line">运行 verifier，回收 container、network 和 volume</span><br></pre></td></tr></table></figure>
 
 <p>Web 最多 150 steps，Post 最多 500 steps，每个 task 最多运行 2 小时，并用三次独立尝试计算 Pass@3。这里的 Pass@3 Avg 是三次运行分数的平均值，Pass@3 Max 则取三次中的最好结果；对于二元 checkpoint，后者等价于三次中只要成功一次就算成功。</p>
-<h3 id="L0-L1-L2：难度与信息提示"><a href="#L0-L1-L2：难度与信息提示" class="headerlink" title="L0&#x2F;L1&#x2F;L2：难度与信息提示"></a>L0&#x2F;L1&#x2F;L2：难度与信息提示</h3><p><img src="/images/13/2-hint-levels.png" alt="AgentCyberRange hint levels"></p>
+<h3 id="L0-L1-L2：难度与信息提示"><a href="#L0-L1-L2：难度与信息提示" class="headerlink" title="L0&#x2F;L1&#x2F;L2：难度与信息提示"></a>L0&#x2F;L1&#x2F;L2：难度与信息提示</h3><p><img src="/images/13/2-hint-levels.png" alt="AgentCyberRange hint levels" loading="lazy" decoding="async"></p>
 <table>
 <thead>
 <tr>
@@ -269,7 +265,7 @@
 </tbody></table>
 <p>这三档不是三套环境，而是同一个环境的不同信息条件。它可以帮助区分 Agent 是找不到入口，还是找到了入口却不会构造 exploit 或继续规划；但这种分解不是完全正交的能力测试。</p>
 <h2 id="3-以-Range-6-为例"><a href="#3-以-Range-6-为例" class="headerlink" title="3. 以 Range-6 为例"></a>3. 以 Range-6 为例</h2><p>Range-6 是最适合贯穿全文的案例：15 个容器、3 个 Docker bridge、5 个 chain node 和 10 个 decoy&#x2F;supporting node。</p>
-<p><img src="/images/13/3-range-6.png" alt="Range-6 topology"></p>
+<p><img src="/images/13/3-range-6.png" alt="Range-6 topology" loading="lazy" decoding="async"></p>
 <p>关键 Compose 关系可以简化为：</p>
 <figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">1_halo:</span></span><br><span class="line">  <span class="attr">networks:</span></span><br><span class="line">    <span class="attr">public_network:</span> <span class="number">.10</span></span><br><span class="line">    <span class="attr">sub_network_1:</span> <span class="number">.10</span></span><br><span class="line"></span><br><span class="line"><span class="attr">3_confluence:</span></span><br><span class="line">  <span class="attr">networks:</span></span><br><span class="line">    <span class="attr">sub_network_1:</span> <span class="number">.30</span></span><br><span class="line">    <span class="attr">sub_network_2:</span> <span class="number">.30</span></span><br><span class="line"></span><br><span class="line"><span class="attr">agent_network:</span> <span class="string">public_network</span></span><br></pre></td></tr></table></figure>
 
@@ -347,9 +343,9 @@
 <p>AgentCyberRange 对第一层较强，对后两层只有部分覆盖。它能降低 false positive，却可能漏掉有效的替代路径，也可能把不同过程压缩成同一个终态分数。</p>
 <h2 id="5-总结"><a href="#5-总结" class="headerlink" title="5. 总结"></a>5. 总结</h2><p>当前 Benchmark 的“全面性”仍然有限：覆盖了 Web exploitation 和 post-exploitation 的两个阶段，却没有连续的 Web-to-Post episode；目标主要是 Linux 容器；没有 Windows&#x2F;AD、云 IAM、钓鱼、供应链和社工；defender 也没有形成完整评分闭环。</p>
 <p>Web 的失败首先发生在探索阶段。论文对 GPT-5.5 with Codex 的分析显示，vulnerability depth 从 2 增加到 6 时，检测率约从 35% 降到 11%。给出 vulnerable URL 的帮助明显大于只给漏洞类型：Web 的平均 Pass@3 Max 在 L0 到 L1 提升 12.12 个百分点，而 L1 到 L2 只提升 3.33 个百分点。</p>
-<p><img src="/images/13/4-web-depth.png" alt="Web vulnerability depth"></p>
+<p><img src="/images/13/4-web-depth.png" alt="Web vulnerability depth" loading="lazy" decoding="async"></p>
 <p>Post 的问题则是长链信息管理。只给拓扑的平均收益接近 0，给出具体弱点的 L2 才带来约 13.42 个百分点的平均提升。Agent 经常在 decoy 上浪费预算，拿下 Confluence 后也不会系统搜索 wiki、配置和凭据，导致 GitLab 到 KOD 的链条中断。</p>
-<p><img src="/images/13/5-post-failure.png" alt="Post-exploitation failure case"></p>
+<p><img src="/images/13/5-post-failure.png" alt="Post-exploitation failure case" loading="lazy" decoding="async"></p>
 <blockquote>
 <p>AgentCyberRange 的核心价值，是把自主渗透拆成三种可测约束：网络可达性、专家设计的信息依赖、环境侧成功证据。</p>
 </blockquote>

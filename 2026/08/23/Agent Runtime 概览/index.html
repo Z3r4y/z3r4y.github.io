@@ -14,14 +14,16 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="项目：kvcache-ai&#x2F;AgentENV  容器毫秒级启动、单机承载上千实例，代价是逃逸即宿主失陷；全功能虚拟机隔离最硬，代价是秒级启动与低密度。Agent Runtime 的全部设计空间，就是在这两极之间找平衡。  Agent Runtime 需要先决定边界放在哪一层——进程、内核还是硬件——再决定这一层如何包装为 agent 可用的会话。E2B、Vercel Sandbox、AW">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-08-23T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-08-23T10:42:55.749Z">
 <meta property="article:author" content="Z3r4y">
-<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Agent Security">
 <meta property="article:tag" content="Infrastructure">
 <meta property="article:tag" content="Virtualization">
+<meta property="article:tag" content="LLM Security">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -49,7 +51,7 @@
     <!-- title -->
     <title>Agent Runtime 概览 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/08/23/Agent%20Runtime%20%E6%A6%82%E8%A7%88/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/08/23/Agent%20Runtime%20%E6%A6%82%E8%A7%88/","url":"https://z3r4y.github.io/2026/08/23/Agent%20Runtime%20%E6%A6%82%E8%A7%88/","headline":"Agent Runtime 概览","name":"Agent Runtime 概览","description":"项目： kvcache-ai&#x2F;AgentENV 容器毫秒级启动、单机承载上千实例，代价是逃逸即宿主失陷；全功能虚拟机隔离最硬，代价是秒级启动与低密度。Agent Runtime 的全部设计空间，就是在这两极之间找平衡。 Agent Runtime 需要先决定边界放在哪一层——进程、内核还是硬件——再决定这一层如何包装为 agent 可用的会话。E2B、Vercel Sandbox、AWS Bedrock AgentCore 与 AgentENV 表面上是不同产品，底层却是同一张隔离谱系上的不同选点。 1. 三层模型 把 Agent Runtime 按三层拆解： 层 解决的问题 202","datePublished":"2026-08-23T04:00:00.000Z","dateModified":"2026-08-23T10:42:55.749Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/og-default.png"],"articleSection":"Infrastructure","keywords":"Agent Security, Infrastructure, Virtualization, LLM Security","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 

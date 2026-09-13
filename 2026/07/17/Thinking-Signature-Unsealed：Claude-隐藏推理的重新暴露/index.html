@@ -14,6 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="2026 年 7 月，Open Reasoning 展示了一件颇为反直觉的事情：Claude API 明明只返回空的 thinking 和一段不可读的 signature，网站却能从中重新得到隐藏推理里的随机秘密，甚至展示一段远长于可见答案的“原始推理”。  Linh-Ice&#x2F;open-reasoning：公开 examples YangWang92&#x2F;open-open-rea">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-07-17T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-08-21T12:21:01.724Z">
 <meta property="article:author" content="Z3r4y">
@@ -22,6 +23,7 @@
 <meta property="article:tag" content="Claude">
 <meta property="article:tag" content="Reverse Engineering">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -49,7 +51,7 @@
     <!-- title -->
     <title>Thinking Signature Unsealed：Claude 隐藏推理的重新暴露 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/07/17/Thinking-Signature-Unsealed%EF%BC%9AClaude-%E9%9A%90%E8%97%8F%E6%8E%A8%E7%90%86%E7%9A%84%E9%87%8D%E6%96%B0%E6%9A%B4%E9%9C%B2/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/07/17/Thinking-Signature-Unsealed%EF%BC%9AClaude-%E9%9A%90%E8%97%8F%E6%8E%A8%E7%90%86%E7%9A%84%E9%87%8D%E6%96%B0%E6%9A%B4%E9%9C%B2/","url":"https://z3r4y.github.io/2026/07/17/Thinking-Signature-Unsealed%EF%BC%9AClaude-%E9%9A%90%E8%97%8F%E6%8E%A8%E7%90%86%E7%9A%84%E9%87%8D%E6%96%B0%E6%9A%B4%E9%9C%B2/","headline":"Thinking Signature Unsealed：Claude 隐藏推理的重新暴露","name":"Thinking Signature Unsealed：Claude 隐藏推理的重新暴露","description":"2026 年 7 月，Open Reasoning 展示了一件颇为反直觉的事情：Claude API 明明只返回空的 thinking 和一段不可读的 signature，网站却能从中重新得到隐藏推理里的随机秘密，甚至展示一段远长于可见答案的“原始推理”。 Linh-Ice&#x2F;open-reasoning ：公开 examples YangWang92&#x2F;open-open-reasoning ：独立 harvest&#x2F;replay 实现 这很容易被描述成“Claude 的 Chain-of-Thought 被解密了”，但这个说法混合了三个问题： 网站是否在本地破解了","datePublished":"2026-07-17T04:00:00.000Z","dateModified":"2026-08-21T12:21:01.724Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/og-default.png"],"keywords":"LLM Security, Reasoning Models, Claude, Reverse Engineering","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 

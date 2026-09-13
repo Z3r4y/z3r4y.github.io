@@ -14,12 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="OPD 和 OPSD 都没有真正摆脱外部监督：要么需要更强教师，要么需要参考答案。U-OPSD 把 OPSD 里的真值参考答案替换成模型自己对同一道题的多数投票共识，反而反超了所有有监督基线。  1. 论文信息论文：On-Policy Self-Distillation without Any Supervision链接：arXiv:2608.06296机构：UC San Diego &amp;#x2F">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/24/1-framework-comparison.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/24/2-uopsd-overview.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/24/3-loss-formula.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/24/4-algorithm.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/24/5-training-curves.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/24/6-ablations.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-08-10T17:30:00.000Z">
 <meta property="article:modified_time" content="2026-08-10T20:22:52.634Z">
 <meta property="article:author" content="Z3r4y">
@@ -28,7 +23,7 @@
 <meta property="article:tag" content="Knowledge Distillation">
 <meta property="article:tag" content="Self-Distillation">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/24/1-framework-comparison.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -56,7 +51,7 @@
     <!-- title -->
     <title>U-OPSD：以self-consistency取代真值监督的无监督自蒸馏 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5self-consistency%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5self-consistency%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/","url":"https://z3r4y.github.io/2026/08/11/U-OPSD%EF%BC%9A%E4%BB%A5self-consistency%E5%8F%96%E4%BB%A3%E7%9C%9F%E5%80%BC%E7%9B%91%E7%9D%A3%E7%9A%84%E6%97%A0%E7%9B%91%E7%9D%A3%E8%87%AA%E8%92%B8%E9%A6%8F/","headline":"U-OPSD：以self-consistency取代真值监督的无监督自蒸馏","name":"U-OPSD：以self-consistency取代真值监督的无监督自蒸馏","description":"OPD 和 OPSD 都没有真正摆脱外部监督：要么需要更强教师，要么需要参考答案。U-OPSD 把 OPSD 里的真值参考答案替换成模型自己对同一道题的多数投票共识，反而反超了所有有监督基线。 1. 论文信息 论文： On-Policy Self-Distillation without Any Supervision 链接： arXiv:2608.06296 机构：UC San Diego &#x2F; Georgia Tech &#x2F; University of Maryland &#x2F; ByteDance OPD（On-Policy Distillation）指学生在自己采样","datePublished":"2026-08-10T17:30:00.000Z","dateModified":"2026-08-10T20:22:52.634Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/24/1-framework-comparison.png","https://z3r4y.github.io/images/24/2-uopsd-overview.png","https://z3r4y.github.io/images/24/3-loss-formula.png"],"articleSection":"Paper Reading","keywords":"Paper Reading, LLM Training, Knowledge Distillation, Self-Distillation","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -228,13 +223,13 @@
 <td>参考答案或示例</td>
 </tr>
 </tbody></table>
-<p><img src="/images/24/1-framework-comparison.png" alt="不同 on-policy 蒸馏框架的监督来源对比"></p>
+<p><img src="/images/24/1-framework-comparison.png" alt="不同 on-policy 蒸馏框架的监督来源对比" loading="eager" fetchpriority="high" decoding="async"></p>
 <p><em>左：OPSD&#x2F;SDFT 依赖真值解答或 ICL；中：SDPO 依赖环境反馈；右：U-OPSD 完全无监督，用多数投票构造伪标签。</em></p>
 <blockquote>
 <p>“self” 只解决了教师身份，没有解决监督来源。U-OPSD 的观察是：模型多次独立生成的一致性（self-consistency）本身就是可用的监督信号，可以构造出问题专属的 self-teacher。</p>
 </blockquote>
 <h2 id="3-Sample-→-Vote-→-Distill"><a href="#3-Sample-→-Vote-→-Distill" class="headerlink" title="3. Sample → Vote → Distill"></a>3. Sample → Vote → Distill</h2><p>U-OPSD 对每个无标注题目 x ~ U 走三步，全程不需要标签：</p>
-<p><img src="/images/24/2-uopsd-overview.png" alt="U-OPSD 框架：Sample → Vote → Distill"></p>
+<p><img src="/images/24/2-uopsd-overview.png" alt="U-OPSD 框架：Sample → Vote → Distill" loading="lazy" decoding="async"></p>
 <p><em>U-OPSD 用模型自身的多数投票共识取代 OPSD 中的真值参考答案：教师条件于一致（winning）轨迹，学生沿不一致（losing）轨迹的前缀做逐 token 蒸馏。</em></p>
 <p><strong>(1) Sample。</strong> 用当前策略（梯度冻结，记为 π̄）在训练温度下采样 G 条独立 rollout，解析每条生成的最终答案 a(g) &#x3D; Ans(y(g))：这类推理模型习惯把最终答案写在 boxed 方框里（例如 $\boxed{42}$），解析器提取方框内的内容，再做归一化、canonicalization。解析不出答案的 rollout 记为无效（通常是被截断的生成）。</p>
 <p><strong>(2) Vote。</strong> 在有效答案上做多数投票得到伪答案 ã(x)，平票时均匀随机打破。投票把 rollout 分成两类：与共识一致的 Y⁺ 和与共识不一致的 Y⁻；无效 rollout 两边都不属于——它既不能证明对，也不能证明错。一致性分数 c(x) 是有效 rollout 中同意共识的比例。</p>
@@ -242,7 +237,7 @@
 <p>这里的”伪”指它没有真值背书——不是外部给出的参考答案，而是模型自己多数投票得到的代理标签，质量取决于模型自身的一致性（第 4 节报告 86.7% 的伪标签与真值一致）。</p>
 </blockquote>
 <p><strong>(3) Distill。</strong> 当 c(x) ≥ τ（默认 τ&#x3D;0.5；τ 是信任投票的阈值，一致性不够的题不拿伪答案当老师），选一条一致 rollout 作为教师参考（默认取最短的一致轨迹 y⁺），把教师分布蒸馏进不一致轨迹的前缀：教师条件于 (x, y⁺, y⁻<sub>&lt;t</sub>)，学生只条件于 (x, y⁻<sub>&lt;t</sub>)，逐 token 最小化两者分布的 forward KL（β&#x3D;0，沿袭 OPSD 的逐 token pointwise clipping）。</p>
-<p><img src="/images/24/3-loss-formula.png" alt="U-OPSD 目标函数"></p>
+<p><img src="/images/24/3-loss-formula.png" alt="U-OPSD 目标函数" loading="lazy" decoding="async"></p>
 <p><em>教师分布条件于伪解答 y⁺ 与不一致轨迹前缀，蒸馏目标是最长错误完成；Dβ 默认为 forward KL。</em></p>
 <p>y⁺ 是投票一致集合里选出的伪解答，默认取最短一致轨迹，替代 OPSD 中的真值 y⋆；y⁻<sub>&lt;t</sub> 是第 i 条不一致轨迹在第 t 个 token 之前的前缀，即学生”已经写错到这里”的位置；π̄ 与 πθ 分别是梯度冻结的教师和可训练的学生，每一步都给出完整词表的 next-token 分布；W<sub>k</sub> 是参与蒸馏的不一致轨迹集合（默认一条）；Dβ 是两分布间的散度，默认 forward KL（β&#x3D;0）。</p>
 <p>需要澄清的是，蒸馏并不生成文本——y⁺ 与 y⁻ 早在 sampling 阶段就写好了，全程只是把这两条固定序列当作输入。损失沿着 y⁻ 逐位置计算，且各位置互不相干：教师读入 (x, y⁺, 已写前缀)，只回答”知道答案的话，这里下一步该写什么”；这个回答不会被接续下去——下一步看的是 y⁻ 实际写下的（可能已出错）前缀，而不是上一步的预测。这个”读入内容后的下一步预测”正是模型的思考产物——在自回归模型里，想得对不对，就体现在下一步概率分得准不准。</p>
@@ -250,7 +245,7 @@
 <p>前缀是逐位增长的，所以一次 teacher-forcing 前向就能同时得到所有位置的 next-token 分布（causal mask 让位置 t 只看得到前面），无需逐位置重跑。损失改的是学生参数，让模型以后遇到类似前缀更可能写对；y⁻ 的 token 本身不动。蒸馏的实质，就是把”看到答案时模型会怎么想”，变成学生”不看答案也能这么想”。</p>
 </blockquote>
 <p>算法的完整流程：</p>
-<p><img src="/images/24/4-algorithm.png" alt="U-OPSD 算法"></p>
+<p><img src="/images/24/4-algorithm.png" alt="U-OPSD 算法" loading="lazy" decoding="async"></p>
 <p><em>Algorithm 1：单个 prompt 上的 U-OPSD 流程，默认取最短一致轨迹为教师参考、蒸馏一条不一致轨迹。</em></p>
 <p>两个被跳过的样本类别很关键：模型完全不会的题（c(x) &lt; τ）不训练，避免把多数投票的噪音学进去；完全一致的题（Y⁻ &#x3D; ∅）没有不一致可纠正。训练因此恰好落在模型的 <strong>competence frontier</strong>——“会做、但做的时候会翻车”的题上：</p>
 <blockquote>
@@ -463,11 +458,11 @@
 <td><strong>77.99</strong></td>
 </tr>
 </tbody></table>
-<p><img src="/images/24/5-training-curves.png" alt="Qwen3-4B 训练曲线"></p>
+<p><img src="/images/24/5-training-curves.png" alt="Qwen3-4B 训练曲线" loading="lazy" decoding="async"></p>
 <p>训练曲线印证了同样的图景：非思考模式 U-OPSD 从 step 50 起在每个 checkpoint 都高于所有方法（AIME 的冲顶也发生在 step 50 而非最后 checkpoint），思考模式所有方法都挤在 base ±2 分内——收益来自早期快速纠正不一致轨迹，不是长训练堆出来的。</p>
 <p><strong>消融与机制。</strong></p>
 <p><strong>配置消融：τ、G 与教师更新。</strong> 三个超参数的行为都很反直觉：</p>
-<p><img src="/images/24/6-ablations.png" alt="配置消融：τ、G、教师更新"></p>
+<p><img src="/images/24/6-ablations.png" alt="配置消融：τ、G、教师更新" loading="lazy" decoding="async"></p>
 <p><em>左：一致性阈值 τ，接受所有样本（τ&#x3D;0）反而最好；中：每 prompt 采样数 G，G&#x3D;12 更优、G&#x3D;16 回吐；右：教师更新方式，EMA 教师带来进一步提升。</em></p>
 <ul>
 <li><strong>τ&#x3D;0 最好。</strong> 平均准确率随 τ 单调下降：59.21（τ&#x3D;0）&gt; 53.93（τ&#x3D;0.5）&gt; 44.40（τ&#x3D;0.9）——多学比学得干净更重要。</li>

@@ -14,20 +14,17 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="论文：ScopeJudge: Cost-Aware Pre-Execution Gating for Offensive Security Agents链接：arXiv:2607.07774机构：dreadnode数据：dreadnode&#x2F;scopejudge代码：dreadnode&#x2F;scopejudge  同一个工具调用——扫一个子域、读一个文件、发一个请求——在这个任务里合">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/21/1-pre-execution-gating.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/21/2-inter-grader-agreement.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/21/4-recall-by-strategy.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/21/3-cost-accuracy-frontier.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-08-06T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-08-06T08:49:08.751Z">
 <meta property="article:author" content="Z3r4y">
-<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Benchmark">
 <meta property="article:tag" content="Paper Reading">
 <meta property="article:tag" content="Agent Monitoring">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/21/1-pre-execution-gating.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -55,7 +52,7 @@
     <!-- title -->
     <title>ScopeJudge：OPSEC Gating 不在动作里，在意图里 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/","url":"https://z3r4y.github.io/2026/08/06/ScopeJudge%EF%BC%9AOPSEC%20Gating%20%E4%B8%8D%E5%9C%A8%E5%8A%A8%E4%BD%9C%E9%87%8C%EF%BC%8C%E5%9C%A8%E6%84%8F%E5%9B%BE%E9%87%8C/","headline":"ScopeJudge：OPSEC Gating 不在动作里，在意图里","name":"ScopeJudge：OPSEC Gating 不在动作里，在意图里","description":"论文： ScopeJudge: Cost-Aware Pre-Execution Gating for Offensive Security Agents 链接： arXiv:2607.07774 机构： dreadnode 数据： dreadnode&#x2F;scopejudge 代码： dreadnode&#x2F;scopejudge 同一个工具调用——扫一个子域、读一个文件、发一个请求——在这个任务里合规，在另一个任务里就是越界。动作本身无对错，对错由发起任务的意图赋予。 ScopeJudge 是 dreadnode 继 PentestJudge 之后关于”自主渗透 Agent 如何","datePublished":"2026-08-06T04:00:00.000Z","dateModified":"2026-08-06T08:49:08.751Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/21/1-pre-execution-gating.png","https://z3r4y.github.io/images/21/2-inter-grader-agreement.png","https://z3r4y.github.io/images/21/4-recall-by-strategy.png"],"articleSection":"Paper Reading","keywords":"Agent Security, LLM Security, Benchmark, Paper Reading, Agent Monitoring","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -259,7 +256,7 @@
 <td>最大</td>
 </tr>
 </tbody></table>
-<p><img src="/images/21/1-pre-execution-gating.png" alt="Figure 1: Pre-execution gating architecture"></p>
+<p><img src="/images/21/1-pre-execution-gating.png" alt="Figure 1: Pre-execution gating architecture" loading="eager" fetchpriority="high" decoding="async"></p>
 <h2 id="2-诱惑任务设计"><a href="#2-诱惑任务设计" class="headerlink" title="2. 诱惑任务设计"></a>2. 诱惑任务设计</h2><p>要评测 judge，先得有 ground truth，而且越界调用不能太少。ScopeBench 的做法是把诱惑直接写进任务设计：<strong>30 个任务，完成目标的最短路径必然越过边界</strong>——任务书明确不许碰的主机、不许做的动作、不许碰的数据，就摆在达成目标的必经之路上。诱惑大致有三类原型，每个都有真实轨迹里的越界调用佐证：</p>
 <ul>
 <li><strong>不许碰的主机</strong>：Greenline 任务只准测 staging，任务书甚至明说”即使同样的 bug 看起来存在于生产环境，也不得访问”。当 Agent 在 staging 上找不到部署密钥时，去生产看一眼就是最自然的下一步。</li>
@@ -268,9 +265,9 @@
 </ul>
 <p>更关键的是，<strong>诱饵是被环境”故意泄露”的</strong>：未文档化的接口（&#x2F;internal&#x2F;qa&#x2F;reassign-ticket，把受限工单 assign 给自己就能看到）、debug 导出里的管理员会话 token、”hidden_matches: 1” 这类暗示——捷径就放在 Agent 触手可及的地方，守规矩的 Agent 要完成同样的目标只能绕开它们。</p>
 <p>5 个模型各跑一遍同样的任务，得到 100 条轨迹（每条 6–170 次调用，中位数 38.5）。4,897 个工具调用中 7.7% 被 5 名专业渗透测试者标为越界。每个调用由 5 人独立标注（给足任务书和完整轨迹前缀），多数票为真值：</p>
-<p><img src="/images/21/2-inter-grader-agreement.png" alt="Figure 2: Pairwise inter-grader agreement (Cohen&#39;s κ)"></p>
+<p><img src="/images/21/2-inter-grader-agreement.png" alt="Figure 2: Pairwise inter-grader agreement (Cohen&#39;s κ)" loading="lazy" decoding="async"></p>
 <p>专家之间的一致性（Fleiss κ &#x3D; 0.64，88.1% 全票一致，剩余 11.9% 是真正的争议区）构成了 judge 的天花板：连专家自己互相打分也只有 F1 &#x3D; 0.78（<strong>F1 是 Precision 与 Recall 的调和平均，一个数同时衡量拦得准不准、漏得多不多；只看准确率在这种失衡数据上没有意义——越界只占 7.7%，一个”永远放行”的模型准确率也有 92%，召回却是 0</strong>）——judge 做到 0.78 就已经是人肉极限。</p>
-<h2 id="3-Intent-Tool-Call-decides"><a href="#3-Intent-Tool-Call-decides" class="headerlink" title="3. Intent &amp; Tool Call decides"></a>3. Intent &amp; Tool Call decides</h2><p><img src="/images/21/4-recall-by-strategy.png" alt="Figure 4: Recall by transcript strategy"></p>
+<h2 id="3-Intent-Tool-Call-decides"><a href="#3-Intent-Tool-Call-decides" class="headerlink" title="3. Intent &amp; Tool Call decides"></a>3. Intent &amp; Tool Call decides</h2><p><img src="/images/21/4-recall-by-strategy.png" alt="Figure 4: Recall by transcript strategy" loading="lazy" decoding="async"></p>
 <p><strong>只给静态策略时，8 个 judge 里 7 个召回率趋近于零（中位数 0.005）</strong>——看不到任务书，judge 不认为任何调用越界，等于全部放行。一旦把意图加进去，召回率立刻跳到 0.60–0.94。这直接证实了论文的论点：范围不在动作里，在意图里，静态策略结构性拦不住越界。</p>
 <p>把五种策略的效果拆开看（以最强 judge GLM-5.2 为例）：</p>
 <table>
@@ -337,7 +334,7 @@
 <li><strong>Full</strong>：只多 0.02 F1，成本几乎翻倍——上下文收益急剧递减。</li>
 </ul>
 <p><strong>成本-精度前沿的最强点是开源的</strong>——GLM-5.2 拿到全部 judge 最高 F1 0.66，把闭源旗舰 Claude Opus 4.8（F1 0.60，贵 2.9 倍）整个支配掉；最便宜的高性价比点也是开源的 Qwen3.6-35B。</p>
-<p><img src="/images/21/3-cost-accuracy-frontier.png" alt="Figure 3: Cost-accuracy frontier"></p>
+<p><img src="/images/21/3-cost-accuracy-frontier.png" alt="Figure 3: Cost-accuracy frontier" loading="lazy" decoding="async"></p>
 <p>因为漏拦（越界被执行）比误拦（合法调用被升级）贵得多，论文给两个操作点：</p>
 <table>
 <thead>

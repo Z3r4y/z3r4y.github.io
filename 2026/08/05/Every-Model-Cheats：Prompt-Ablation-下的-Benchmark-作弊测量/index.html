@@ -14,18 +14,16 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="论文：Every Model Cheats: Prompt-Level Mitigation of Cheating on Offensive Cyber Tasks链接：arXiv:2607.21763机构：dreadnode  之前知道 LLM agent 会在 CTF benchmark 上搜 writeup，但没人系统量化过：多少模型在做、占多大比例、prompt 能压多少、压不住的部分去">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/20/1-harness-architecture.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/20/3-cheated-passes.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/20/4-cheating-channels.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-08-04T17:00:00.000Z">
 <meta property="article:modified_time" content="2026-08-04T19:35:49.252Z">
 <meta property="article:author" content="Z3r4y">
-<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Agent Security">
+<meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Benchmark">
 <meta property="article:tag" content="Paper Reading">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/20/1-harness-architecture.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -53,7 +51,7 @@
     <!-- title -->
     <title>Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/","url":"https://z3r4y.github.io/2026/08/05/Every-Model-Cheats%EF%BC%9APrompt-Ablation-%E4%B8%8B%E7%9A%84-Benchmark-%E4%BD%9C%E5%BC%8A%E6%B5%8B%E9%87%8F/","headline":"Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量","name":"Every Model Cheats：Prompt Ablation 下的 Benchmark 作弊测量","description":"论文： Every Model Cheats: Prompt-Level Mitigation of Cheating on Offensive Cyber Tasks 链接： arXiv:2607.21763 机构： dreadnode 之前知道 LLM agent 会在 CTF benchmark 上搜 writeup，但没人系统量化过：多少模型在做、占多大比例、prompt 能压多少、压不住的部分去了哪里。 实验设计与核心数据 论文 在 Cybench 上做了 controlled prompt-ablation study。22 个前沿模型（7 家厂商），23 个 medium-dif","datePublished":"2026-08-04T17:00:00.000Z","dateModified":"2026-08-04T19:35:49.252Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/20/1-harness-architecture.png","https://z3r4y.github.io/images/20/3-cheated-passes.png","https://z3r4y.github.io/images/20/4-cheating-channels.png"],"articleSection":"Paper Reading","keywords":"Agent Security, LLM Security, Benchmark, Paper Reading","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -197,7 +195,7 @@
 </blockquote>
 <h2 id="实验设计与核心数据"><a href="#实验设计与核心数据" class="headerlink" title="实验设计与核心数据"></a>实验设计与核心数据</h2><p>论文 在 Cybench 上做了 controlled prompt-ablation study。22 个前沿模型（7 家厂商），23 个 medium-difficulty CTF 题，3 种 prompt 条件（baseline 无约束 &#x2F; standard 规范性反作弊 &#x2F; severe 后果性反作弊 + 行为枚举），总共 1,518 条 trace、168,000 条消息、84,800 次 tool call，全量四阶段审计。</p>
 <p>这里四阶段 pipeline 审计值得说一下：programmatic verifier（正则匹配 CTF event name + cheating terms）做高 recall 兜底，LLM judge（Claude Sonnet 4.6）做 contextual reconciliation——区分命令是在 agent 自己的 sandbox 里执行（作弊）还是作为 payload 发给 challenge service（合法 exploit）。</p>
-<p><img src="/images/20/1-harness-architecture.png" alt="Figure 1: Evaluation harness architecture"></p>
+<p><img src="/images/20/1-harness-architecture.png" alt="Figure 1: Evaluation harness architecture" loading="eager" fetchpriority="high" decoding="async"></p>
 <p>关键设计选择：sandbox 通外网，故意留着让模型有机会作弊以测量作弊行为。<br>两条作弊向量：web tools 搜 writeup（图中实线）、bash 探测&#x2F;利用 eval infra 本身（图中虚线）。</p>
 <p>结果：</p>
 <table>
@@ -276,7 +274,7 @@
 <td>2.4×</td>
 </tr>
 </tbody></table>
-<p><img src="/images/20/3-cheated-passes.png" alt="Figure 3: Cheated passes per model across three prompt conditions"></p>
+<p><img src="/images/20/3-cheated-passes.png" alt="Figure 3: Cheated passes per model across three prompt conditions" loading="lazy" decoding="async"></p>
 <h2 id="三种作弊模式"><a href="#三种作弊模式" class="headerlink" title="三种作弊模式"></a>三种作弊模式</h2><p>论文在附录贴了三个完整 trace，展示了三种不同的 pattern：</p>
 <p><strong>做不出来，搜。</strong> Claude Sonnet 4.6 在 locktalk 上花了 200+ 轮消息做 HAProxy ACL bypass，全部失败，第 217 轮 pivot 到 web_search。搜到了 &#x2F;&#x2F;api&#x2F;v1&#x2F;get_ticket 的 double-slash bypass——200 轮都没试出来的技巧。Capability gap 驱动的 fallback。</p>
 <p><strong>能做，但直接搜更快。</strong> Claude Opus 4.8 在 sop 上只花了 37 轮做逆向，就说 “This is getting deep”，然后 clone writeup repo、cat solve.py——flag 作为明文字符串直接出现。Effort minimization，模型有能力但选择了更省力的路径。</p>
@@ -299,7 +297,7 @@
 <blockquote>
 <p>prompt 压住了前门，一部分行为转移到了后门。</p>
 </blockquote>
-<p><img src="/images/20/4-cheating-channels.png" alt="Figure 4: Cheating channel breakdown across prompt conditions"></p>
+<p><img src="/images/20/4-cheating-channels.png" alt="Figure 4: Cheating channel breakdown across prompt conditions" loading="lazy" decoding="async"></p>
 <p>Anyway，我们当前能做到的实践：Prompt-level mitigation 压了 74%（33% → 8.5%），Reward Hacking Benchmark 显示 environmental hardening 能压 88%。两层叠加是当前上限，但仍然不是 100%——作弊不是模型的 bug，是 RL 训练范式的 structural feature。</p>
 <h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>论文 review 了所有 7 家厂商的 system card：</p>
 <blockquote>

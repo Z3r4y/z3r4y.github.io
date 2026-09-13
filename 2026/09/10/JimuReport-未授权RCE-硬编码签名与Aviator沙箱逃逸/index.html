@@ -14,11 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。   IntroJimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：  自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。 Jim">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://z3r4y.github.io/images/29/0-workbench.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/29/2-step1-repeater.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/29/3-step2-repeater.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/29/1-marker.png">
-<meta property="og:image" content="https://z3r4y.github.io/images/29/4-fix-diff.png">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-09-10T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-09-10T18:00:41.337Z">
 <meta property="article:author" content="Z3r4y">
@@ -28,7 +24,7 @@
 <meta property="article:tag" content="RCE">
 <meta property="article:tag" content="代码审计">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://z3r4y.github.io/images/29/0-workbench.png">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -56,7 +52,7 @@
     <!-- title -->
     <title>JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/","url":"https://z3r4y.github.io/2026/09/10/JimuReport-%E6%9C%AA%E6%8E%88%E6%9D%83RCE-%E7%A1%AC%E7%BC%96%E7%A0%81%E7%AD%BE%E5%90%8D%E4%B8%8EAviator%E6%B2%99%E7%AE%B1%E9%80%83%E9%80%B8/","headline":"JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸","name":"JimuReport 未授权 RCE：硬编码签名与 Aviator 沙箱逃逸","description":"硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。 Intro JimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成： 自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。 JimuReport 给 Aviator 做了沙箱，但 5.2.6 的 getter 路径没有类白名单校验：可以先拿到 Feature.StaticMethods 加回白名单，再把 functionMissing","datePublished":"2026-09-10T04:00:00.000Z","dateModified":"2026-09-10T18:00:41.337Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/29/0-workbench.png","https://z3r4y.github.io/images/29/2-step1-repeater.png","https://z3r4y.github.io/images/29/3-step2-repeater.png"],"articleSection":"Cyber Security","keywords":"JimuReport, Aviator, 沙箱逃逸, RCE, 代码审计","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -195,7 +191,7 @@
     <blockquote>
 <p>硬编码的 MD5 密钥，加上没有覆盖 getter 路径的语言级沙箱，组合出默认配置下的未授权 RCE。</p>
 </blockquote>
-<p><img src="/images/29/0-workbench.png" alt="workbench"></p>
+<p><img src="/images/29/0-workbench.png" alt="workbench" loading="eager" fetchpriority="high" decoding="async"></p>
 <h2 id="Intro"><a href="#Intro" class="headerlink" title="Intro"></a>Intro</h2><p>JimuReport 这条Pre-Auth RCE 链路由两个缺陷叠加而成：</p>
 <ol>
 <li>自动导出接口 &#x2F;jmreport&#x2F;auto&#x2F;export&#x2F;python&#x2F;plugin 的签名密钥硬编码在 jar 里，X-Sign 可伪造。</li>
@@ -353,13 +349,13 @@
 
 <p>Reflector.invokeMatchingMethod 会在 Runtime 的多个 exec 重载里按参数类型匹配，[String[]] 正好命中 Runtime.exec(String[])，命令随即以应用进程身份执行。</p>
 <h2 id="Break-Fix"><a href="#Break-Fix" class="headerlink" title="Break &amp; Fix"></a>Break &amp; Fix</h2><p>step1 请求（沙箱逃逸）：</p>
-<p><img src="/images/29/2-step1-repeater.png" alt="step1"></p>
+<p><img src="/images/29/2-step1-repeater.png" alt="step1" loading="lazy" decoding="async"></p>
 <p>step2 请求（命令执行）：</p>
-<p><img src="/images/29/3-step2-repeater.png" alt="step2"></p>
-<p><img src="/images/29/1-marker.png" alt="marker"></p>
+<p><img src="/images/29/3-step2-repeater.png" alt="step2" loading="lazy" decoding="async"></p>
+<p><img src="/images/29/1-marker.png" alt="marker" loading="lazy" decoding="async"></p>
 <p style="text-align: left;">Aviator 5.4.0 的 PR #571（fix: check innerClazz while get property，2023-10-03 合并）给这条 getter 路径补上了类白名单校验：把 Env 里原有的检查抽成 AviatorEvaluatorInstance.checkIfClassIsAllowed，再在 Reflector.fastGetProperty 的 target.innerClazz != null 分支加一次调用。</p>
 
-<p><img src="/images/29/4-fix-diff.png" alt="fix-diff"></p>
+<p><img src="/images/29/4-fix-diff.png" alt="fix-diff" loading="lazy" decoding="async"></p>
 <p style="text-align: left;">在 Class 对象上取成员时，先校验这个类是否在 ALLOWED_CLASS_SET 里</p>
 
 <p>补丁没有改动 ALLOWED_CLASS_SET 的语义：checkIfClassIsAllowed 里 null 依旧表示放行所有类，只有非 null 的白名单才会拦，所以链断不断取决于宿主怎么配。要注意校验对象是 target.innerClazz，也就是上一段刚解析出来的那个 Class，而不是表达式里的 x：x 只是一个 Feature 实例，x.declaringClass 是普通对象上的 getter，照常通过并返回 Feature.class；紧接着的 .enumConstants 要在这个新拿到的 Class 上取成员，才会撞上白名单。JimuReport 配的是空集，这里直接拒绝，functionMissing 保持 null，链断在第一步：</p>

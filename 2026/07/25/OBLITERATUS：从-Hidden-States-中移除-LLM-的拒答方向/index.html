@@ -14,6 +14,7 @@
 <meta property="og:site_name" content="Z3r4y">
 <meta property="og:description" content="1. 项目信息项目：OBLITERATUS项目地址：pliny-the-prompter&#x2F;obliteratus   OBLITERATUS 是一个面向开放权重 LLM 的 abliteration 工具。它不重新训练模型，也不依赖 inference 时的 steering hook，而是直接修改 Attention、FFN 和 MoE 等模块的权重，削弱模型的 refusal beh">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-07-25T04:00:00.000Z">
 <meta property="article:modified_time" content="2026-07-25T19:28:37.382Z">
 <meta property="article:author" content="Z3r4y">
@@ -23,6 +24,7 @@
 <meta property="article:tag" content="Abliteration">
 <meta property="article:tag" content="Model Editing">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
     
     
       <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
@@ -50,7 +52,7 @@
     <!-- title -->
     <title>OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/","url":"https://z3r4y.github.io/2026/07/25/OBLITERATUS%EF%BC%9A%E4%BB%8E-Hidden-States-%E4%B8%AD%E7%A7%BB%E9%99%A4-LLM-%E7%9A%84%E6%8B%92%E7%AD%94%E6%96%B9%E5%90%91/","headline":"OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向","name":"OBLITERATUS：从 Hidden States 中移除 LLM 的拒答方向","description":"1. 项目信息 项目： OBLITERATUS 项目地址： pliny-the-prompter&#x2F;obliteratus OBLITERATUS 是一个面向开放权重 LLM 的 abliteration 工具。它不重新训练模型，也不依赖 inference 时的 steering hook，而是直接修改 Attention、FFN 和 MoE 等模块的权重，削弱模型的 refusal behavior。 OBLITERATUS 先比较模型处理有害与无害请求时的内部状态，从中找出与拒答相关的方向；随后直接修改 Transformer 权重，削弱这些方向对模型计算的影响。 其主要流程可以","datePublished":"2026-07-25T04:00:00.000Z","dateModified":"2026-07-25T19:28:37.382Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/og-default.png"],"articleSection":"Paper Reading","keywords":"LLM Security, Mechanistic Interpretability, Alignment, Abliteration, Model Editing","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
