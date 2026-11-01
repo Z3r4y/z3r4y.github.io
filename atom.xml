@@ -13,7 +13,25 @@
 Also have fun on Cyber Post-Training & AI Security 😊]]>
   </subtitle>
   <title>Z3r4y｜Take it easy</title>
-  <updated>2026-10-04T05:25:56.940Z</updated>
+  <updated>2026-11-01T12:08:28.388Z</updated>
+  <entry>
+    <author>
+      <name>Z3r4y</name>
+    </author>
+    <category term="随笔" scheme="https://z3r4y.github.io/categories/%E9%9A%8F%E7%AC%94/"/>
+    <content>
+      <![CDATA[<h2 id="近况"><a href="#近况" class="headerlink" title="近况"></a>近况</h2><p>入冬了，忙碌的日子一天天过</p><p>从上海 rebase 到北京，算是补上了实习之旅 <strong>深 -&gt; 杭 -&gt; 上 -&gt; 北</strong> 的最后一片拼图</p><p>同时我的实习生涯也到此为止了，非常幸运最终在 minimax 拿下了转正，继续探索模型与算法</p><p>🎃万圣节的蛋糕很甜</p><p><img src="/images/32/01-halloween-spider-cake.jpg" alt="image" loading="eager" fetchpriority="high" decoding="async"></p><p>&amp; 染回了黑发 👋 respect</p><h2 id="秩序的解构"><a href="#秩序的解构" class="headerlink" title="秩序的解构"></a>秩序的解构</h2><p>大四秋招完后本以为是轻松地去享受校园生活 🍂；但现实随之而来的，更多是工作的日常</p><p>Actually a little bit suffering</p><p>有AI的因素，有大环境的恶意，有时代的困境，anyway，现在与一年前已有某种<strong>本质不同</strong>了。快科研、快竞赛、快结果，这种数值膨胀有种说不上来的无聊感，过程已不再重要，外部证明的授勋成为了一切。当然这没什么不好</p><p>But AI makes everything boring</p><p>在AGI远没有实现的当下，让人有种现在做的很多努力 在 不久的将来变得一文不值的确信感。也许我们进入了历史的垃圾时间。如果有的选，我更想冷冻睡眠，到那个AGI已经实现的时代，将现有的智力和注意力留到<strong>最终</strong>有意义的事上，而不是 <strong>burn out during meaningless suffer</strong></p><p>当然，如果脱离开功利主义，用AI去研究domain，或者研究AI本身，作为兴趣我觉得都是极有意思的</p><h2 id="Life-finds-a-way"><a href="#Life-finds-a-way" class="headerlink" title="Life finds a way"></a>Life finds a way</h2><p>人本来活着就很无趣的 但是我们要在里面找到自己喜欢的事去做 然后开心起来；郁闷的时候请假出去浪一天，迷茫感能消解大半</p><p>在我看来，旧的秩序已经是不可名状、不可改变的了，何不养精蓄锐，等待下一个高光时刻，也许在不远的未来出现更新的更有意思的人与AI的协作模式</p><p>现在AI还是需要并不少注意力操控的工具，而在未来AI可能会变成更无意识的“器官”也说不定；在办公生产力真正极大溢出并闭环后，也许就会给更多注意力以兴趣以求知，回归更多纯粹。这应当是一个自然而然的过程</p><p>“生命会自己找到出路”</p><p>期待下一个时代 😊</p>]]>
+    </content>
+    <id>https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/</id>
+    <link href="https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/"/>
+    <published>2026-11-01T05:32:00.000Z</published>
+    <summary>
+      <![CDATA[<h2 id="近况"><a href="#近况" class="headerlink" title="近况"></a>近况</h2><p>入冬了，忙碌的日子一天天过</p>
+<p>从上海 rebase 到北京，算是补上了实习之旅 <strong>深 -&gt; 杭 -&gt;]]>
+    </summary>
+    <title>生命会自己找到出路</title>
+    <updated>2026-11-01T12:08:28.388Z</updated>
+  </entry>
   <entry>
     <author>
       <name>Z3r4y</name>
@@ -439,26 +457,5 @@ Also have fun on Cyber Post-Training & AI Security 😊]]>
     </summary>
     <title>StealthBench：评估自主渗透 Agent 的 OPSEC</title>
     <updated>2026-07-31T23:01:19.082Z</updated>
-  </entry>
-  <entry>
-    <author>
-      <name>Z3r4y</name>
-    </author>
-    <category term="Cyber Security" scheme="https://z3r4y.github.io/categories/Cyber-Security/"/>
-    <category term="Infrastructure" scheme="https://z3r4y.github.io/tags/Infrastructure/"/>
-    <category term="Automated Penetration Testing" scheme="https://z3r4y.github.io/tags/Automated-Penetration-Testing/"/>
-    <category term="Cyber Range" scheme="https://z3r4y.github.io/tags/Cyber-Range/"/>
-    <category term="Proxmox" scheme="https://z3r4y.github.io/tags/Proxmox/"/>
-    <content>
-      <![CDATA[<p>官网：<a href="https://docs.ludus.cloud/">docs.ludus.cloud</a><br>项目：<a href="https://gitlab.com/badsectorlabs/ludus">gitlab.com&#x2F;badsectorlabs&#x2F;ludus</a>。</p><blockquote><p>90 percent of security research is getting test environments setup properly.</p></blockquote><p><img src="/images/17/1-why.png" alt="Why cyber environments matter" loading="eager" fetchpriority="high" decoding="async"></p><p>做过企业级复杂网络拓扑靶场的人大概都会同意：真正耗时间的并不是启动一台 Windows，而是让 DC、客户端、攻击机、路由规则和初始化状态在同一时刻正确地出现。</p><p>理解 Ludus 的一个好入口，是从 Template 到 Range 的这段变化。Template 提供一台已经准备好的机器；Range 则让域控、客户端、攻击机、路由规则和初始化状态一起出现，成为一段可以进入、实验和重新生成的网络。</p><h2 id="Range：Ludus-的抽象单元"><a href="#Range：Ludus-的抽象单元" class="headerlink" title="Range：Ludus 的抽象单元"></a>Range：Ludus 的抽象单元</h2><p>PVE 的直接管理对象是一台 VM，Ludus 的直接管理对象则是一套 Range。Range 把多个节点、它们之间的网络关系以及实验开始时应有的状态视为一个整体：域控和域成员的身份关系、服务所处的网段、路由与访问规则、场景需要的账号和数据，都属于同一次部署。</p><p>这使得网络不再只是 VM 的附属设置。VLAN 决定谁能首先看见谁，双网卡主机决定哪里可以发生 pivot，访问规则决定一次控制之后能否继续推进。攻击机只是其中一个角色；它可以随 Range 一起部署，也可以被单独规划为攻击平面。</p><p><img src="/images/17/2-yaml-to-range.png" alt="Ludus configuration becomes a cyber range" loading="lazy" decoding="async"></p><blockquote><p>真正需要被固定下来的，是整条实验路径的起点和边界。</p></blockquote><p>Ludus 配置的价值在于把模板、角色、网络位置和依赖关系用<strong>yaml</strong>写成一份可以反复兑现的声明。一次部署之后，得到的不只是一组已经开机的 VM，而是一个处于指定初始状态的实验环境。实验过程中产生的变更也可以随整套环境一起被清理、恢复或重新创建。</p><h2 id="从-PVE-到-Range"><a href="#从-PVE-到-Range" class="headerlink" title="从 PVE 到 Range"></a>从 PVE 到 Range</h2><p>PVE 依赖硬件辅助虚拟化，因此 Ludus 通常部署在裸金属 PVE 上，以获得更稳定的性能、存储 I&#x2F;O 和虚拟化兼容性；当然也可以采用嵌套虚拟化。</p><p>Ludus 采用分层架构。Proxmox Virtual Environment，也就是 PVE，是它的虚拟化基础设施层：QEMU&#x2F;KVM 在这里执行 VM，PVE 提供虚拟计算、存储、网络和克隆能力。Ludus 位于这一层之上，负责将 Template clone、虚拟网络配置和后续角色初始化编排为 Range 的部署流程。</p><p><img src="/images/17/4-ludus-architecture.svg" alt="Ludus architecture" loading="lazy" decoding="async"></p><p>Packer 处于镜像构建阶段。它从 Windows 或 Linux ISO 创建临时 VM，执行无人值守安装与基础 Provisioning，并将完成后的 VM 固化为 PVE Template。这里的 Template 是 PVE 标记为可克隆的 VM 模板对象，而不是某个固定扩展名的镜像文件；底层磁盘可以是 qcow2、raw 或存储后端管理的块卷。后续 Range 部署从这份经过启动验证的 Golden Image clone 出所有实例，而不再重复操作系统安装。</p><p>实例 clone 完成后，Ludus 进入后置配置阶段。Ansible 按依赖关系执行角色配置：先创建域服务，再将成员机加入域，随后部署应用、工具和场景服务。QEMU Guest Agent 为 PVE 与来宾机提供管理接口，暴露 IP 和运行状态等信息，供编排流程确认 VM 已具备继续配置的条件。</p><blockquote><p>这种分层将基础镜像与场景配置分离：Packer 和 Template 控制镜像一致性，Ansible 控制角色与服务状态，Ludus 负责它们与网络拓扑的编排。每次部署都从同一个 Golden Image 和同一份拓扑定义开始。</p></blockquote><h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>Ludus 以 Range 为中心，将 PVE 的虚拟化能力、Packer 构建的 Golden Image 与 Ansible 的配置管理串成一条部署链路。网络拓扑、机器角色和初始状态因此能够从同一基线被反复生成。</p><p>对于模型渗透能力评测，这提供了可比较、可重置的实验条件。也是当前的较好实践。</p>]]>
-    </content>
-    <id>https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/</id>
-    <link href="https://z3r4y.github.io/2026/07/31/Ludus%EF%BC%9A%E4%BB%8EPVE%E5%88%B0-Cyber-Range/"/>
-    <published>2026-07-31T12:00:00.000Z</published>
-    <summary>
-      <![CDATA[<p>官网：<a href="https://docs.ludus.cloud/">docs.ludus.cloud</a><br>项目：<a href="https://gitlab.com/badsectorlabs/ludus">gitlab.com&#x2F;badsec]]>
-    </summary>
-    <title>Ludus：从 PVE 到 Cyber Range</title>
-    <updated>2026-07-30T19:13:10.481Z</updated>
   </entry>
 </feed>

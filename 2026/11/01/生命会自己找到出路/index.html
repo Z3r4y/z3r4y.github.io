@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    
+    <meta name="description" content="近况入冬了，忙碌的日子一天天过 从上海 rebase 到北京，算是补上了实习之旅 深 -&gt; 杭 -&gt; 上 -&gt; 北 的最后一片拼图 同时我的实习生涯也到此为止了，非常幸运最终在 minimax 拿下了转正，继续探索模型与算法 🎃万圣节的蛋糕很甜  &amp; 染回了黑发 👋 respect 秩序的解构大四秋招完后本以为是轻松地去享受校园生活 🍂；但现实随之而来的，更多是工作">
+<meta property="og:type" content="article">
+<meta property="og:title" content="生命会自己找到出路">
+<meta property="og:url" content="https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/">
+<meta property="og:site_name" content="Z3r4y">
+<meta property="og:description" content="近况入冬了，忙碌的日子一天天过 从上海 rebase 到北京，算是补上了实习之旅 深 -&gt; 杭 -&gt; 上 -&gt; 北 的最后一片拼图 同时我的实习生涯也到此为止了，非常幸运最终在 minimax 拿下了转正，继续探索模型与算法 🎃万圣节的蛋糕很甜  &amp; 染回了黑发 👋 respect 秩序的解构大四秋招完后本以为是轻松地去享受校园生活 🍂；但现实随之而来的，更多是工作">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
+<meta property="article:published_time" content="2026-11-01T05:32:00.000Z">
+<meta property="article:modified_time" content="2026-11-01T12:08:28.388Z">
+<meta property="article:author" content="Z3r4y">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>生命会自己找到出路 | Z3r4y</title>
+    <!-- structured data: site name / author entity for search engines -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3，I'm a Genius trader 💰 Also have fun on Cyber Post-Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/","url":"https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/","headline":"生命会自己找到出路","name":"生命会自己找到出路","description":"近况 入冬了，忙碌的日子一天天过 从上海 rebase 到北京，算是补上了实习之旅 深 -&gt; 杭 -&gt; 上 -&gt; 北 的最后一片拼图 同时我的实习生涯也到此为止了，非常幸运最终在 minimax 拿下了转正，继续探索模型与算法 🎃万圣节的蛋糕很甜 &amp; 染回了黑发 👋 respect 秩序的解构 大四秋招完后本以为是轻松地去享受校园生活 🍂；但现实随之而来的，更多是工作的日常 Actually a little bit suffering 有AI的因素，有大环境的恶意，有时代的困境，anyway，现在与一年前已有某种 本质不同 了。快科研、快竞赛、快结果，这种数值","datePublished":"2026-11-01T05:32:00.000Z","dateModified":"2026-11-01T12:08:28.388Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/32/01-halloween-spider-cake.jpg"],"articleSection":"随笔","inLanguage":"zh-CN"}]}</script>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/10/03/EchoCoT%EF%BC%9A%E5%90%8C%E8%BD%AE-tool-call-%E4%B8%AD%E7%9A%84%E9%9A%90%E8%97%8F-CoT-%E9%87%8D%E6%94%BE%E9%9D%A2/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&text=生命会自己找到出路"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&is_video=false&description=生命会自己找到出路"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=生命会自己找到出路&body=Check out this article: https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&name=生命会自己找到出路&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&t=生命会自己找到出路"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%91%E5%86%B5"><span class="toc-number">1.</span> <span class="toc-text">近况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%A9%E5%BA%8F%E7%9A%84%E8%A7%A3%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">秩序的解构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Life-finds-a-way"><span class="toc-number">3.</span> <span class="toc-text">Life finds a way</span></a></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        生命会自己找到出路
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-11-01T05:32:00.000Z" class="dt-published" itemprop="datePublished">2026-11-01</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a>
+    </div>
+
+
+      
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="近况"><a href="#近况" class="headerlink" title="近况"></a>近况</h2><p>入冬了，忙碌的日子一天天过</p>
+<p>从上海 rebase 到北京，算是补上了实习之旅 <strong>深 -&gt; 杭 -&gt; 上 -&gt; 北</strong> 的最后一片拼图</p>
+<p>同时我的实习生涯也到此为止了，非常幸运最终在 minimax 拿下了转正，继续探索模型与算法</p>
+<p>🎃万圣节的蛋糕很甜</p>
+<p><img src="/images/32/01-halloween-spider-cake.jpg" alt="image" loading="eager" fetchpriority="high" decoding="async"></p>
+<p>&amp; 染回了黑发 👋 respect</p>
+<h2 id="秩序的解构"><a href="#秩序的解构" class="headerlink" title="秩序的解构"></a>秩序的解构</h2><p>大四秋招完后本以为是轻松地去享受校园生活 🍂；但现实随之而来的，更多是工作的日常</p>
+<p>Actually a little bit suffering</p>
+<p>有AI的因素，有大环境的恶意，有时代的困境，anyway，现在与一年前已有某种<strong>本质不同</strong>了。快科研、快竞赛、快结果，这种数值膨胀有种说不上来的无聊感，过程已不再重要，外部证明的授勋成为了一切。当然这没什么不好</p>
+<p>But AI makes everything boring</p>
+<p>在AGI远没有实现的当下，让人有种现在做的很多努力 在 不久的将来变得一文不值的确信感。也许我们进入了历史的垃圾时间。如果有的选，我更想冷冻睡眠，到那个AGI已经实现的时代，将现有的智力和注意力留到<strong>最终</strong>有意义的事上，而不是 <strong>burn out during meaningless suffer</strong></p>
+<p>当然，如果脱离开功利主义，用AI去研究domain，或者研究AI本身，作为兴趣我觉得都是极有意思的</p>
+<h2 id="Life-finds-a-way"><a href="#Life-finds-a-way" class="headerlink" title="Life finds a way"></a>Life finds a way</h2><p>人本来活着就很无趣的 但是我们要在里面找到自己喜欢的事去做 然后开心起来；郁闷的时候请假出去浪一天，迷茫感能消解大半</p>
+<p>在我看来，旧的秩序已经是不可名状、不可改变的了，何不养精蓄锐，等待下一个高光时刻，也许在不远的未来出现更新的更有意思的人与AI的协作模式</p>
+<p>现在AI还是需要并不少注意力操控的工具，而在未来AI可能会变成更无意识的“器官”也说不定；在办公生产力真正极大溢出并闭环后，也许就会给更多注意力以兴趣以求知，回归更多纯粹。这应当是一个自然而然的过程</p>
+<p>“生命会自己找到出路”</p>
+<p>期待下一个时代 😊</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%91%E5%86%B5"><span class="toc-number">1.</span> <span class="toc-text">近况</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E7%A7%A9%E5%BA%8F%E7%9A%84%E8%A7%A3%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">秩序的解构</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Life-finds-a-way"><span class="toc-number">3.</span> <span class="toc-text">Life finds a way</span></a></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&text=生命会自己找到出路"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&is_video=false&description=生命会自己找到出路"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=生命会自己找到出路&body=Check out this article: https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&title=生命会自己找到出路"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&name=生命会自己找到出路&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/&t=生命会自己找到出路"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
