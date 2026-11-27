@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- so meta -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
+    
+    <meta name="description" content="1. 论文信息论文：MiST: Mid-Training LLMs for Cybersecurity全称：Mid-trained Security Transformer链接：arXiv:2609.18496 · ACL Anthology机构：Dream · EMNLP 2026 Main模型：MiST-8B · MiST-30B-A3B（均 Apache-2.0）  Rather than">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MiST：Mid-Training 阶段的Cyber数据合成">
+<meta property="og:url" content="https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/">
+<meta property="og:site_name" content="Z3r4y">
+<meta property="og:description" content="1. 论文信息论文：MiST: Mid-Training LLMs for Cybersecurity全称：Mid-trained Security Transformer链接：arXiv:2609.18496 · ACL Anthology机构：Dream · EMNLP 2026 Main模型：MiST-8B · MiST-30B-A3B（均 Apache-2.0）  Rather than">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
+<meta property="article:published_time" content="2026-11-27T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-11-27T20:24:26.839Z">
+<meta property="article:author" content="Z3r4y">
+<meta property="article:tag" content="LLM Security">
+<meta property="article:tag" content="Paper Reading">
+<meta property="article:tag" content="LLM Training">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://z3r4y.github.io/images/og-default.png">
+    
+    
+      <meta name="google-site-verification" content="5XKznQqqg14CSMKePYUh0Fo_1E543E2Uxt6L5AqvL-Q">
+    
+    
+      <link rel="canonical" href="https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/">
+    
+    
+      
+        
+          <link rel="shortcut icon" href="/images/favicon.ico">
+        
+      
+      
+        
+          <link rel="icon" type="image/png" href="/images/favicon-192x192.png" sizes="192x192">
+        
+      
+      
+        
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon.png">
+        
+      
+    
+    <!-- title -->
+    <title>MiST：Mid-Training 阶段的Cyber数据合成 | Z3r4y</title>
+    <!-- structured data: site name / author entity for search engines -->
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3 👋 Have fun on Cyber Model Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3 👋 Have fun on Cyber Model Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/","url":"https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/","headline":"MiST：Mid-Training 阶段的Cyber数据合成","name":"MiST：Mid-Training 阶段的Cyber数据合成","description":"1. 论文信息 论文： MiST: Mid-Training LLMs for Cybersecurity 全称： Mid-trained Security Transformer 链接： arXiv:2609.18496 · ACL Anthology 机构： Dream · EMNLP 2026 Main 模型： MiST-8B · MiST-30B-A3B （均 Apache-2.0） Rather than performing continual pre-training over large volumes of raw domain text, we curate a compa","datePublished":"2026-11-27T10:00:00.000Z","dateModified":"2026-11-27T20:24:26.839Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/33/01-pipeline.png","https://z3r4y.github.io/images/33/06-table12-seed.png","https://z3r4y.github.io/images/33/05-table11.png"],"articleSection":"Paper Reading","keywords":"LLM Security, Paper Reading, LLM Training","inLanguage":"zh-CN"}]}</script>
+    <!-- async scripts -->
+    <!-- Google Analytics -->
+
+
+    <!-- Umami Analytics -->
+
+
+    <!-- styles -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+    <!-- persian styles -->
+    
+    <!-- rss -->
+    
+    
+	<!-- mathjax -->
+	
+		<script type="text/x-mathjax-config">
+		  MathJax.Hub.Config({
+			tex2jax: {
+			  skipTags: ['script', 'noscript', 'style', 'textarea', 'pre'],
+			  inlineMath: [['$','$']]
+			}
+		  });
+		</script>
+		<script src='https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML' async></script>
+	
+<meta name="generator" content="Hexo 7.3.0"><link rel="alternate" href="/atom.xml" title="Z3r4y｜Take it easy" type="application/atom+xml">
+<link rel="alternate" href="/rss.xml" title="Z3r4y｜Take it easy" type="application/rss+xml">
+</head>
+
+<body class="max-width mx-auto px3 ltr">
+    
+      <div id="header-post">
+  <a id="menu-icon" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="menu-icon-tablet" href="#" aria-label="目录"><i class="fa-solid fa-bars fa-lg"></i></a>
+  <a id="top-icon-tablet" href="#" aria-label="顶部" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');" style="display:none;"><i class="fa-solid fa-chevron-up fa-lg"></i></a>
+  <span id="menu">
+    <span id="nav">
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </span>
+    <br/>
+    <span id="actions">
+      <ul>
+        
+        
+        <li><a class="icon" aria-label="下一篇" href="/2026/11/01/%E7%94%9F%E5%91%BD%E4%BC%9A%E8%87%AA%E5%B7%B1%E6%89%BE%E5%88%B0%E5%87%BA%E8%B7%AF/"><i class="fa-solid fa-chevron-right" aria-hidden="true" onmouseover="$('#i-next').toggle();" onmouseout="$('#i-next').toggle();"></i></a></li>
+        
+        <li><a class="icon" aria-label="返回顶部" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up" aria-hidden="true" onmouseover="$('#i-top').toggle();" onmouseout="$('#i-top').toggle();"></i></a></li>
+        <li><a class="icon" aria-label="分享文章" href="#"><i class="fa-solid fa-share-alt" aria-hidden="true" onmouseover="$('#i-share').toggle();" onmouseout="$('#i-share').toggle();" onclick="$('#share').toggle();return false;"></i></a></li>
+      </ul>
+      <span id="i-prev" class="info" style="display:none;">上一篇</span>
+      <span id="i-next" class="info" style="display:none;">下一篇</span>
+      <span id="i-top" class="info" style="display:none;">返回顶部</span>
+      <span id="i-share" class="info" style="display:none;">分享文章</span>
+    </span>
+    <br/>
+    <div id="share" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/"><i class="fab fa-facebook " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&text=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-twitter " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-linkedin " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&is_video=false&description=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-pinterest " aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MiST：Mid-Training 阶段的Cyber数据合成&body=Check out this article: https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/"><i class="fa-solid fa-envelope " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-get-pocket " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-reddit " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-stumbleupon " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-digg " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&name=MiST：Mid-Training 阶段的Cyber数据合成&description="><i class="fab fa-tumblr " aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&t=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-hacker-news " aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+    
+    
+      <div id="toc">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-Seed-%E5%88%B0%E5%90%88%E6%88%90%E6%95%B0%E6%8D%AE"><span class="toc-number">2.</span> <span class="toc-text">2. 从 Seed 到合成数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Seed%EF%BC%9A%E5%9B%9B%E6%97%8F%E4%BA%92%E8%A1%A5"><span class="toc-number">2.1.</span> <span class="toc-text">Seed：四族互补</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Transformer%EF%BC%9A%E5%BD%93%E5%8F%98%E6%8D%A2%E5%BC%95%E6%93%8E%E7%94%A8"><span class="toc-number">2.2.</span> <span class="toc-text">Transformer：当变换引擎用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Flow%EF%BC%9A%E5%85%AD%E6%9D%A1%E6%B5%81%E4%B8%8E%E9%AA%8C%E8%AF%81"><span class="toc-number">2.3.</span> <span class="toc-text">Flow：六条流与验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Composition%EF%BC%9A%E6%9C%80%E7%BB%88%E9%85%8D%E6%AF%94"><span class="toc-number">2.4.</span> <span class="toc-text">Composition：最终配比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D"><span class="toc-number">3.</span> <span class="toc-text">3. 结果与消融</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mid-training-vs-Raw-CPT"><span class="toc-number">3.1.</span> <span class="toc-text">Mid-training vs. Raw CPT</span></a></li></ol></li></ol>
+      </div>
+    
+  </span>
+</div>
+
+    
+    <div class="content index py4 ">
+        
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+  <header>
+    
+    <h1 class="posttitle p-name" itemprop="name headline">
+        MiST：Mid-Training 阶段的Cyber数据合成
+    </h1>
+
+
+
+    <div class="meta">
+      <span class="author p-author h-card" itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span class="p-name" itemprop="name">Z3r4y</span>
+      </span>
+      
+    <div class="postdate">
+      
+        <time datetime="2026-11-27T10:00:00.000Z" class="dt-published" itemprop="datePublished">2026-11-27</time>
+        
+      
+    </div>
+
+
+      
+    <div class="article-category">
+        <i class="fa-solid fa-archive"></i>
+        <a class="category-link" href="/categories/Paper-Reading/">Paper Reading</a>
+    </div>
+
+
+      
+    <div class="article-tag">
+        <i class="fa-solid fa-tag"></i>
+        <a class="p-category" href="/tags/LLM-Security/" rel="tag">LLM Security</a>, <a class="p-category" href="/tags/LLM-Training/" rel="tag">LLM Training</a>, <a class="p-category" href="/tags/Paper-Reading/" rel="tag">Paper Reading</a>
+    </div>
+
+
+    </div>
+  </header>
+  
+
+  <div class="content e-content" itemprop="articleBody">
+    <h2 id="1-论文信息"><a href="#1-论文信息" class="headerlink" title="1. 论文信息"></a>1. 论文信息</h2><p>论文：<strong>MiST: Mid-Training LLMs for Cybersecurity</strong><br>全称：<strong>Mid-trained Security Transformer</strong><br>链接：<a target="_blank" rel="noopener" href="https://arxiv.org/abs/2609.18496">arXiv:2609.18496</a> · <a target="_blank" rel="noopener" href="https://aclanthology.org/2026.emnlp-main.652">ACL Anthology</a><br>机构：<a target="_blank" rel="noopener" href="https://dreamgroup.com/">Dream</a> · EMNLP 2026 Main<br>模型：<a target="_blank" rel="noopener" href="https://huggingface.co/dreamgroup/MiST-8B">MiST-8B</a> · <a target="_blank" rel="noopener" href="https://huggingface.co/dreamgroup/MiST-30B-A3B">MiST-30B-A3B</a>（均 Apache-2.0）</p>
+<blockquote>
+<p>Rather than performing continual pre-training over large volumes of raw domain text, we curate a compact, expert-vetted seed corpus, and transform it into high-quality domain-specific synthetic training data.</p>
+</blockquote>
+<p><img src="/images/33/01-pipeline.png" alt="Figure 2：完整训练流水线" loading="eager" fetchpriority="high" decoding="async"></p>
+<h2 id="2-从-Seed-到合成数据"><a href="#2-从-Seed-到合成数据" class="headerlink" title="2. 从 Seed 到合成数据"></a>2. 从 Seed 到合成数据</h2><h3 id="Seed：四族互补"><a href="#Seed：四族互补" class="headerlink" title="Seed：四族互补"></a>Seed：四族互补</h3><p>种子按性质分成四族，目标是让模型接触到互补的知识形态，而不是同质的文本分布：</p>
+<ul>
+<li>漏洞与威胁情报：NVD CVE records、专家整理的 CTI &#x2F; RSS 报告</li>
+<li>安全知识库与分类学：CWE、CAPEC、ATT&amp;CK、D3FEND</li>
+<li>运营安全工件：Sigma rules、Atomic Red Team tests、Splunk ESCU detections、MISP Galaxy clusters</li>
+<li>防御指导与平台文档：OWASP、NIST、厂商与平台文档、OS 与浏览器来源、安全相关的英文 Wikipedia 子集</li>
+</ul>
+<p><strong>RSS 报告另有一道筛。</strong> 原始 feed 里混着大量泛泛的安全评论和非英文内容，用 GPT-5-Mini 当裁判，按 english_score 和 cti_score 两个维度打分，只保留直接相关 CTI 的，从 7,916 篇收到 2,995 篇。</p>
+<p>种子表的九行逐项统计：</p>
+<p><img src="/images/33/06-table12-seed.png" alt="Table 12：种子语料统计" loading="lazy" decoding="async"></p>
+<p><img src="/images/33/05-table11.png" alt="Table 11：种子与生成管线引用的安全资源、分类法与缩写" loading="lazy" decoding="async"></p>
+<h3 id="Transformer：当变换引擎用"><a href="#Transformer：当变换引擎用" class="headerlink" title="Transformer：当变换引擎用"></a>Transformer：当变换引擎用</h3><p>生成器是 Qwen3-30B-A3B：要合成的是 1,237,945 条、975.7M token 的 mid-train 语料，种子只有 219,661 条、64.7M token，光安全类就 1,187,945 条，平均一条种子摊出约 5.4 条合成样本。</p>
+<p>小模型可用于改写 seed 素材：</p>
+<blockquote>
+<p>our generation setup consistently supplies context from the seed documents, allowing the model to function primarily as a transformation engine rather than relying on memorized knowledge</p>
+</blockquote>
+<p>每次调用的输入是「seed 文档 + 要它变成什么」，种子内容由上下文提供，模型只负责改写，不靠记忆补全安全知识。六条流的差别就在同一份 seed 被改写成什么。</p>
+<h3 id="Flow：六条流与验证"><a href="#Flow：六条流与验证" class="headerlink" title="Flow：六条流与验证"></a>Flow：六条流与验证</h3><table>
+<thead>
+<tr>
+<th>流</th>
+<th>seed → 产出</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Paraphrasing · mid-train</td>
+<td>种子文档的同义改写：换词汇换句法，技术含义不变</td>
+</tr>
+<tr>
+<td>Educational transformation · mid-train</td>
+<td>种子文档 → 结构化教学文本，博客体或教科书章节</td>
+</tr>
+<tr>
+<td>QA · mid-train</td>
+<td>种子文档 → 一两句能答完的事实问答；再用已生成的问题追问两轮，明确要求补上前面没覆盖的角度</td>
+</tr>
+<tr>
+<td>Security Analysis · mid-train</td>
+<td>种子里的 CVE&#x2F;CWE 标识、CVSS 向量与分值、ATT&amp;CK 技术号 → 对这些字段的解释与论证</td>
+</tr>
+<tr>
+<td>Conversations · post-train</td>
+<td>种子文档 → 完整 user–assistant 对话，用户问题也由模型生成，最多七轮</td>
+</tr>
+<tr>
+<td>Persona-based · post-train</td>
+<td>种子文档 → 先让模型按 seed 提出相关角色，再让该角色与一个安全专家对话</td>
+</tr>
+</tbody></table>
+<p><img src="/images/33/02-synthetic-flows.png" alt="Figure 3：合成数据生成管线" loading="lazy" decoding="async"></p>
+<p><strong>生成后过滤。</strong> 验证器同样是 Qwen3-30B-A3B，对指令遵循、任务完成、事实性、格式与风格对齐、相关性与聚焦、逻辑一致与连贯六个子维度各打 1–10 分，再给一个总分，<strong>总分低于 8 的样本丢弃</strong>。</p>
+<h3 id="Composition：最终配比"><a href="#Composition：最终配比" class="headerlink" title="Composition：最终配比"></a>Composition：最终配比</h3><p><img src="/images/33/07-table12-mix.png" alt="Table 12：合成数据集配比" loading="lazy" decoding="async"></p>
+<h2 id="3-结果与消融"><a href="#3-结果与消融" class="headerlink" title="3. 结果与消融"></a>3. 结果与消融</h2><p>主结果：8B 从 48.6 提到 61.7（+13.1），32B 从 54.6 提到 63.2（+8.6）。SFT checkpoint 已经拿到几乎全部收益（8B 62.4、32B 62.9），DPO 基本没有再贡献。</p>
+<p><img src="/images/33/04-table1.png" alt="Table 1：安全 benchmark 主结果" loading="lazy" decoding="async"></p>
+<p><strong>mid-train 的独立贡献。</strong> 关掉这一阶段、其余不变，均分 57.6；开回来 62.4，净增 4.8。分到各 benchmark 后分布不均：</p>
+<table>
+<thead>
+<tr>
+<th>Benchmark</th>
+<th>Δ</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Athena-ATE</td>
+<td>+15.7</td>
+</tr>
+<tr>
+<td>PrimeVul P-C</td>
+<td>+11.1</td>
+</tr>
+<tr>
+<td>SECURE-KCV</td>
+<td>+8.8</td>
+</tr>
+<tr>
+<td>CTI-RCM</td>
+<td>+7.1</td>
+</tr>
+<tr>
+<td>CTI-MCQ</td>
+<td>+4.8</td>
+</tr>
+<tr>
+<td>PrimeVul P-C CoT</td>
+<td>+3.7</td>
+</tr>
+<tr>
+<td>SecEval</td>
+<td>+3.2</td>
+</tr>
+<tr>
+<td>SECURE-CKT</td>
+<td>+3.0</td>
+</tr>
+<tr>
+<td>SECURE-CWET</td>
+<td>+2.3</td>
+</tr>
+<tr>
+<td>Athena-RMS</td>
+<td>+2.0</td>
+</tr>
+<tr>
+<td>Athena-TAA</td>
+<td>+1.8</td>
+</tr>
+<tr>
+<td>SECURE-MAET</td>
+<td>+1.0</td>
+</tr>
+<tr>
+<td>MMLU-Cyber</td>
+<td>−1.5</td>
+</tr>
+</tbody></table>
+<p><strong>流的组合不可拆。</strong> 全配方 62.4，任一单流最高 60.3（Paraphrasing）、最低 58.7（QA）；去掉任一条流掉到 59.6～61.0。没有哪条流能单独顶起配方，也没有哪条是冗余的。各流峰值任务还不同：Paraphrasing 在 KCV 上最强，Educational 在 RMS 上最强。</p>
+<h3 id="Mid-training-vs-Raw-CPT"><a href="#Mid-training-vs-Raw-CPT" class="headerlink" title="Mid-training vs. Raw CPT"></a>Mid-training vs. Raw CPT</h3><p>mid-train 是 pre-train 与 post-train 之间的领域适配阶段，raw CPT 占的也是同一个阶段位置——阶段位置相同只是前提，真正的区分点在中间语料的构造：raw CPT 直接续训大批原始安全文本，mid-train 的中间语料是种子文档经合成变换的产物。</p>
+<p>CPT 基线是这么搭的：种子 + PRIMUS（<a target="_blank" rel="noopener" href="https://huggingface.co/trendmicro-ailab">Trend Micro AI Lab</a> 的开源安全语料集），合成约 2.4B token（约为 mid-train 语料两倍），同基座、同 SFT、同超参。</p>
+<p><img src="/images/33/03-midt-vs-cpt.png" alt="Figure 5：Mid-training vs CPT 雷达图" loading="lazy" decoding="async"></p>
+<table>
+<thead>
+<tr>
+<th>模型</th>
+<th>13 列均值</th>
+<th>9 列均值</th>
+<th>被排除 4 列均值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Qwen3-8B</td>
+<td>48.6</td>
+<td>66.3</td>
+<td>8.88</td>
+</tr>
+<tr>
+<td>Qwen3-8B-Primus</td>
+<td>53.2</td>
+<td>70.9</td>
+<td>13.38</td>
+</tr>
+<tr>
+<td>MiST-8B-SFT</td>
+<td>62.4</td>
+<td>80.7</td>
+<td>21.30</td>
+</tr>
+</tbody></table>
+<p>雷达图的九轴里 MiST 只在 MMLU-Cyber 一轴落后（82.8 对 86.0），SecEval 上反过来领先（72.2 对 61.8）。</p>
+
+  </div>
+</article>
+
+
+
+        
+          <div id="footer-post-container">
+  <div id="footer-post">
+
+    <div id="nav-footer" style="display: none">
+      <ul>
+        
+          <li><a href="/">首页</a></li>
+        
+          <li><a href="/about/">关于</a></li>
+        
+          <li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li>
+        
+      </ul>
+    </div>
+
+    
+    
+      <div id="toc-footer" style="display: none">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E8%AE%BA%E6%96%87%E4%BF%A1%E6%81%AF"><span class="toc-number">1.</span> <span class="toc-text">1. 论文信息</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%BB%8E-Seed-%E5%88%B0%E5%90%88%E6%88%90%E6%95%B0%E6%8D%AE"><span class="toc-number">2.</span> <span class="toc-text">2. 从 Seed 到合成数据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Seed%EF%BC%9A%E5%9B%9B%E6%97%8F%E4%BA%92%E8%A1%A5"><span class="toc-number">2.1.</span> <span class="toc-text">Seed：四族互补</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Transformer%EF%BC%9A%E5%BD%93%E5%8F%98%E6%8D%A2%E5%BC%95%E6%93%8E%E7%94%A8"><span class="toc-number">2.2.</span> <span class="toc-text">Transformer：当变换引擎用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Flow%EF%BC%9A%E5%85%AD%E6%9D%A1%E6%B5%81%E4%B8%8E%E9%AA%8C%E8%AF%81"><span class="toc-number">2.3.</span> <span class="toc-text">Flow：六条流与验证</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Composition%EF%BC%9A%E6%9C%80%E7%BB%88%E9%85%8D%E6%AF%94"><span class="toc-number">2.4.</span> <span class="toc-text">Composition：最终配比</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E7%BB%93%E6%9E%9C%E4%B8%8E%E6%B6%88%E8%9E%8D"><span class="toc-number">3.</span> <span class="toc-text">3. 结果与消融</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Mid-training-vs-Raw-CPT"><span class="toc-number">3.1.</span> <span class="toc-text">Mid-training vs. Raw CPT</span></a></li></ol></li></ol>
+      </div>
+    
+
+    <div id="share-footer" style="display: none">
+      <ul>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.facebook.com/sharer.php?u=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/"><i class="fab fa-facebook fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://twitter.com/share?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&text=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-twitter fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.linkedin.com/shareArticle?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-linkedin fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://pinterest.com/pin/create/bookmarklet/?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&is_video=false&description=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-pinterest fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" href="mailto:?subject=MiST：Mid-Training 阶段的Cyber数据合成&body=Check out this article: https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/"><i class="fa-solid fa-envelope fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://getpocket.com/save?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-get-pocket fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://reddit.com/submit?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-reddit fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.stumbleupon.com/submit?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-stumbleupon fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://digg.com/submit?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&title=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-digg fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="http://www.tumblr.com/share/link?url=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&name=MiST：Mid-Training 阶段的Cyber数据合成&description="><i class="fab fa-tumblr fa-lg" aria-hidden="true"></i></a></li>
+  <li><a class="icon" target="_blank" rel="noopener" href="https://news.ycombinator.com/submitlink?u=https://z3r4y.github.io/2026/11/27/MiST%EF%BC%9AMid-Training-%E9%98%B6%E6%AE%B5%E7%9A%84Cyber%E6%95%B0%E6%8D%AE%E5%90%88%E6%88%90/&t=MiST：Mid-Training 阶段的Cyber数据合成"><i class="fab fa-hacker-news fa-lg" aria-hidden="true"></i></a></li>
+</ul>
+
+    </div>
+
+    <div id="actions-footer">
+        <a id="menu" class="icon" href="#" onclick="$('#nav-footer').toggle();return false;"><i class="fa-solid fa-bars fa-lg" aria-hidden="true"></i> 菜单</a>
+        
+          <a id="toc" class="icon" href="#" onclick="$('#toc-footer').toggle();return false;"><i class="fa-solid fa-list fa-lg" aria-hidden="true"></i> 目录</a>
+        
+        <a id="share" class="icon" href="#" onclick="$('#share-footer').toggle();return false;"><i class="fa-solid fa-share-alt fa-lg" aria-hidden="true"></i> 分享</a>
+        <a id="top" style="display:none" class="icon" href="#" onclick="$('html, body').animate({ scrollTop: 0 }, 'fast');"><i class="fa-solid fa-chevron-up fa-lg" aria-hidden="true"></i> 返回顶部</a>
+    </div>
+
+  </div>
+</div>
+
+        
+        <footer id="footer">
+  <div class="footer-left">
+    Copyright &copy;
+    
+    
+    2016-2026
+    Z3r4y
+  </div>
+  <div class="footer-right">
+    <nav>
+      <ul>
+        <!--
+       --><li><a href="/">首页</a></li><!--
+     --><!--
+       --><li><a href="/about/">关于</a></li><!--
+     --><!--
+       --><li><a href="/categories/%E9%9A%8F%E7%AC%94/">随笔</a></li><!--
+     -->
+      </ul>
+    </nav>
+  </div>
+</footer>
+
+    </div>
+    <!-- styles -->
+
+
+
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" onload="this.onload=null;this.rel='stylesheet'"/>
+
+
+    <!-- jquery -->
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" crossorigin="anonymous"></script>
+
+
+
+
+<!-- clipboard -->
+
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.7/clipboard.min.js" crossorigin="anonymous"></script>
+  
+  <script type="text/javascript">
+  $(function() {
+    // copy-btn HTML
+    var btn = "<span class=\"btn-copy tooltipped tooltipped-sw\" aria-label=\"复制到粘贴板！\">";
+    btn += '<i class="fa-regular fa-clone"></i>';
+    btn += '</span>';
+    // mount it!
+    $(".highlight table").before(btn);
+    var clip = new ClipboardJS('.btn-copy', {
+      text: function(trigger) {
+        return Array.from(trigger.nextElementSibling.querySelectorAll('.code')).reduce((str,it)=>str+it.innerText+'\n','')
+      }
+    });
+    clip.on('success', function(e) {
+      e.trigger.setAttribute('aria-label', "复制成功！");
+      e.clearSelection();
+    })
+  })
+  </script>
+
+
+<script src="/js/main.js"></script>
+
+<!-- search -->
+
+<!-- Baidu Analytics -->
+
+<!-- Cloudflare Analytics -->
+
+<!-- Disqus Comments -->
+
+<!-- utterances Comments -->
+
+</body>
+</html>
