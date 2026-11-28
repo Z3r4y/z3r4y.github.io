@@ -1,62 +1,75 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 600" font-family="Helvetica Neue, Arial, sans-serif">
-<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#666"/></marker></defs>
-<rect width="920" height="600" fill="#fff"/>
-<text x="460" y="32" text-anchor="middle" font-size="17" font-weight="600" fill="#111">XekRung 的语料工程：五类来源 → 四个补丁 → 混合 → 阶段链</text>
-<text x="30" y="66" font-size="13" font-weight="600" fill="#333">五类语料来源</text>
-<line x1="30" y1="72" x2="220" y2="72" stroke="#ddd" stroke-width="1"/>
-<text x="270" y="66" font-size="13" font-weight="600" fill="#333">四个领域策略</text>
-<line x1="270" y1="72" x2="460" y2="72" stroke="#ddd" stroke-width="1"/>
-<text x="500" y="66" font-size="13" font-weight="600" fill="#333">数据混合</text>
-<line x1="500" y1="72" x2="690" y2="72" stroke="#ddd" stroke-width="1"/>
-<text x="640" y="66" font-size="13" font-weight="600" fill="#333">训练阶段</text>
-<line x1="640" y1="72" x2="830" y2="72" stroke="#ddd" stroke-width="1"/>
-<rect x="30" y="86" width="190" height="44" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1"/>
-<text x="125" y="113" text-anchor="middle" font-size="12.5" fill="#111">开源与外部数据</text>
-<rect x="30" y="144" width="190" height="44" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1"/>
-<text x="125" y="171" text-anchor="middle" font-size="12.5" fill="#111">内部产品数据</text>
-<rect x="30" y="202" width="190" height="44" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1"/>
-<text x="125" y="229" text-anchor="middle" font-size="12.5" fill="#111">内部知识文档</text>
-<rect x="30" y="260" width="190" height="44" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1"/>
-<text x="125" y="287" text-anchor="middle" font-size="12.5" fill="#111">日志数据</text>
-<rect x="30" y="318" width="190" height="44" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1"/>
-<text x="125" y="345" text-anchor="middle" font-size="12.5" fill="#111">代码数据</text>
-<rect x="270" y="86" width="190" height="56" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1"/>
-<text x="365" y="109" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">解释性标注</text>
-<text x="365" y="127" text-anchor="middle" font-size="10" fill="#777">原始产物 → 自然语言解释</text>
-<rect x="270" y="160" width="190" height="56" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1"/>
-<text x="365" y="183" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">关联信息聚合</text>
-<text x="365" y="201" text-anchor="middle" font-size="10" fill="#777">CVE / PoC / 情报对齐</text>
-<rect x="270" y="234" width="190" height="56" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1"/>
-<text x="365" y="257" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">熵引导长上下文</text>
-<text x="365" y="275" text-anchor="middle" font-size="10" fill="#777">检索 + 熵验收拼接</text>
-<rect x="270" y="308" width="190" height="56" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1"/>
-<text x="365" y="331" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">工程经验编排</text>
-<text x="365" y="349" text-anchor="middle" font-size="10" fill="#777">差分 / commit / 自纠错</text>
-<rect x="500" y="200" width="120" height="120" rx="4" fill="#f0f0f2" stroke="#bbb" stroke-width="1"/>
-<text x="560" y="238" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">§3.1.4</text>
-<text x="560" y="256" text-anchor="middle" font-size="11" font-weight="normal" fill="#555">静态配比</text>
-<text x="560" y="274" text-anchor="middle" font-size="11" font-weight="normal" fill="#555">消融只提及</text>
-<text x="560" y="292" text-anchor="middle" font-size="11" font-weight="normal" fill="#555">不给结果</text>
-<rect x="640" y="86" width="250" height="52" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.5"/>
-<text x="765" y="109" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">CPT checkpoint</text>
-<line x1="765" y1="140" x2="765" y2="166" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<rect x="640" y="172" width="250" height="52" rx="4" fill="#fffbe6" stroke-dasharray="5,3" stroke="#d9c05c" stroke-width="1.5"/>
-<text x="765" y="195" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">mid-training §3.2</text>
-<text x="765" y="213" text-anchor="middle" font-size="10" fill="#8a7a20">两轴课程：sigmoid 配比 + 短到长</text>
-<line x1="765" y1="226" x2="765" y2="252" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<rect x="640" y="258" width="250" height="52" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.5"/>
-<text x="765" y="281" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">SFT</text>
-<line x1="765" y1="312" x2="765" y2="338" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<rect x="640" y="344" width="250" height="52" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.5"/>
-<text x="765" y="367" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">RL (GRPO)</text>
-<rect x="640" y="440" width="250" height="46" rx="4" fill="#111"/>
-<text x="765" y="469" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">XekRung-8B (non-thinking)</text>
-<line x1="765" y1="398" x2="765" y2="436" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<line x1="222" y1="210" x2="264" y2="210" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<line x1="462" y1="210" x2="494" y2="210" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<line x1="622" y1="260" x2="634" y2="260" stroke="#666" stroke-width="1.5" marker-end="url(#ar)"/>
-<rect x="30" y="506" width="860" height="72" rx="4" fill="#fdf3f3" stroke="#e0a0a0" stroke-width="1"/>
-<text x="48" y="530" font-size="12" font-weight="600" fill="#a03030">口径错位</text>
-<text x="48" y="550" font-size="11.5" fill="#333">mid-training 在 §3 出现 9 次，§4 之后 0 次；§5 的 checkpoint 链是 base → CPT checkpoint → SFT checkpoint → RL。</text>
-<text x="48" y="568" font-size="11.5" fill="#333">论文 Table 1 与结论章都写 CPT → SFT → RL 三阶段——§3.2 是设计论证，没有进结果口径，也没有任何隔离消融。</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 440" font-family="PingFang SC, Hiragino Sans GB, Microsoft YaHei, Helvetica Neue, Arial, sans-serif">
+<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#777"/></marker></defs>
+<rect width="1000" height="440" fill="#fff"/>
+<text x="500" y="28" text-anchor="middle" font-size="17" font-weight="600" fill="#111">XekRung 的 CPT 语料工程：五类来源 → 通用处理 → 九条路径 → 阶段链</text>
+<text x="125.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#333">五类语料来源</text>
+<line x1="20" y1="66" x2="230" y2="66" stroke="#ddd" stroke-width="1"/>
+<text x="375.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#333">通用处理链</text>
+<line x1="270" y1="66" x2="480" y2="66" stroke="#ddd" stroke-width="1"/>
+<text x="625.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#333">九条路径</text>
+<line x1="520" y1="66" x2="730" y2="66" stroke="#ddd" stroke-width="1"/>
+<text x="875.0" y="58" text-anchor="middle" font-size="13" font-weight="600" fill="#333">训练阶段</text>
+<line x1="770" y1="66" x2="980" y2="66" stroke="#ddd" stroke-width="1"/>
+<rect x="20" y="76" width="210" height="100" rx="5" fill="#fcfcfd" stroke="#e4e4e8" stroke-width="1"/>
+<text x="32" y="95" font-size="11.5" font-weight="600" fill="#555" text-anchor="start">公开来源</text>
+<rect x="32" y="102" width="186" height="30" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1.2"/>
+<text x="125.0" y="122" text-anchor="middle" font-size="12" font-weight="normal" fill="#111">开源与外部数据</text>
+<rect x="32" y="138" width="186" height="30" rx="4" fill="#eef4fb" stroke="#9dbfe0" stroke-width="1.2"/>
+<text x="125.0" y="158" text-anchor="middle" font-size="12" font-weight="normal" fill="#111">代码数据</text>
+<rect x="20" y="184" width="210" height="144" rx="5" fill="#fcfcfd" stroke="#e4e4e8" stroke-width="1"/>
+<text x="32" y="203" font-size="11.5" font-weight="600" fill="#555" text-anchor="start">内部资产</text>
+<rect x="32" y="210" width="186" height="30" rx="4" fill="#f7f4ea" stroke="#c3b489" stroke-width="1.2"/>
+<text x="125.0" y="230" text-anchor="middle" font-size="12" font-weight="normal" fill="#111">内部产品数据</text>
+<rect x="32" y="246" width="186" height="30" rx="4" fill="#f7f4ea" stroke="#c3b489" stroke-width="1.2"/>
+<text x="125.0" y="266" text-anchor="middle" font-size="12" font-weight="normal" fill="#111">内部知识文档</text>
+<rect x="32" y="282" width="186" height="30" rx="4" fill="#f7f4ea" stroke="#c3b489" stroke-width="1.2"/>
+<text x="125.0" y="302" text-anchor="middle" font-size="12" font-weight="normal" fill="#111">日志数据</text>
+<rect x="270" y="76" width="210" height="57" rx="4" fill="#f4f4f6" stroke="#c4c4c8" stroke-width="1.2"/>
+<text x="375.0" y="100" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">去重</text>
+<text x="375.0" y="118" text-anchor="middle" font-size="10" font-weight="normal" fill="#777">精确哈希 + MinHash</text>
+<rect x="270" y="141" width="210" height="57" rx="4" fill="#f4f4f6" stroke="#c4c4c8" stroke-width="1.2"/>
+<text x="375.0" y="165" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">质量过滤</text>
+<text x="375.0" y="183" text-anchor="middle" font-size="10" font-weight="normal" fill="#777">启发式 + 学习式分类器</text>
+<rect x="270" y="206" width="210" height="57" rx="4" fill="#f4f4f6" stroke="#c4c4c8" stroke-width="1.2"/>
+<text x="375.0" y="230" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">脱敏</text>
+<text x="375.0" y="248" text-anchor="middle" font-size="10" font-weight="normal" fill="#777">PII、资产标识、编码串</text>
+<rect x="270" y="271" width="210" height="57" rx="4" fill="#f4f4f6" stroke="#c4c4c8" stroke-width="1.2"/>
+<text x="375.0" y="295" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">格式归一</text>
+<text x="375.0" y="313" text-anchor="middle" font-size="10" font-weight="normal" fill="#777">统一纯文本，保留代码块</text>
+<rect x="520" y="76" width="210" height="106" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1.2"/>
+<text x="625.0" y="98" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">样本合成 · 4 条</text>
+<text x="625.0" y="120" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">解释性标注</text>
+<text x="625.0" y="138" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">关联信息聚合</text>
+<text x="625.0" y="156" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">熵引导长上下文</text>
+<text x="625.0" y="174" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">工程经验编排</text>
+<rect x="520" y="190" width="210" height="62" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1.2"/>
+<text x="625.0" y="211" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">内部资产转化 · 2 条</text>
+<text x="625.0" y="230" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">日志 → 知识图谱</text>
+<text x="625.0" y="244" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">专家经验 → CoT</text>
+<rect x="520" y="260" width="210" height="84" rx="4" fill="#fff3e8" stroke="#e8b98a" stroke-width="1.2" stroke-dasharray="5,3"/>
+<text x="625.0" y="281" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">阶段注入 · 3 条</text>
+<text x="625.0" y="301" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">长程 agentic traj</text>
+<text x="625.0" y="317" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">仓库级长上下文</text>
+<text x="625.0" y="333" text-anchor="middle" font-size="11.5" font-weight="normal" fill="#111">线性化 SFT 数据</text>
+<rect x="770" y="76" width="210" height="44" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.2"/>
+<text x="875.0" y="104" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">CPT checkpoint</text>
+<line x1="875.0" y1="122" x2="875.0" y2="126" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<rect x="770" y="128" width="210" height="44" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.2"/>
+<text x="875.0" y="156" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">mid-training</text>
+<line x1="875.0" y1="174" x2="875.0" y2="178" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<rect x="770" y="180" width="210" height="44" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.2"/>
+<text x="875.0" y="208" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">SFT</text>
+<line x1="875.0" y1="226" x2="875.0" y2="230" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<rect x="770" y="232" width="210" height="44" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.2"/>
+<text x="875.0" y="260" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">RL (GRPO)</text>
+<line x1="875.0" y1="278" x2="875.0" y2="282" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<rect x="770" y="284" width="210" height="44" rx="4" fill="#eef7ee" stroke="#8fbf8f" stroke-width="1.2"/>
+<text x="875.0" y="312" text-anchor="middle" font-size="12.5" font-weight="600" fill="#111">XekRung-8B</text>
+<line x1="230" y1="202" x2="266" y2="202" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<line x1="480" y1="202" x2="516" y2="202" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<line x1="730" y1="202" x2="766" y2="202" stroke="#777" stroke-width="1.4" marker-end="url(#ar)"/>
+<rect x="20" y="348" width="976" height="76" rx="4" fill="#fafafa" stroke="#e2e2e2" stroke-width="1"/>
+<text x="40" y="370" font-size="11.5" fill="#333" text-anchor="start">样本合成那四条与内部资产转化那两条共同产出 CPT 语料（5B token）；阶段注入那三条落在 CPT 与 SFT 之间的 mid-training 窗口。</text>
+<text x="40" y="390" font-size="11.5" fill="#333" text-anchor="start">内部资产另有两条额外用法：日志抽成知识图谱，与 top-down 框架互校；专家经验蒸馏成 CoT 训练数据。</text>
+<text x="40" y="410" font-size="11.5" fill="#333" text-anchor="start">九条路径共享同一条通用处理链，产出同一份 CPT 语料。</text>
 </svg>
