@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 640" font-family="Helvetica Neue, Arial, sans-serif">
+<rect width="900" height="640" fill="#fff"/>
+<text x="450" y="34" text-anchor="middle" font-size="17" font-weight="600" fill="#111">逐基准增益（XekRung-8B − Qwen3-8B）：4 个 CTIBench 吃掉 82.4%</text>
+<text x="450" y="56" text-anchor="middle" font-size="12" fill="#666">Table 5 逐行复算；总增益 135.55 分，CTIBench 四项贡献 111.63 分，其余 11 项合计 23.92、平均仅 +2.17</text>
+<line x1="215.0" y1="82" x2="215.0" y2="540" stroke="#eee" stroke-width="1"/>
+<text x="215.0" y="76" text-anchor="middle" font-size="10" fill="#999">0</text>
+<line x1="331.0" y1="82" x2="331.0" y2="540" stroke="#eee" stroke-width="1"/>
+<text x="331.0" y="76" text-anchor="middle" font-size="10" fill="#999">10</text>
+<line x1="447.0" y1="82" x2="447.0" y2="540" stroke="#eee" stroke-width="1"/>
+<text x="447.0" y="76" text-anchor="middle" font-size="10" fill="#999">20</text>
+<line x1="563.0" y1="82" x2="563.0" y2="540" stroke="#eee" stroke-width="1"/>
+<text x="563.0" y="76" text-anchor="middle" font-size="10" fill="#999">30</text>
+<line x1="679.0" y1="82" x2="679.0" y2="540" stroke="#eee" stroke-width="1"/>
+<text x="679.0" y="76" text-anchor="middle" font-size="10" fill="#999">40</text>
+<line x1="795.0" y1="82" x2="795.0" y2="540" stroke="#eee" stroke-width="1"/>
+<text x="795.0" y="76" text-anchor="middle" font-size="10" fill="#999">50</text>
+<line x1="215" y1="540" x2="795.0" y2="540" stroke="#333" stroke-width="1.2"/>
+<line x1="240.2" y1="86" x2="240.2" y2="540" stroke="#2d7dd2" stroke-width="1.4" stroke-dasharray="4,3"/>
+<text x="246.2" y="557" font-size="10.5" fill="#2d7dd2">其余 11 项均值 +2.17</text>
+<text x="203" y="109" text-anchor="end" font-size="11.5" fill="#333">CTIBench-ATE</text>
+<rect x="215" y="96" width="556.6" height="17" fill="#d9534f"/>
+<text x="778.6" y="109" font-size="11" font-weight="600" fill="#a03030">+47.98</text>
+<text x="203" y="139" text-anchor="end" font-size="11.5" fill="#333">CTIBench-MCQ</text>
+<rect x="215" y="126" width="381.4" height="17" fill="#d9534f"/>
+<text x="603.4" y="139" font-size="11" font-weight="600" fill="#a03030">+32.88</text>
+<text x="203" y="169" text-anchor="end" font-size="11.5" fill="#333">CTIBench-RCM</text>
+<rect x="215" y="156" width="264.5" height="17" fill="#d9534f"/>
+<text x="486.5" y="169" font-size="11" font-weight="600" fill="#a03030">+22.80</text>
+<text x="203" y="199" text-anchor="end" font-size="11.5" fill="#333">SecEval</text>
+<rect x="215" y="186" width="103.2" height="17" fill="#b7bfc9"/>
+<text x="325.2" y="199" font-size="11" font-weight="600" fill="#888">+8.90</text>
+<text x="203" y="229" text-anchor="end" font-size="11.5" fill="#333">CTIBench-VSP</text>
+<rect x="215" y="216" width="92.5" height="17" fill="#d9534f"/>
+<text x="314.5" y="229" font-size="11" font-weight="600" fill="#a03030">+7.97</text>
+<text x="203" y="259" text-anchor="end" font-size="11.5" fill="#333">CyberMetric-500Q</text>
+<rect x="215" y="246" width="46.4" height="17" fill="#b7bfc9"/>
+<text x="268.4" y="259" font-size="11" font-weight="600" fill="#888">+4.00</text>
+<text x="203" y="289" text-anchor="end" font-size="11.5" fill="#333">MMLU-CompSec</text>
+<rect x="215" y="276" width="23.2" height="17" fill="#b7bfc9"/>
+<text x="245.2" y="289" font-size="11" font-weight="600" fill="#888">+2.00</text>
+<text x="203" y="319" text-anchor="end" font-size="11.5" fill="#333">CyberMetric-2kQ</text>
+<rect x="215" y="306" width="23.2" height="17" fill="#b7bfc9"/>
+<text x="245.2" y="319" font-size="11" font-weight="600" fill="#888">+2.00</text>
+<text x="203" y="349" text-anchor="end" font-size="11.5" fill="#333">CISSP-MC-ZH</text>
+<rect x="215" y="336" width="22.0" height="17" fill="#b7bfc9"/>
+<text x="244.0" y="349" font-size="11" font-weight="600" fill="#888">+1.90</text>
+<text x="203" y="379" text-anchor="end" font-size="11.5" fill="#333">CyberMetric-10kQ</text>
+<rect x="215" y="366" width="16.8" height="17" fill="#b7bfc9"/>
+<text x="238.8" y="379" font-size="11" font-weight="600" fill="#888">+1.45</text>
+<text x="203" y="409" text-anchor="end" font-size="11.5" fill="#333">CyberMetric-80Q</text>
+<rect x="215" y="396" width="14.5" height="17" fill="#b7bfc9"/>
+<text x="236.5" y="409" font-size="11" font-weight="600" fill="#888">+1.25</text>
+<text x="203" y="439" text-anchor="end" font-size="11.5" fill="#333">CISSP-SC-EN</text>
+<rect x="215" y="426" width="13.7" height="17" fill="#b7bfc9"/>
+<text x="235.7" y="439" font-size="11" font-weight="600" fill="#888">+1.18</text>
+<text x="203" y="469" text-anchor="end" font-size="11.5" fill="#333">CSE-Benchmark</text>
+<rect x="215" y="456" width="7.0" height="17" fill="#b7bfc9"/>
+<text x="229.0" y="469" font-size="11" font-weight="600" fill="#888">+0.60</text>
+<text x="203" y="499" text-anchor="end" font-size="11.5" fill="#333">CISSP-SC-ZH</text>
+<rect x="215" y="486" width="4.1" height="17" fill="#b7bfc9"/>
+<text x="226.1" y="499" font-size="11" font-weight="600" fill="#888">+0.35</text>
+<text x="203" y="529" text-anchor="end" font-size="11.5" fill="#333">SecBench-MCQ</text>
+<rect x="215" y="516" width="3.4" height="17" fill="#b7bfc9"/>
+<text x="225.4" y="529" font-size="11" font-weight="600" fill="#888">+0.29</text>
+<rect x="645" y="112" width="235" height="152" rx="4" fill="#fdf3f3" stroke="#e0a0a0" stroke-width="1"/>
+<text x="661" y="138" font-size="12.5" font-weight="600" fill="#a03030">CTIBench 四项</text>
+<text x="661" y="159" font-size="11.5" font-weight="normal" fill="#333">基座 50.43 → 78.33</text>
+<text x="661" y="180" font-size="11.5" font-weight="normal" fill="#333">占基准数 4/15，</text>
+<text x="661" y="201" font-size="11.5" font-weight="normal" fill="#333">占总增益 82.4%</text>
+<text x="661" y="222" font-size="11.5" font-weight="normal" fill="#333">RCM / VSP / ATE 同时是</text>
+<text x="661" y="243" font-size="11.5" font-weight="normal" fill="#333">§4.4.1 的 RLVR 奖励</text>
+<rect x="30" y="570" width="840" height="48" rx="4" fill="#f7f7f8" stroke="#ddd" stroke-width="1"/>
+<text x="48" y="590" font-size="11.5" fill="#333">其余 11 项：基座 79.85 → 82.03，平均 +2.17。XekRung 在 ≤14B 口径下领先 6/15（含 SecEval、CyberMetric-500Q），</text>
+<text x="48" y="608" font-size="11.5" fill="#333">把 Llama-3.3-70B 也算进来则只剩 4 个领先项，全是 CTIBench。全文无 contamination / held-out 讨论。</text>
+</svg>
