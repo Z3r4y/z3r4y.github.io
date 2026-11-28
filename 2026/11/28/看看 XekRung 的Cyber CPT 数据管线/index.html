@@ -16,7 +16,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://z3r4y.github.io/images/og-default.png">
 <meta property="article:published_time" content="2026-11-28T08:00:00.000Z">
-<meta property="article:modified_time" content="2026-11-28T09:25:38.364Z">
+<meta property="article:modified_time" content="2026-11-28T13:26:44.504Z">
 <meta property="article:author" content="Z3r4y">
 <meta property="article:tag" content="LLM Security">
 <meta property="article:tag" content="Paper Reading">
@@ -50,7 +50,7 @@
     <!-- title -->
     <title>看看 XekRung 的Cyber CPT 数据管线 | Z3r4y</title>
     <!-- structured data: site name / author entity for search engines -->
-    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3 👋 Have fun on Cyber Model Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3 👋 Have fun on Cyber Model Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/11/28/%E7%9C%8B%E7%9C%8B%20XekRung%20%E7%9A%84Cyber%20CPT%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%BA%BF/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/11/28/%E7%9C%8B%E7%9C%8B%20XekRung%20%E7%9A%84Cyber%20CPT%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%BA%BF/","url":"https://z3r4y.github.io/2026/11/28/%E7%9C%8B%E7%9C%8B%20XekRung%20%E7%9A%84Cyber%20CPT%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%BA%BF/","headline":"看看 XekRung 的Cyber CPT 数据管线","name":"看看 XekRung 的Cyber CPT 数据管线","description":"1. Intro 论文： XekRung Technical Report 链接： arXiv:2605.00072 · v1 2026-04-30 &#x2F; v2 2026-11-06 机构：Alibaba Security AGI Lab 流水线：Qwen3-8B → CPT（5B token）→ mid-training → SFT（约 30 万条）→ RL（约 12 万条 prompt，GRPO） 2. 语料来源 论文列了五类语料：开源与外部数据、内部产品数据、内部知识文档、日志数据、代码数据。其中内部产品数据、内部知识文档、日志数据三类是内部资产。 内部资产还有两条额外用法：日志","datePublished":"2026-11-28T08:00:00.000Z","dateModified":"2026-11-28T09:25:38.364Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/34/03-cpt-pipeline-map.svg","https://z3r4y.github.io/images/34/02-entropy-pipeline.png"],"articleSection":"Paper Reading","keywords":"LLM Security, Paper Reading, LLM Training","inLanguage":"zh-CN"}]}</script>
+    <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebSite","@id":"https://z3r4y.github.io/#website","url":"https://z3r4y.github.io/","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3 👋 Have fun on Cyber Model Training & AI Security 😊","inLanguage":"zh-CN","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"}},{"@type":"Person","@id":"https://z3r4y.github.io/#person","name":"Z3r4y","alternateName":["Z3r4y｜Take it easy","Z3r4y | Take it easy"],"description":"Here is blog of Z3 👋 Have fun on Cyber Model Training & AI Security 😊","url":"https://z3r4y.github.io/about/","mainEntityOfPage":"https://z3r4y.github.io/","sameAs":["https://z3r4y.blog.csdn.net/","https://x.com/Z3r4y137535","https://github.com/Z3r4y"]},{"@type":"BlogPosting","@id":"https://z3r4y.github.io/2026/11/28/%E7%9C%8B%E7%9C%8B%20XekRung%20%E7%9A%84Cyber%20CPT%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%BA%BF/#article","isPartOf":{"@id":"https://z3r4y.github.io/#website"},"mainEntityOfPage":"https://z3r4y.github.io/2026/11/28/%E7%9C%8B%E7%9C%8B%20XekRung%20%E7%9A%84Cyber%20CPT%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%BA%BF/","url":"https://z3r4y.github.io/2026/11/28/%E7%9C%8B%E7%9C%8B%20XekRung%20%E7%9A%84Cyber%20CPT%20%E6%95%B0%E6%8D%AE%E7%AE%A1%E7%BA%BF/","headline":"看看 XekRung 的Cyber CPT 数据管线","name":"看看 XekRung 的Cyber CPT 数据管线","description":"1. Intro 论文： XekRung Technical Report 链接： arXiv:2605.00072 · v1 2026-04-30 &#x2F; v2 2026-11-06 机构：Alibaba Security AGI Lab 流水线：Qwen3-8B → CPT（5B token）→ mid-training → SFT（约 30 万条）→ RL（约 12 万条 prompt，GRPO） 2. 语料来源 论文列了五类语料：开源与外部数据、内部产品数据、内部知识文档、日志数据、代码数据。其中内部产品数据、内部知识文档、日志数据三类是内部资产。 内部资产还有两条额外用法：日志","datePublished":"2026-11-28T08:00:00.000Z","dateModified":"2026-11-28T13:26:44.504Z","author":{"@id":"https://z3r4y.github.io/#person"},"publisher":{"@id":"https://z3r4y.github.io/#person"},"image":["https://z3r4y.github.io/images/34/03-cpt-pipeline-map.svg","https://z3r4y.github.io/images/34/02-entropy-pipeline.png"],"articleSection":"Paper Reading","keywords":"LLM Security, Paper Reading, LLM Training","inLanguage":"zh-CN"}]}</script>
     <!-- async scripts -->
     <!-- Google Analytics -->
 
@@ -221,7 +221,7 @@
 <tr>
 <th>切法</th>
 <th>做法</th>
-<th>学到的东西</th>
+<th>模型学到的东西</th>
 </tr>
 </thead>
 <tbody><tr>
